@@ -2,12 +2,12 @@
     "compilerOptions": {
       "experimentalDecorators": true,
       "baseUrl": ".",
-      "outDir": "libTypes",
+      "outDir": "types",
       // "rootDirs": [
       //   "src"
       // ],
       "declaration": true,
-      "declarationDir": "libTypes",
+      "declarationDir": "types",
       "emitDeclarationOnly": true,
       "target": "ESNext",
       "module": "ESNext",
