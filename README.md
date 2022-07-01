@@ -47,6 +47,11 @@
         <br>
         <a href="https://github.com/doerme">Doerme</a>
       </td>
+      <td align="center" valign="top">
+        <img  width="80" height="80" src="https://github.com/linjunjain.png?s=80">
+        <br>
+        <a href="https://github.com/linjunjain">LinJunJian</a>
+      </td>
      </tr>
   </tbody>
 </table>

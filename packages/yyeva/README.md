@@ -1,7 +1,7 @@
 # YY-EVA <sup>web</sup> 🎁
 <a href="https://www.npmjs.com/package/yyeva"><img src="https://img.shields.io/npm/v/yyeva.svg" alt="npm"></a>
 <a href="https://emp2.netlify.app"><img src="https://img.shields.io/node/v/yyeva.svg" alt="node"></a>
-<a href="https://github.com/YY-LIVE/YYEVA-Web"><img src="https://img.shields.io/badge/github-YYEVA-blue" alt="github"></a>
+<a href="https://github.com/yylive/YYEVA-Web"><img src="https://img.shields.io/badge/github-YYEVA-blue" alt="github"></a>
 <a href="https://yyeva.netlify.app/"><img src="https://img.shields.io/badge/demo-YYEVA-black" alt="demo"></a>
 
 ## 📦安装
@@ -58,7 +58,7 @@ player.destory() // dstory player
 + 正式环境 确保 `logLevel` 为 `info` 避免内存泄露
 
 ## 兼容性
-综合测试 整理了主流的手机 通过情况 [详细](https://github.com/YY-LIVE/YYEVA-Web/blob/main/docs/device.md)
+综合测试 整理了主流的手机 通过情况 [详细](https://github.com/yylive/YYEVA-Web/blob/main/docs/device.md)
 ### 微信
 #### IOS
 微信 ios 已经验证通过，可以自动播放
