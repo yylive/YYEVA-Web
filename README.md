@@ -19,8 +19,14 @@
 ## 兼容性
 + 项目推进中，经历多重实验与反复修正，目前 web 兼容性 [详情](docs/device.md)
 + 后续会针对 TEST CASE 进一步增强兼容性
+
 ## QQ交流群
 ![qqgroup](docs/assets/qqgroup.png)
+
+## 鸣谢 
++ 感谢 [vap](https://github.com/Tencent/vap) 优秀的混合渲染方案、项目webgl混合部分重用了 vap的方案
++ 感谢 UC、夸克浏览器团队 提供技术支持 
++ 感谢百度 小程序、内核团队提供适配于技术支持
 
 ## Web Team
 <table>
