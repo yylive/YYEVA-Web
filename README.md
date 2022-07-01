@@ -24,9 +24,9 @@
 ![qqgroup](docs/assets/qqgroup.png)
 
 ## 鸣谢 
-+ 感谢 [vap](https://github.com/Tencent/vap) 优秀的混合渲染方案、项目webgl混合部分重用了 vap的方案
-+ 感谢 UC、夸克浏览器团队 提供技术支持 
-+ 感谢百度 小程序、内核团队提供适配于技术支持
++ 感谢 [Vap](https://github.com/Tencent/vap) 优秀的混合渲染方案、项目webgl混合部分重用了 vap的方案
++ 感谢 UC、夸克浏览器团队 提供兼容性等 技术支持 
++ 感谢百度 小程序、内核团队提供对小程序的适配等 技术支持
 
 ## Web Team
 <table>
