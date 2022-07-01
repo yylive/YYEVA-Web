@@ -1,0 +1,11 @@
+{
+  "name": "yy-eva-workspace",
+  "scripts": {
+    "dev": "pnpm --filter={yyeva,demo} dev",
+    "build": "pnpm --filter {yyeva} build",
+		"start": "pnpm --filter {demo} start"
+  },
+  "devDependencies": {
+    "@efox/eslint-config-react": "^2.3.0"
+  }
+}

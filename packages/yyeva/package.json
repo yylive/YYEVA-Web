@@ -1,0 +1,62 @@
+{
+  "name": "yyeva",
+  "version": "1.0.0-beta.8",
+  "description": "mp4 gift player",
+  "files": [
+    "dist",
+    "libTypes"
+  ],
+  "maintainers": [
+    {
+      "name": "xuhongbin",
+      "email": "xuhongbin@yy.com"
+    },
+    {
+      "name": "liangxiaoming",
+      "email": "liangxiaoming@yy.com"
+    }
+  ],
+	"engines": {
+    "node": ">=14"
+  },
+	"repository": {
+    "type": "git",
+    "url": "git+https://github.com/YY-LIVE/YYEVA-Web.git",
+    "directory": "packages/yyeva"
+  },
+  "main": "./dist/umd/yyeva.js",
+  "module": "./dist/esm/yyeva.js",
+  "types": "./libTypes/index.d.ts",
+  "scripts": {
+    "build": "npm-run-all --parallel build:**",
+    "build:esm": "cross-env FORMAT=esm vite build --mode prod",
+    "build:umd": "cross-env FORMAT=umd vite build --mode prod",
+    "build:tsc": "ttsc",
+    "dev": "npm-run-all --parallel dev:**",
+    "dev:umd": "cross-env FORMAT=umd vite build -w --mode dev",
+    "dev:esm": "cross-env FORMAT=esm vite build -w --mode dev",
+    "dev:tsc": "ttsc -w",
+    "lint": "eslint ./src --ext js,ts,tsx --fix"
+  },
+  "author": "Ken",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "zlib.es": "^0.6.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.16.7",
+    "@babel/plugin-transform-runtime": "^7.16.0",
+    "@babel/preset-env": "^7.16.8",
+    "@babel/runtime": "^7.16.0",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-typescript": "^8.3.0",
+    "@types/offscreencanvas": "^2019.6.4",
+    "cross-env": "^7.0.3",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2",
+    "ttypescript": "^1.5.12",
+    "typescript": "^4.3.5",
+    "typescript-transform-paths": "^3.3.1",
+    "vite": "^2.9.9"
+  }
+}

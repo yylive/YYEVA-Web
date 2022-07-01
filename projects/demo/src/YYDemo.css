@@ -1,0 +1,18 @@
+body{
+	background: 0 0/15px 15px,0 0/15px 15px,0 0/75px 75px,0 0/75px 75px #222;
+	background-image: linear-gradient(hsla(0,0%,100%,.3) 1px,transparent 0),linear-gradient(90deg,hsla(0,0%,100%,.3) 1px,transparent 0),linear-gradient(#fff 1px,transparent 0),linear-gradient(90deg,#fff 1px,transparent 0);
+}
+
+.wrap{
+		margin: 0 auto;
+		overflow: hidden;
+		height: 100vh;
+		width: 100vw;
+		max-width: 750px;
+}
+.pos{
+	position: fixed; margin: 0;left: 50%;top: 50%;transform: translate(-50%,-50%);margin: 20px;padding: 20px;text-align: center;
+	background-color: #fff;
+	cursor: pointer;
+	border-radius: 50%;
+}
