@@ -12,9 +12,15 @@
 
 ## 平台支持
 + 支持 [Android](https://github.com/yylive/YYEVA-Android)、[IOS](https://github.com/yylive/YYEVA-iOS)、[Web](https://github.com/yylive/YYEVA-Web)、百度小程序  点击了解详细接入
-+ 素材制作 AE插件 [详情](https://github.com/yylive/YYEVA-AE-Plugin)
-+ 数据结构定义 [详情](https://github.com/yylive/YYEVA-format)
-+ 项目相关文章、设计规范等 [详情](https://github.com/yylive/YYEVA-docs)
++ 素材制作 AE插件 [详情](https://github.com/yylive/YYEVA/tree/main/AEP)
+
+## 文档介绍
+* [第一篇:直播间礼物动效 - 实现方案](https://github.com/yylive/YYEVA/blob/main/直播间礼物动效实现方案.md)
+* [第二篇:透明MP4礼物](https://github.com/yylive/YYEVA/blob/main/透明MP4礼物.md)
+* [第三篇:变换矩阵在动画上一些应用](https://github.com/yylive/YYEVA/blob/main/变换矩阵在动画上一些应用.md)
+* [第四篇:YYEVA , 让MP4静态资源也能够动态起来](https://github.com/yylive/YYEVA/blob/main/YYEVA-让MP4静态资源也能够动态起来.md)
+* [第五篇:YYEVA设计规范](https://github.com/yylive/YYEVA/blob/main/YYEVA设计规范.md)
+* [第六篇:YYEVA数据结构](https://github.com/yylive/YYEVA/blob/main/数据结构.md)
 
 ## 兼容性
 + 项目推进中，经历多重实验与反复修正，目前 web 兼容性 [详情](docs/device.md)
