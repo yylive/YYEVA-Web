@@ -1,7 +1,7 @@
 # YY-EVA <sup>web</sup> 🎁
 <a href="https://www.npmjs.com/package/yyeva"><img src="https://img.shields.io/npm/v/yyeva.svg" alt="npm"></a>
-<a><img src="https://img.shields.io/node/v/yyeva.svg" alt="node"></a>
-<a href="https://github.com/YY-LIVE/YYEVA-Web"><img src="https://img.shields.io/badge/github-YYEVA-blue" alt="github"></a>
+<a href="https://github.com/yylive/YYEVA-Web"><img src="https://img.shields.io/node/v/yyeva.svg" alt="node"></a>
+<a href="https://github.com/yylive/YYEVA-Web"><img src="https://img.shields.io/badge/github-YYEVA-blue" alt="github"></a>
 <a href="https://yyeva.netlify.app/"><img src="https://img.shields.io/badge/demo-YYEVA-black" alt="demo"></a>
 
 > 轻量级 高性能 跨平台 MP4 礼物播放器
@@ -11,10 +11,10 @@
 + Typescript [类型文件](packages/yyeva/src//type//mix.ts)
 
 ## 平台支持
-+ 支持 [Android](https://github.com/YY-LIVE/YYEVA-Android)、[IOS](https://github.com/YY-LIVE/YYEVA-iOS)、[Web](https://github.com/YY-LIVE/YYEVA-Web)、百度小程序  点击了解详细接入
-+ 素材制作 AE插件 [详情](https://github.com/YY-LIVE/YYEVA-AE-Plugin)
-+ 数据结构定义 [详情](https://github.com/YY-LIVE/YYEVA-format)
-+ 项目相关文章、设计规范等 [详情](https://github.com/YY-LIVE/YYEVA-docs)
++ 支持 [Android](https://github.com/yylive/YYEVA-Android)、[IOS](https://github.com/yylive/YYEVA-iOS)、[Web](https://github.com/yylive/YYEVA-Web)、百度小程序  点击了解详细接入
++ 素材制作 AE插件 [详情](https://github.com/yylive/YYEVA-AE-Plugin)
++ 数据结构定义 [详情](https://github.com/yylive/YYEVA-format)
++ 项目相关文章、设计规范等 [详情](https://github.com/yylive/YYEVA-docs)
 
 ## 兼容性
 + 项目推进中，经历多重实验与反复修正，目前 web 兼容性 [详情](docs/device.md)
