@@ -1,6 +1,6 @@
 # YY-EVA <sup>web</sup> 🎁
 <a href="https://www.npmjs.com/package/yyeva"><img src="https://img.shields.io/npm/v/yyeva.svg" alt="npm"></a>
-<a href="https://emp2.netlify.app"><img src="https://img.shields.io/node/v/yyeva.svg" alt="node"></a>
+<a><img src="https://img.shields.io/node/v/yyeva.svg" alt="node"></a>
 <a href="https://github.com/YY-LIVE/YYEVA-Web"><img src="https://img.shields.io/badge/github-YYEVA-blue" alt="github"></a>
 <a href="https://yyeva.netlify.app/"><img src="https://img.shields.io/badge/demo-YYEVA-black" alt="demo"></a>
 
