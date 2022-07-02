@@ -1,6 +1,6 @@
 [build]
-  command = "npx pnpm@7 install --store-dir=.pnpm --frozen-lockfile && cd packages/yyeva && npx pnpm@7 build && cd ../../projects/demo && npx pnpm@7 build"
-  publish = "projects/demo/dist"
+  command = "npx pnpm@6 install --store-dir=.pnpm --frozen-lockfile && npx pnpm@6 build"
+  publish = "projects/offical/dist"
 
 [build.environment]
   NPM_FLAGS="--version"

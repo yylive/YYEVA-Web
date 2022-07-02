@@ -16,10 +16,10 @@
       "email": "liangxiaoming@yy.com"
     }
   ],
-	"engines": {
+  "engines": {
     "node": ">=14"
   },
-	"repository": {
+  "repository": {
     "type": "git",
     "url": "git+https://github.com/yylive/YYEVA-Web.git",
     "directory": "packages/yyeva"
@@ -41,6 +41,7 @@
   "author": "Ken",
   "license": "Apache-2.0",
   "dependencies": {
+    "@types/node": "^18.0.0",
     "zlib.es": "^0.6.0"
   },
   "devDependencies": {
