@@ -38,7 +38,7 @@ const runOnce = async (container: any) => {
     useFrameCache: true,
     // useVideoDBCache: false,
     // logLevel: 'info',
-
+    showPlayerInfo: 'table',
     onEnd: () => runOnce(container),
   })
   evideo.start()

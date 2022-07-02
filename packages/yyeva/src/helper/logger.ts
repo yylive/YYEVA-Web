@@ -1,6 +1,6 @@
 import config from 'src/helper/config'
-import type {LoggerLevelType} from 'src/type/mix'
-import {MixEvideoOptions} from 'src/type/mix'
+import type { LoggerLevelType } from 'src/type/mix'
+import { MixEvideoOptions } from 'src/type/mix'
 import Animator from 'src/player/video/animator'
 import VideoEntity from 'src/player/render/videoEntity'
 import Webgl from 'src/player/render/webglEntity'
@@ -48,12 +48,13 @@ export class Logger {
       ]
     return rs
   }
-  constructor() {}
+  constructor() { }
   setup(options?: LogParams) {
-    const {channel, level, showtips} = (self as any).LoggerConfig || {}
-    this.op = {...this.op, ...options}
+    const { channel, level, showtips } = (self as any).LoggerConfig || {}
+    this.op = { ...this.op, ...options }
     if (typeof showtips === 'boolean') this.op.showtips = showtips
-    const lv = level ? this.levels[level] : this.op.level ? this.levels[this.op.level] : 1
+    const lv = level ? this.levels[level] : this.op.level ? this.levels[this.op.level] : (config.mode === 'dev' ? 1 : 2)
+    // console.log(lv,config)
     const useChannel = !channel || channel === this.op.channel
     const silenceFn = (...args: any[]) => {
       //:TODO 增加上报逻辑
@@ -76,17 +77,30 @@ export const logger = new Logger()
 export default logger
 
 // version
-export const versionTips = (op: MixEvideoOptions) =>
+export const versionTips = (op: MixEvideoOptions) => {
+  if (op.showPlayerInfo === 'table') {
+    return console.table({
+      Version: config.version,
+      RenderType: op.renderType === 'canvas2d' ? op.renderType : `WebGL.${Webgl.version}`,
+      FPS: VideoEntity.fps,
+      DisplayMode: op.mode,
+      LoadType: op.usePrefetch ? ' MSE' : 'src',
+      OffScreenRender: !!op.useOfsRender,
+      UseFrameCache: !!op.useFrameCache,
+      UseVideoDBCache: !!op.useVideoDBCache,
+      AnimationType: Animator.animationType
+      //
+    })
+  }
   console.log(
-    `%c ${prefixName} ${config.version} %c ${op.renderType === 'canvas2d' ? op.renderType : `WebGL.${Webgl.version}`}${
-      self.devicePixelRatio ? ` DPR.${self.devicePixelRatio}` : ''
-    }${` FPS.${VideoEntity.fps}`}${op.mode ? ` ${op.mode}` : ''}${op.usePrefetch ? ' MSE' : ''}${
-      op.useOfsRender ? ' OfsRender' : ''
+    `%c ${prefixName} ${config.version} %c ${op.renderType === 'canvas2d' ? op.renderType : `WebGL.${Webgl.version}`}${self.devicePixelRatio ? ` DPR.${self.devicePixelRatio}` : ''
+    }${` FPS.${VideoEntity.fps}`}${op.mode ? ` ${op.mode}` : ''}${op.usePrefetch ? ' MSE' : ''}${op.useOfsRender ? ' OfsRender' : ''
     }${op.useFrameCache ? ` FrameCache` : ''}${op.useVideoDBCache ? ` VideoCache` : ''}${
-      // op.useAccurate && 'requestVideoFrameCallback' in HTMLVideoElement.prototype ? ' Accurate' : ''
-      ` ${Animator.animationType}`
+    // op.useAccurate && 'requestVideoFrameCallback' in HTMLVideoElement.prototype ? ' Accurate' : ''
+    ` ${Animator.animationType}`
     } %c`,
     'background:#34495e ; padding: 1px; border-radius: 2px 0 0 2px;  color: #fff',
-    'background:#3498db ; padding: 1px; border-radius: 0 2px 2px 0;  color: #fff',
+    'background:#16a085 ; padding: 1px; border-radius: 0 2px 2px 0;  color: #fff',
     'background:transparent',
   )
+}

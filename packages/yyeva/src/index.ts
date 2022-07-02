@@ -48,7 +48,8 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
   }
   //
   // setLoggerLevel(op.logLevel)
-  logger.setup({level: op.logLevel, showtips: op.showPlayerInfo})
+  // console.log('op.logLevel',op.logLevel)
+  logger.setup({level: op.logLevel, showtips: !!op.showPlayerInfo})
   //
   if (polyfill.weixin && !wxIsReady && polyfill.ios) await wxReady()
   //

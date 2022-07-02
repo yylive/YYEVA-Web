@@ -164,7 +164,7 @@ export type MixEvideoOptions = VideoEvent & {
    * showPlayerInfo
    * @default true
    */
-  showPlayerInfo?: boolean
+  showPlayerInfo?: boolean | 'table'
   /**
    * onRequestClickPlay
    * 微信&安卓端不能自动播放

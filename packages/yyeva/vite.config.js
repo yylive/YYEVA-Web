@@ -1,6 +1,7 @@
 import path from 'path'
 import {getBabelOutputPlugin} from '@rollup/plugin-babel'
 import pkg from './package.json'
+import {defineConfig} from 'vite'
 //
 const root = process.cwd()
 const src = path.join(root, 'src')
@@ -49,10 +50,9 @@ const plugins = []
 if (libFormat !== 'esm') {
   plugins.push(babelPlugin)
 }
-/**
- * @type {import('vite').UserConfig}
- */
-export default ({mode}) => {
+
+export default defineConfig(({mode}) => {
+  const isDev = mode === 'dev'
   return {
     define: {
       'import.meta.env.PKGVERSION': `"${pkg.version}"`,
@@ -66,8 +66,7 @@ export default ({mode}) => {
     },
     build: {
       emptyOutDir: libFormat === 'esm',
-      minify: mode === 'prod',
-      // minify: false,
+      sourcemap: true,
       lib: {
         entry: appRoot('src/index.ts'),
         name: libName,
@@ -80,4 +79,4 @@ export default ({mode}) => {
       },
     },
   }
-}
+})
