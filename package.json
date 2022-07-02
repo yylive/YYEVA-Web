@@ -1,8 +1,8 @@
 {
   "name": "yy-eva-workspace",
   "scripts": {
-    "dev": "pnpm --filter={yyeva,offical} dev",
-    "build": "pnpm --filter={yyeva,offical} build",
+    "dev": "pnpm --filter=yyeva --filter=offical dev",
+    "build": "pnpm --filter=yyeva --filter=offical build",
 		"start": "pnpm --filter=offical start"
   },
   "devDependencies": {
