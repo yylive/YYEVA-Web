@@ -61,6 +61,11 @@ export default function YYDemo() {
       <div className="container">
         <GiftPlayer />
       </div>
+      <div className="buttomLink">
+        <a href="https://github.com/yylive/YYEVA-Web" rel="noreferrer">
+          Github
+        </a>
+      </div>
     </>
   )
 }

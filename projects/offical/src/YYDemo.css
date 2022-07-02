@@ -16,3 +16,16 @@ body{
 	cursor: pointer;
 	border-radius: 50%;
 }
+.buttomLink{
+	position: fixed;
+	right: 0;
+	bottom: 0;
+	background-color: #222;
+	color: #fff;
+	display: block;
+	padding: 8px;
+}
+.buttomLink a{
+	color: #fff;
+	text-decoration: none;
+}
