@@ -105,7 +105,9 @@ export default class MCache {
       // }
       // console.log('hasRequestAnimationFrame skip', frame)
       // this.currentFrame = frame
-      return MCache.caches[this.storeName] ? MCache.caches[this.storeName][frame] : 'skip'
+      return MCache.caches[this.storeName] && MCache.caches[this.storeName][frame]
+        ? MCache.caches[this.storeName][frame]
+        : 'skip'
     }
     // if (frame === this.currentFrame) {
     //   // console.log('=== skip ========================')

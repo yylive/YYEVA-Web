@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from 'react'
-import {yyEva, YYEvaType} from 'yyeva'
+import {yyEva, YYEvaType, version} from 'yyeva'
 import './reset.css'
 import './YYDemo.css'
 let evideo: YYEvaType
@@ -18,9 +18,9 @@ const videos = [
 
     effects: {
       user_nick: 'girl',
-      user_avatar: 'https://downhdlogo.yy.com/hdlogo/640640/640/640/78/2624780478/u2624780478ZhhQq46.jpg',
+      user_avatar: '/yy/1.jpeg',
       anchor_nick: 'boy',
-      anchor_avatar: 'https://downhdlogo.yy.com/hdlogo/640640/640/640/01/0050018133/u50018133k68-pbY41.jpg',
+      anchor_avatar: '/yy/2.jpeg',
     },
   },
 ]
@@ -36,9 +36,10 @@ const runOnce = async (container: any) => {
     useMetaData: true,
     loop: false,
     useFrameCache: true,
+    // useAccurate: false,
     // useVideoDBCache: false,
     // logLevel: 'info',
-    showPlayerInfo: 'table',
+    // showPlayerInfo: 'table',
     onEnd: () => runOnce(container),
   })
   evideo.start()
@@ -63,7 +64,7 @@ export default function YYDemo() {
       </div>
       <div className="buttomLink">
         <a href="https://github.com/yylive/YYEVA-Web" rel="noreferrer">
-          Github
+          Github YYEVA {version}
         </a>
       </div>
     </>
