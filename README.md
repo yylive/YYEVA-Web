@@ -11,7 +11,7 @@
 + Typescript [类型文件](packages/yyeva/src//type//mix.ts)
 
 ## 平台支持
-+ 支持 [Android](https://github.com/yylive/YYEVA-Android)、[IOS](https://github.com/yylive/YYEVA-iOS)、[Web](https://github.com/yylive/YYEVA-Web)、百度小程序  点击了解详细接入
++ 支持 [Android](https://github.com/yylive/YYEVA-Android)、[IOS](https://github.com/yylive/YYEVA-iOS)、[Web](https://github.com/yylive/YYEVA-Web)   点击了解详细接入
 + 素材制作 AE插件 [详情](https://github.com/yylive/YYEVA/tree/main/AEP)
 
 ## 文档介绍
