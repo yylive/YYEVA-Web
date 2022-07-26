@@ -1,7 +1,7 @@
 import {yyEva, YYEvaType, version} from 'yyeva'
 import {useEffect, useRef} from 'react'
 let evideo: YYEvaType
-const host = `https://dev.yy.com:3333`
+const host = `${location.protocol}//${location.host}`
 const runPlayer = async (container: HTMLDivElement) => {
   evideo = await yyEva({
     mode: 'AspectFill',
@@ -24,8 +24,11 @@ const YYEVA = () => {
   const div = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    console.log('useEffect')
     if (div.current) runPlayer(div.current)
+    return () => {
+      console.log('evideo.destroy')
+      evideo.destroy()
+    }
   }, [])
   return (
     <div className="yyeva">

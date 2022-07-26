@@ -1,17 +1,13 @@
-// import {createRoot} from 'react-dom/client'
-// import {StrictMode} from 'react'
-// import App from './App'
-// const container = document.getElementById('emp-root') as HTMLElement
-// const root = createRoot(container)
-// root.render(
-//   <StrictMode>
-//     <App />
-//   </StrictMode>,
-// )
-// =====================
-import ReactDOM from 'react-dom'
+import {createRoot} from 'react-dom/client'
+import {StrictMode} from 'react'
 import App from './App'
-ReactDOM.render(<App />, document.getElementById('emp-root'))
+const container = document.getElementById('emp-root') as HTMLElement
+const root = createRoot(container)
+root.render(<App />)
+// =====================
+// import ReactDOM from 'react-dom'
+// import App from './App'
+// ReactDOM.render(<App />, document.getElementById('emp-root'))
 
 // =====================
 // const video = document.createElement('video')

@@ -2,5 +2,12 @@ video{
     position: fixed;
     right: 0;
     top: 0;
-    width: 200px;
+    width: 50px;
+}
+.container{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
 }

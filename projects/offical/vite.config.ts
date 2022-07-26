@@ -12,12 +12,13 @@ export default defineConfig(({mode}) => {
       ],
     },
     plugins: [react()],
-    build:{
-      sourcemap:!isDev,
+    build: {
+      sourcemap: !isDev,
     },
     server: {
       port: 3001,
       host: true,
+      https: true,
     },
     preview: {
       port: 3001,
