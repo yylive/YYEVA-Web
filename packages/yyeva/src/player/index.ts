@@ -290,10 +290,10 @@ export default class EVideo {
     if (this.op.usePrefetch) {
       const url = await this.prefetch()
       video.src = url
-      logger.debug('[prefetch url]', url.length)
+      logger.debug('[prefetch url]', url)
     } else {
       video.src = this.op.videoUrl
-      logger.debug('[prefetch url]', this.op.videoUrl.length)
+      logger.debug('[prefetch url]', this.op.videoUrl)
     }
     video.load()
     logger.debug('[video load]')
@@ -372,7 +372,10 @@ export default class EVideo {
   async prefetch(): Promise<string> {
     // const URL = (window as any).webkitURL || window.URL
     // const polyfillCreateObjectURL = polyfill.baidu || ((polyfill.quark || polyfill.uc) && polyfill.android)
-    const polyfillCreateObjectURL = (polyfill.baidu || polyfill.quark || polyfill.uc) && this.op.forceBlob === false
+    let polyfillCreateObjectURL = (polyfill.baidu || polyfill.quark || polyfill.uc) && this.op.forceBlob === false
+    if (this.op.returnVideoUrl === true) {
+      polyfillCreateObjectURL = true
+    }
     //
     if (this.op.useVideoDBCache && !polyfillCreateObjectURL) {
       const url = await this.checkVideoCache()
@@ -399,6 +402,7 @@ export default class EVideo {
               }
             }
             //
+            logger.debug('polyfillCreateObjectURL', polyfillCreateObjectURL)
             if (!polyfillCreateObjectURL) {
               const raw = atob(rs.slice(rs.indexOf(',') + 1))
               const buf = Array(raw.length)

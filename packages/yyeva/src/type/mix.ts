@@ -178,6 +178,18 @@ export type MixEvideoOptions = VideoEvent & {
    * @default false
    */
   forceBlob?: boolean
+  /**
+   * onGetConfig
+   * 获取配置信息
+   * @params op 适配后的配置
+   * @params option 传入配置
+   */
+  onGetConfig?: (op: MixEvideoOptions, option: MixEvideoOptions) => void
+  /**
+   * returnVideoUrl
+   * 强制返回video url
+   */
+  returnVideoUrl?: boolean
 }
 
 export type VideoDataInfoType = {

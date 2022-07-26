@@ -1,3 +1,3 @@
-import 'core-js/es'
+import 'core-js/full'
 import './style.css'
 import('./bootstrap')

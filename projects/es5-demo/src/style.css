@@ -2,7 +2,7 @@ video{
     position: fixed;
     right: 0;
     top: 0;
-    width: 50px;
+    width: 100px;
 }
 .container{
     width: 100%;
@@ -10,4 +10,14 @@ video{
     position: fixed;
     top: 0;
     left: 0;
+}
+body{
+    background: #222;
+    background-image:linear-gradient(rgba(255,255,255,.3) 1px, transparent 0),
+        linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 0);
+    background-size: 15px 15px, 15px 15px;
+}
+.title{
+    color: #eee;
+    font-size: 14px;
 }
