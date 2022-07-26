@@ -1,6 +1,6 @@
 {
   "name": "yyeva",
-  "version": "1.0.0-beta.12",
+  "version": "1.0.0-beta.15",
   "description": "mp4 gift player",
   "files": [
     "dist",
@@ -41,7 +41,6 @@
   "author": "Ken",
   "license": "Apache-2.0",
   "dependencies": {
-    "@types/node": "^18.0.0",
     "zlib.es": "^0.6.0"
   },
   "devDependencies": {
@@ -58,6 +57,7 @@
     "ttypescript": "^1.5.12",
     "typescript": "^4.3.5",
     "typescript-transform-paths": "^3.3.1",
-    "vite": "^2.9.9"
+    "vite": "^2.9.9",
+    "@types/node": "^18.0.0"
   }
 }
