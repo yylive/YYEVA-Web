@@ -4,6 +4,8 @@
 <a href="https://github.com/yylive/YYEVA-Web"><img src="https://img.shields.io/badge/github-YYEVA-blue" alt="github"></a>
 <a href="https://yyeva.netlify.app/"><img src="https://img.shields.io/badge/demo-YYEVA-black" alt="demo"></a>
 
+Language: [English](./README.en.md)
+
 ## 📦安装
 ```shell
 npm i yyeva
