@@ -7,7 +7,7 @@
 > This is a lightweight, high-performance, and cross-platform MP4 animation player.
 
 ## Usage
-+ intall、Usage、Options [Learn more](packages/yyeva//README.md)
++ intall、Usage、Options [Learn more](packages/yyeva//README.en.md)
 + Typescript [Learn more](packages/yyeva/src//type//mix.ts)
 
 ## Platform support
