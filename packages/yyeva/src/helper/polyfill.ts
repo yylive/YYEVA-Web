@@ -5,7 +5,8 @@ const ua = navigator.userAgent.toLowerCase()
 export const isWeixin = ua.indexOf('micromessenger') > -1
 export const isBaidu = /baidu/.test(ua)
 export const isIOS = /iphone|ipad|ipod/i.test(ua)
-export const isMac = /macintosh|mac os x/i.test(ua)
+export const isMac = /macintosh/i.test(ua)
+export const isSafari = /^((?!chrome|android).)*safari/i.test(ua)
 export const isApple = isIOS || isMac
 export const isQQbrw = ua.indexOf('mqqbrowser') > -1
 export const isAndroid = /android|adr/i.test(ua)
@@ -21,6 +22,8 @@ export const polyfill = {
   android: isAndroid,
   uc: isUCBrowser,
   quark: isQuark,
+  mac: isMac,
+  safari: isSafari,
 }
 
 export let wxIsReady = false
@@ -33,7 +36,7 @@ export const wxReady = () =>
     })
   })
 let tips: HTMLElement
-export const wxAndroidClick = (container: HTMLElement, video: HTMLVideoElement) => {
+export const clickPlayBtn = (container: HTMLElement, video: HTMLVideoElement) => {
   // alert('wxAndroidClick')
   if (!tips) {
     tips = document.createElement('div')

@@ -14,6 +14,9 @@ const videos = [
     },
   },
   {
+    videoUrl: `${host}/yy/music.mp4`,
+  },
+  {
     videoUrl: `${host}/yy/yy.mp4`,
 
     effects: {
@@ -27,7 +30,7 @@ const videos = [
 let i = 0
 const runOnce = async (container: any) => {
   const o: any = videos[i]
-  i = i === 0 ? 1 : 0
+  i = i === videos.length - 1 ? 0 : i + 1
   evideo = await yyEva({
     container,
     alphaDirection: 'right',
@@ -36,6 +39,7 @@ const runOnce = async (container: any) => {
     useMetaData: true,
     loop: false,
     useFrameCache: true,
+    // mute: false,
     // useAccurate: false,
     // useVideoDBCache: false,
     // logLevel: 'info',

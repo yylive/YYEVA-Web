@@ -11,7 +11,7 @@ import db from 'src/parser/db'
 import Webgl from './render/webglEntity'
 
 import {getVIdeoId} from 'src/helper/utils'
-import {polyfill, wxAndroidClick} from 'src/helper/polyfill'
+import {polyfill, clickPlayBtn} from 'src/helper/polyfill'
 // import VideoEntity from './render/videoEntity'
 //
 export default class EVideo {
@@ -116,6 +116,13 @@ export default class EVideo {
     if (!this.renderer) return this.isDestoryed()
     this.startEvent()
   }
+  private clickToPlay() {
+    if (this.op.onRequestClickPlay) {
+      this.op.onRequestClickPlay(this.video)
+    } else {
+      clickPlayBtn(this.op.container, this.video)
+    }
+  }
   private startEvent() {
     if (this.renderer.isPlay === true) return
     this.setPlay(true)
@@ -128,25 +135,38 @@ export default class EVideo {
         .then(() => {
           logger.debug(`${this.op.mute === false ? '声音播放' : '静音播放'}`)
         })
-        .catch(err => {
-          logger.warn('切换到静音播放', this.op.videoUrl)
-          this.video.muted = true
-          this.video.play().catch(e => {
-            logger.warn(`play() error toggle muted to play`, e.code, e.message, e.name)
-            if (this.op.onRequestClickPlay) {
-              this.op.onRequestClickPlay(this.video)
-            } else {
-              wxAndroidClick(this.op.container, this.video)
-            }
-            // 增加弹窗 手动触发 video.play
-            if (e?.code === 0 && e?.name === EPlayError.NotAllowedError) {
-              this.op?.onError?.({
-                playError: EPlayError.NotAllowedError,
-                video: this.video,
-                playStep: EPlayStep.muted,
-              })
-            }
-          })
+        .catch(e => {
+          /**
+           * 触发 catch 条件
+           * 浏览器对静音不允许导致
+           * 微信禁止自动播放导致
+           * TODO 看看是否可以跟 canplaythrough 合并
+           */
+          /**
+           * TODO 音频适配 safari
+           * safari 会引起死循环
+           * 暂时自动切换静音
+           */
+          if (polyfill.safari && polyfill.mac) {
+            logger.debug('切换到静音播放', this.op.videoUrl)
+            this.video.muted = true
+            this.video.play().catch(e => {
+              logger.debug(e)
+              this.op?.onError?.(e)
+            })
+            return
+          }
+          //
+          logger.debug(`切换到静音播放`, this.op.videoUrl, e)
+          this.clickToPlay()
+          // 增加弹窗 手动触发 video.play
+          if (e?.code === 0 && e?.name === EPlayError.NotAllowedError) {
+            this.op?.onError?.({
+              playError: EPlayError.NotAllowedError,
+              video: this.video,
+              playStep: EPlayStep.muted,
+            })
+          }
         })
     } else {
       this.op?.onEnd?.()

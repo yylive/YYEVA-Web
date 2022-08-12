@@ -18,7 +18,7 @@ export default defineConfig(({mode}) => {
     server: {
       port: 3001,
       host: true,
-      https: true,
+      // https: true,
     },
     preview: {
       port: 3001,
