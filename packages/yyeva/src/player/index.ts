@@ -118,7 +118,7 @@ export default class EVideo {
   }
   private clickToPlay() {
     if (this.op.onRequestClickPlay) {
-      this.op.onRequestClickPlay(this.video)
+      this.op.onRequestClickPlay(this.op.container, this.video)
     } else {
       clickPlayBtn(this.op.container, this.video)
     }

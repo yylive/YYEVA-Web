@@ -168,9 +168,10 @@ export type MixEvideoOptions = VideoEvent & {
   /**
    * onRequestClickPlay
    * 微信&安卓端不能自动播放
+   * mute=false 不能自动播放
    * 需要回调点击事件用户通过 video.play()触发一次
    */
-  onRequestClickPlay?: (video: HTMLVideoElement) => void
+  onRequestClickPlay?: (container: HTMLElement, video: HTMLVideoElement) => void
   // [key: string]: any
   /**
    * forceBlob

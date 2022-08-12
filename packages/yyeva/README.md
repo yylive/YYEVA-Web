@@ -52,7 +52,7 @@ player.destory() // dstory player
 |logLevel|日志级别|`info`||
 |showPlayerInfo|是否控制台显示播放状态|||
 |effects|根据素材传入相应的素材内容|||
-|onRequestClickPlay|微信 安卓会触发这个事件，不定义则显示默认样式|`(video:HTMLVideoElement)=>void`||
+|onRequestClickPlay|微信 或者 `mute=false` 会触发这个事件，不定义则显示默认样式|[类型](https://github.com/yylive/YYEVA-Web/blob/main/packages/yyeva/src/type/mix.ts#L173) [参考](https://github.com/yylive/YYEVA-Web/blob/main/packages/yyeva/src/helper/polyfill.ts#L39)||
 
 ## 注意
 + 正式环境 确保 `logLevel` 为 `info` 避免内存泄露
