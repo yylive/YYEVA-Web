@@ -11,7 +11,7 @@
 + Typescript [Learn more](packages/yyeva/src//type//mix.ts)
 
 ## Platform support
-+ For [Android](https://github.com/yylive/YYEVA-Android)、[IOS](https://github.com/yylive/YYEVA-iOS)、[Web](https://github.com/yylive/YYEVA-Web)    Learn more
++ For [Android](https://github.com/yylive/YYEVA-Android)、[IOS](https://github.com/yylive/YYEVA-iOS)、[Web](https://github.com/yylive/YYEVA-Web)
 + Effects Production [AE Plug-in](https://github.com/yylive/YYEVA/tree/main/AEP)
 
 ## Technology Sharing
@@ -23,7 +23,7 @@
 * [Chapter 6: Data Structure Of YYEVA](https://github.com/yylive/YYEVA/blob/main/数据结构.md)
 
 ## Compatibility
-+ Project progression, undergoing multiple experiments and repeated corrections, [web compatibility] (docs/device.md)
++ Project progression, undergoing multiple experiments and repeated corrections, [web compatibility](docs/device.md)
 + Further compatibility will follow for TEST CASE
 
 ## Communicate
