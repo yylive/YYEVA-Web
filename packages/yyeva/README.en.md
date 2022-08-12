@@ -4,6 +4,8 @@
 <a href="https://github.com/yylive/YYEVA-Web"><img src="https://img.shields.io/badge/github-YYEVA-blue" alt="github"></a>
 <a href="https://yyeva.netlify.app/"><img src="https://img.shields.io/badge/demo-YYEVA-black" alt="demo"></a>
 
+Language: [中文](./README.md)
+
 ## 📦 Install
 ```shell
 npm i yyeva
@@ -58,7 +60,7 @@ player.destory() // dstory player
 + make sure `logLevel` is `info` to avoid memory leaks in production environments.
 
 ## compatibility
-compatibility list obtained after comprehensive testing [detail](https://github.com/yylive/YYEVA-Web/blob/main/docs/device.md)
+compatibility list obtained after comprehensive testing [detail](https://github.com/yylive/YYEVA-Web/blob/main/docs/device.en.md)
 ### WeChat
 #### IOS
 WeChat ios has been verified and can be played automatically
