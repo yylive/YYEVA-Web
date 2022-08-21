@@ -1,12 +1,45 @@
 import {useState, useRef, useEffect, useCallback} from 'react'
 import {yyEva, YYEvaOptionsType} from 'yyeva'
+import {Button, Drawer, Radio, Space, Select, Form} from 'antd'
 import {modeList, phoneList} from './preview-config'
 import PreviewDesc from './PreviewDesc'
 import PreviewExtendForm from './PreviewExtendForm'
 import demoUrl from './dataUrl'
 import './preview.scss'
+import 'antd/dist/antd.css'
+
+import type {DrawerProps, RadioChangeEvent} from 'antd'
+
+const {Option} = Select
 
 const PlayGround = () => {
+  const [form] = Form.useForm()
+  const [ctrlBarVisible, setCtrlBarVisible] = useState(false)
+  const onClose = () => {
+    setCtrlBarVisible(false)
+  }
+  const showDrawer = () => {
+    setCtrlBarVisible(true)
+  }
+  const [extendFormVisible, setExtendFormVisible] = useState(false)
+  const onExtendFormClose = () => {
+    setExtendFormVisible(false)
+  }
+  const openExtendForm = () => {
+    setExtendFormVisible(true)
+  }
+  const onPhoneListChange = (value: string) => {
+    console.log('onChange', value)
+    setDropInfo({
+      objdata: phoneList[value],
+      dropWidth: phoneList[value].width + 'px',
+      dropHeight: phoneList[value].height + 'px',
+      dropBackground: phoneList[value].background,
+      dropBorder: phoneList[value].border,
+      routeSupport: phoneList[value].routeSupport,
+      outsideBackground: phoneList[value].outsideBackground,
+    })
+  }
   const [dropInfo, setDropInfo] = useState({
     objdata: phoneList['iPhone 6'],
     dropWidth: phoneList['iPhone 6'].width + 'px',
@@ -218,25 +251,6 @@ const PlayGround = () => {
     <div className="preview_wrap">
       <div className="MainLayoutStyle">
         <div className="TopBarDescFont">
-          <span> 模拟屏幕: </span>
-          <select
-            onChange={e => {
-              console.log('onChange', e.target.value)
-              setDropInfo({
-                objdata: phoneList[e.target.value],
-                dropWidth: phoneList[e.target.value].width + 'px',
-                dropHeight: phoneList[e.target.value].height + 'px',
-                dropBackground: phoneList[e.target.value].background,
-                dropBorder: phoneList[e.target.value].border,
-                routeSupport: phoneList[e.target.value].routeSupport,
-                outsideBackground: phoneList[e.target.value].outsideBackground,
-              })
-            }}
-          >
-            {Object.keys(phoneList).map(item => (
-              <option key={item}>{item}</option>
-            ))}
-          </select>
           <input
             style={{display: 'none'}}
             id="drop_width_dom"
@@ -265,43 +279,6 @@ const PlayGround = () => {
             }}
             value={dropInfo.dropHeight ? dropInfo.dropHeight.replace('px', '') : ''}
           />
-          <div
-            className="rotateIcon"
-            style={{display: dropInfo.routeSupport ? 'inline-block' : 'none'}}
-            title="旋转尺寸"
-            onClick={() => {
-              const tempHeight = (document?.querySelector('#drop_height_dom') as any)?.value
-              const tempWidth = (document?.querySelector('#drop_width_dom') as any)?.value
-              setDropInfo({
-                ...dropInfo,
-                dropWidth: tempHeight + 'px',
-                dropHeight: tempWidth + 'px',
-                dropBackground: tempHeight > tempWidth ? dropInfo.objdata.backgroundH : dropInfo.objdata.background,
-              })
-              const fillmodeselect = document.querySelector('#fillmodeselect')
-              if (tempWidth < tempHeight) {
-                setModeOption('horizontal')
-                ;(fillmodeselect as any).value = 'horizontal'
-              } else {
-                setModeOption('vertical')
-                ;(fillmodeselect as any).value = 'vertical'
-              }
-            }}
-          >
-            旋转屏幕🍌
-          </div>
-          <span> 填充模式: </span>
-          <select
-            id="fillmodeselect"
-            onChange={e => {
-              console.log('onChange', e.target.value)
-              setModeOption(e.target.value as YYEvaOptionsType['mode'])
-            }}
-          >
-            {modeList.map(item => (
-              <option key={item}>{item}</option>
-            ))}
-          </select>
         </div>
         <div
           ref={dropZoneRef}
@@ -341,6 +318,14 @@ const PlayGround = () => {
             }}
           ></div>
         </div>
+      </div>
+      <Button type="primary" onClick={showDrawer} className="setting_button">
+        设置
+      </Button>
+      <Button type="primary" onClick={openExtendForm} className="extend_button">
+        扩展key
+      </Button>
+      <Drawer title="预览设置" placement={'top'} closable={false} onClose={onClose} visible={ctrlBarVisible}>
         <div className="buttonWrap">
           <div className="uploadButton">
             <input ref={inputRef} className="uploadInput" type="file" />
@@ -350,8 +335,68 @@ const PlayGround = () => {
             预览Demo
           </div>
         </div>
+        <Form form={form}>
+          <Form.Item label="选择模拟设备">
+            <Select defaultValue={Object.keys(phoneList)?.[0]} style={{width: 220}} onChange={onPhoneListChange}>
+              {Object.keys(phoneList).map(item => (
+                <Option key={item} value={item}>
+                  {item}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item label="选择填充模式" name="fillmodeselect">
+            <Select
+              style={{width: 220}}
+              defaultValue={modeList[0]}
+              onChange={(value: string) => {
+                console.log('onChange', value)
+                setModeOption(value as YYEvaOptionsType['mode'])
+              }}
+            >
+              {modeList.map(item => (
+                <Option key={item} value={item}>
+                  {item}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Button
+            onClick={() => {
+              const tempHeight = (document?.querySelector('#drop_height_dom') as any)?.value
+              const tempWidth = (document?.querySelector('#drop_width_dom') as any)?.value
+              setDropInfo({
+                ...dropInfo,
+                dropWidth: tempHeight + 'px',
+                dropHeight: tempWidth + 'px',
+                dropBackground: tempHeight > tempWidth ? dropInfo.objdata.backgroundH : dropInfo.objdata.background,
+              })
+              if (tempWidth < tempHeight) {
+                setModeOption('horizontal')
+                form.setFieldsValue({
+                  fillmodeselect: 'horizontal',
+                })
+              } else {
+                setModeOption('vertical')
+                form.setFieldsValue({
+                  fillmodeselect: 'vertical',
+                })
+              }
+            }}
+          >
+            旋转屏幕
+          </Button>
+        </Form>
+      </Drawer>
+      <Drawer
+        title="mp4扩展信息"
+        placement={'top'}
+        closable={false}
+        onClose={onExtendFormClose}
+        visible={extendFormVisible}
+      >
         <PreviewExtendForm replayMp4={replayMp4} />
-      </div>
+      </Drawer>
     </div>
   )
 }

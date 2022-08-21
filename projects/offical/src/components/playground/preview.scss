@@ -7,6 +7,19 @@
     overflow-y: auto;
     background: #FFF;
 }
+
+.setting_button{
+  position: absolute !important;
+  left: 6px;
+  top: 6px;
+}
+
+.extend_button {
+  position: absolute !important;
+  right: 6px;
+  top: 6px;
+}
+
 .MainLayoutStyle {
     display: flex;
     justify-content: center;
@@ -110,6 +123,7 @@
     display: flex;
     flex-direction: row;
     justify-content: center;
+    padding-bottom: 20px;
   }
   
   .uploadButton {
@@ -119,7 +133,6 @@
     text-align: center;
     line-height: 40px;
     font-size: 18px;
-    margin-top: 30px;
     background: blue;
     color: #FFF;
     border-radius: 10px;
@@ -134,7 +147,6 @@
     text-align: center;
     line-height: 40px;
     font-size: 18px;
-    margin-top: 30px;
     background: green;
     color: #FFF;
     border-radius: 10px;
