@@ -5,7 +5,9 @@ const PreviewDesc = () => {
         <div>
           体验e-video动画，请将<span className="RedFont">.mp4</span>文件拖拽到此区域。
         </div>
-        {/* <div>或点击此区域上传文件。</div> */}
+        <div>
+          <span className="RedFont">6秒</span>后将会自动播放Demo。
+        </div>
       </div>
     </div>
   )

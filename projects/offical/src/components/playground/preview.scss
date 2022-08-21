@@ -6,16 +6,17 @@
     height: 100%;
     overflow-y: auto;
     background: #FFF;
+    overflow-x: hidden;
 }
 
 .setting_button{
-  position: absolute !important;
+  position: fixed !important;
   left: 6px;
   top: 6px;
 }
 
 .extend_button {
-  position: absolute !important;
+  position: fixed !important;
   right: 6px;
   top: 6px;
 }
@@ -182,6 +183,7 @@
     display: block;
     width: 610px;
     height: 300px;
+    margin-top: 10px;
   }
   
   .effectBlockStyle {

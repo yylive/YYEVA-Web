@@ -67,10 +67,10 @@ const PlayGround = () => {
 
   const demoPreview = () => {
     cacheDataRef.current.effects = {
-      // souceimage: 'https://unpkg.yy.com/webupload/e-video/demo/a1.png',
-      // comicimage: 'https://unpkg.yy.com/webupload/e-video/demo/b1.png',
-      // mp4url: 'https://unpkg.yy.com/webupload/e-video/demo/AAA_dynamic_264_mid-0.mp4',
-      mp4url: demoUrl,
+      souceimage: 'https://unpkg.yy.com/webupload/e-video/demo/a1.png',
+      comicimage: 'https://unpkg.yy.com/webupload/e-video/demo/b1.png',
+      mp4url: 'https://unpkg.yy.com/webupload/e-video/demo/AAA_dynamic_264_mid-0.mp4',
+      // mp4url: demoUrl,
     }
     if (dropZoneRef.current) {
       replayMp4(cacheDataRef.current.effects.mp4url, dropZoneRef.current, () => {
@@ -88,13 +88,11 @@ const PlayGround = () => {
   const showExtendForm = (evideo: any) => {
     const extendConfig = evideo?.renderer?.videoEntity?.config
     if (extendConfig) {
-      const extend_form = document.querySelector('#extend_form')
       const descript_show = document.querySelector('#descript_show')
       const datas_show = document.querySelector('#datas_show')
       const effect_show = document.querySelector('#effect_show')
       try {
-        if (extend_form && descript_show && datas_show && effect_show) {
-          ;(extend_form as any).style.display = 'block'
+        if (descript_show && datas_show && effect_show) {
           ;(descript_show as any).value = JSON.stringify(extendConfig.descript, null, 2)
           ;(datas_show as any).value = JSON.stringify(extendConfig.datas, null, 2)
           ;(effect_show as any).value = JSON.stringify(extendConfig.effect, null, 2)
@@ -247,6 +245,12 @@ const PlayGround = () => {
     replayMp4()
   }, [dropInfo.dropWidth, dropInfo.dropHeight])
 
+  useEffect(() => {
+    setTimeout(() => {
+      demoPreview()
+    }, 5000)
+  }, [])
+
   return (
     <div className="preview_wrap">
       <div className="MainLayoutStyle">
@@ -320,7 +324,7 @@ const PlayGround = () => {
         </div>
       </div>
       <Button type="primary" onClick={showDrawer} className="setting_button">
-        设置
+        预览设置
       </Button>
       <Button type="primary" onClick={openExtendForm} className="extend_button">
         扩展key
