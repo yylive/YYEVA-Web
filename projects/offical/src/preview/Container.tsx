@@ -5,7 +5,7 @@ import {GiftPlayer} from './player'
 import VideoOptions from 'src/preview/player/VideoOptions'
 import {version} from 'yyeva'
 import VideoMeta from './player/VideoMeta'
-
+import {useEffectStore} from 'src/preview/store/usePlayerStore'
 /* const Content = () => (
   <div>
     YYEVA（YY Effect
@@ -25,19 +25,20 @@ import VideoMeta from './player/VideoMeta'
     mute: true,
  */
 const Page = () => {
+  const effect = useEffectStore(state => state)
   return (
     <PageContainer
       subTitle="(YY Effect Video Animate)"
       // content={<Content />}
       title="YYEVA"
     >
-      <ProCard gutter={8} ghost wrap>
+      <ProCard gutter={8} wrap split={'vertical'}>
         <ProCard
           style={{marginTop: 8}}
           colSpan={{xs: 24, sm: 6, md: 6, lg: 6}}
           title="描述信息 Meta"
-          bordered
           headerBordered
+          loading={Object.keys(effect.effect).length === 0}
         >
           <VideoMeta />
         </ProCard>
@@ -47,18 +48,11 @@ const Page = () => {
           title={`预览 Preview`}
           extra={`v${version}`}
           layout="center"
-          bordered
           headerBordered
         >
           <GiftPlayer />
         </ProCard>
-        <ProCard
-          style={{marginTop: 8}}
-          colSpan={{xs: 24, sm: 6, md: 6, lg: 6}}
-          title="配置 Config"
-          bordered
-          headerBordered
-        >
+        <ProCard style={{marginTop: 8}} colSpan={{xs: 24, sm: 6, md: 6, lg: 6}} title="配置 Config" headerBordered>
           <VideoOptions />
         </ProCard>
       </ProCard>
