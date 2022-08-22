@@ -1,7 +1,7 @@
 import {ProCard, ProForm, ProFormText, ProFormRadio, ProFormSwitch, ProFormSelect} from '@ant-design/pro-components'
 import {useOptionsStore} from 'src/preview/store/usePlayerStore'
 const VideoOptions = () => {
-  const options = useOptionsStore()
+  const {options, setOptions} = useOptionsStore()
   return (
     <ProForm
       layout="horizontal"
@@ -10,8 +10,8 @@ const VideoOptions = () => {
         gutter: [16, 0],
       }}
       onFinish={async (v: any) => {
-        console.log('options submit', v)
-        options.setOptions(v)
+        // console.log('options submit', v)
+        setOptions(v)
       }}
     >
       <ProFormRadio.Group

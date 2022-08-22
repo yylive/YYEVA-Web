@@ -20,12 +20,12 @@ const runOnce = async (container: any, videos: any, options: any) => {
 let v: HTMLVideoElement
 export const GiftPlayer = () => {
   const div = useRef<HTMLDivElement>(null)
-  const video = useVideoStore(state => state)
-  const options = useOptionsStore(state => state)
-  const effect = useEffectStore(state => state)
+  const {video} = useVideoStore(state => state)
+  const {options} = useOptionsStore(state => state)
+  const {effect, setEffect} = useEffectStore(state => state)
   useEffect(() => {
     i = 0
-    runOnce(div.current, video, options).then(() => effect.setEffect(evideo?.renderer?.videoEntity?.config?.effect))
+    runOnce(div.current, video, options).then(() => setEffect(evideo?.renderer?.videoEntity?.config?.effect))
 
     return () => {
       evideo.destroy()

@@ -4,7 +4,7 @@ const VideoMeta = () => {
   //   console.log('effect.data', effect.data)
   return (
     <>
-      <pre>{JSON.stringify(effect.data, null, 2)}</pre>
+      <pre>{JSON.stringify(effect.effect, null, 2)}</pre>
     </>
   )
 }
