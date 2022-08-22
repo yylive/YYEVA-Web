@@ -15,7 +15,7 @@ export const useOptionsStore = create(
       showVideo: false,
       showPlayerInfo: true,
       useAccurate: true,
-      logLevel: 'debug',
+      logLevel: 'info',
     },
     set => ({
       setOptions(d: any) {
