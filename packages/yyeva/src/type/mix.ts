@@ -297,6 +297,7 @@ export type VideoAnimateDescriptType = {
   rgbFrame: number[] //rgb位置信息
   alphaFrame: number[] //alpha位置信息
   fps: number
+  hasAudio?: boolean
 }
 
 export type VideoAnimateDataType = {

@@ -14,7 +14,7 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
       videoID: null,
       dataUrl: '',
       offset: 0,
-      mute: true,
+      // mute: true,
       usePrefetch: true,
       useBitmap: true,
       useAccurate: true,

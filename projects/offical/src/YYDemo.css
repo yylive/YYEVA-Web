@@ -1,22 +1,35 @@
-body{
-	background: 0 0/15px 15px,0 0/15px 15px,0 0/75px 75px,0 0/75px 75px #222;
-	background-image: linear-gradient(hsla(0,0%,100%,.3) 1px,transparent 0),linear-gradient(90deg,hsla(0,0%,100%,.3) 1px,transparent 0),linear-gradient(#fff 1px,transparent 0),linear-gradient(90deg,#fff 1px,transparent 0);
+body {
+	background: 0 0/15px 15px, 0 0/15px 15px, 0 0/75px 75px, 0 0/75px 75px #222;
+	background-image: 
+	linear-gradient(hsla(0, 0%, 100%, .2) 1px, transparent 0), 
+	linear-gradient(90deg, hsla(0, 0%, 100%, .2) 1px, transparent 0);
+	/* linear-gradient(#fff 1px, transparent 0),  */
+	/* linear-gradient(90deg, #fff 1px, transparent 0); */
 }
 
-.wrap{
-		margin: 0 auto;
-		overflow: hidden;
-		height: 100vh;
-		width: 100vw;
-		max-width: 750px;
+.wrap {
+	margin: 0 auto;
+	overflow: hidden;
+	height: 100vh;
+	width: 100vw;
+	max-width: 750px;
 }
-.pos{
-	position: fixed; margin: 0;left: 50%;top: 50%;transform: translate(-50%,-50%);margin: 20px;padding: 20px;text-align: center;
+
+.pos {
+	position: fixed;
+	margin: 0;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	margin: 20px;
+	padding: 20px;
+	text-align: center;
 	background-color: #fff;
 	cursor: pointer;
 	border-radius: 50%;
 }
-.buttomLink{
+
+.buttomLink {
 	position: fixed;
 	right: 0;
 	bottom: 0;
@@ -25,7 +38,8 @@ body{
 	display: block;
 	padding: 8px;
 }
-.buttomLink a{
+
+.buttomLink a {
 	color: #fff;
 	text-decoration: none;
 }

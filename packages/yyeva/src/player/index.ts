@@ -12,7 +12,7 @@ import Webgl from './render/webglEntity'
 
 import {getVIdeoId} from 'src/helper/utils'
 import {polyfill, clickPlayBtn} from 'src/helper/polyfill'
-// import VideoEntity from './render/videoEntity'
+import VideoEntity from './render/videoEntity'
 //
 export default class EVideo {
   public op: MixEvideoOptions
@@ -128,7 +128,6 @@ export default class EVideo {
     this.setPlay(true)
     this.animator.start()
     const videoPromise = this.video.play()
-    // console.log(`### videoPromise`, videoPromise)
     // 避免 uc 夸克报错
     if (videoPromise) {
       videoPromise
@@ -212,7 +211,7 @@ export default class EVideo {
      */
 
     //
-    video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : true
+    // video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : true
     video.loop = typeof this.op.loop !== 'undefined' ? this.op.loop : true
     video.crossOrigin = 'anonymous'
     video.autoplay = true
@@ -315,6 +314,9 @@ export default class EVideo {
       video.src = this.op.videoUrl
       logger.debug('[prefetch url]', this.op.videoUrl.length)
     }
+    //判断是否存在 audio 默认为 false
+    video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : !VideoEntity.hasAudio
+    //
     video.load()
     logger.debug('[video load]')
     await this.videoAddEvents()
