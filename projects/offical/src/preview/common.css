@@ -1,0 +1,19 @@
+.ant-layout {
+    min-height: 100vh;
+}
+.ant-layout, .ant-layout * {
+    box-sizing: border-box;
+}
+/* .ant-page-header{
+    display: none;
+} */
+.playbox{
+    background: 0 0/15px 15px, 0 0/15px 15px, 0 0/75px 75px, 0 0/75px 75px #222;
+	background-image: 
+	linear-gradient(hsla(0, 0%, 100%, .2) 1px, transparent 0), 
+	linear-gradient(90deg, hsla(0, 0%, 100%, .2) 1px, transparent 0);
+}
+.playbox,.playbox .wrap{
+    width: 100%;
+    height: 100%;
+}
