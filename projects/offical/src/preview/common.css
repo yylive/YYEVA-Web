@@ -17,3 +17,17 @@
     width: 100%;
     height: 100%;
 }
+video {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 72px;
+}
+.playbox.AspectFill {
+    height: 667px;
+    width: 375px;
+}
+.playbox.AspectFit {
+    height: 375px;
+    width: 667px;
+}

@@ -1,8 +1,12 @@
 import {PageContainer} from '@ant-design/pro-layout'
-import {ProCard, ProForm, ProFormText, ProFormSwitch, ProFormSelect} from '@ant-design/pro-components'
+import {ProCard, ProForm, ProFormText, ProFormRadio, ProFormSwitch, ProFormSelect} from '@ant-design/pro-components'
+// import {Row, Col, Space} from 'antd'
 import {GiftPlayer} from './player'
+import VideoOptions from 'src/preview/player/VideoOptions'
 import {version} from 'yyeva'
-const Content = () => (
+import VideoMeta from './player/VideoMeta'
+
+/* const Content = () => (
   <div>
     YYEVA（YY Effect
     VideoAnimate）是一个开源的支持可插入动态元素的MP4动效播放器解决方案，包含设计资源输出的AE插件，客户端渲染引擎，在线预览工具。
@@ -12,7 +16,7 @@ const Content = () => (
     该方案是在透明MP4动效解决方案的基础上，做了进一步扩充，让静态的MP4资源，也能够支持插入动态的元素，关于透明MP4的相关介绍，请点击
     第二篇:透明MP4礼物 查看相关介绍。
   </div>
-)
+) */
 /**
     mode: 'AspectFill',
     useMetaData: true,
@@ -20,44 +24,45 @@ const Content = () => (
     useFrameCache: true,
     mute: true,
  */
-const Page = () => (
-  <PageContainer
-    subTitle="(YY Effect Video Animate)"
-    // content={<Content />}
-    title="YYEVA"
-  >
-    <ProCard gutter={8} ghost wrap>
-      <ProCard
-        style={{marginTop: 8}}
-        colSpan={{xs: 24, sm: 8, md: 10, lg: 12}}
-        title={`预览 v${version}`}
-        layout="center"
-        bordered
-        headerBordered
-      >
-        <div className="playbox">
+const Page = () => {
+  return (
+    <PageContainer
+      subTitle="(YY Effect Video Animate)"
+      // content={<Content />}
+      title="YYEVA"
+    >
+      <ProCard gutter={8} ghost wrap>
+        <ProCard
+          style={{marginTop: 8}}
+          colSpan={{xs: 24, sm: 6, md: 6, lg: 6}}
+          title="描述信息 Meta"
+          bordered
+          headerBordered
+        >
+          <VideoMeta />
+        </ProCard>
+        <ProCard
+          style={{marginTop: 8}}
+          colSpan={{xs: 24, sm: 12, md: 12, lg: 12}}
+          title={`预览 Preview`}
+          extra={`v${version}`}
+          layout="center"
+          bordered
+          headerBordered
+        >
           <GiftPlayer />
-        </div>
+        </ProCard>
+        <ProCard
+          style={{marginTop: 8}}
+          colSpan={{xs: 24, sm: 6, md: 6, lg: 6}}
+          title="配置 Config"
+          bordered
+          headerBordered
+        >
+          <VideoOptions />
+        </ProCard>
       </ProCard>
-      <ProCard style={{marginTop: 8}} colSpan={{xs: 24, sm: 8, md: 10, lg: 12}} title="配置" bordered headerBordered>
-        <ProForm layout="horizontal" submitter={false}>
-          <ProFormSelect
-            name="mode"
-            valueEnum={{
-              AspectFill: 'AspectFill',
-              AspectFit: 'AspectFit',
-              Fill: 'Fill',
-              vertical: 'vertical',
-              horizontal: 'horizontal',
-              contain: 'contain',
-              cover: 'cover',
-            }}
-          />
-          <ProFormSwitch name="mute" label="静音" />
-          <ProFormSwitch name="loop" label="循环" />
-        </ProForm>
-      </ProCard>
-    </ProCard>
-  </PageContainer>
-)
+    </PageContainer>
+  )
+}
 export default Page
