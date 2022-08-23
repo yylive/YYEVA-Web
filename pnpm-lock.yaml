@@ -66,6 +66,7 @@ importers:
 
   projects/offical:
     specifiers:
+      '@ant-design/icons': ^4.7.0
       '@ant-design/pro-components': ^1.1.17
       '@ant-design/pro-layout': ^6.38.19
       '@types/react': ^17.0.0
@@ -81,6 +82,7 @@ importers:
       yyeva: workspace:*
       zustand: ^4.1.1
     dependencies:
+      '@ant-design/icons': 4.7.0_react-dom@17.0.2+react@17.0.2
       '@ant-design/pro-components': 1.1.17_react-dom@17.0.2+react@17.0.2
       '@ant-design/pro-layout': 6.38.19_react-dom@17.0.2+react@17.0.2
       antd: 4.22.7_react-dom@17.0.2+react@17.0.2
@@ -6559,7 +6561,7 @@ packages:
   /history/4.10.1:
     resolution: {integrity: sha512-36nwAD620w12kuzPAsyINPWJqlNbij+hpK1k9XRloDtym8mxzGYl2c17LnV6IAGB2Dmg4tEa7G7DlawS0+qjew==}
     dependencies:
-      '@babel/runtime': 7.17.9
+      '@babel/runtime': 7.18.9
       loose-envify: 1.4.0
       resolve-pathname: 3.0.0
       tiny-invariant: 1.2.0
@@ -7348,7 +7350,7 @@ packages:
       prop-types: ^15.0.0
       react: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
     dependencies:
-      '@babel/runtime': 7.17.9
+      '@babel/runtime': 7.18.9
       prop-types: 15.8.1
       react: 17.0.2
       tiny-warning: 1.0.3
@@ -9339,7 +9341,7 @@ packages:
     peerDependencies:
       react: '>=15'
     dependencies:
-      '@babel/runtime': 7.17.9
+      '@babel/runtime': 7.18.9
       history: 4.10.1
       hoist-non-react-statics: 3.3.2
       loose-envify: 1.4.0

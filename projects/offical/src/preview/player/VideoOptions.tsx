@@ -1,5 +1,6 @@
 import {ProCard, ProForm, ProFormText, ProFormRadio, ProFormSwitch, ProFormSelect} from '@ant-design/pro-components'
 import {useOptionsStore} from 'src/preview/store/usePlayerStore'
+import {message} from 'antd'
 const VideoOptions = () => {
   const {options, setOptions} = useOptionsStore()
   return (
@@ -12,6 +13,7 @@ const VideoOptions = () => {
       onFinish={async (v: any) => {
         // console.log('options submit', v)
         setOptions(v)
+        message.success('配置更新成功！')
       }}
     >
       <ProFormRadio.Group

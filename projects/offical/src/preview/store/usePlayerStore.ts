@@ -40,16 +40,16 @@ export const useVideoStore = create(
         },
       },
     },
-    set => ({
-      setVideo(d: any) {
-        set(state => ({video: d}))
+    (set, get) => ({
+      setVideo(video: any) {
+        set(state => ({video}))
       },
     }),
   ),
 )
 
 export const useEffectStore = create(
-  combine({effect: {}}, set => ({
+  combine({effect: []}, set => ({
     setEffect(d: any) {
       set(state => ({effect: d}))
     },

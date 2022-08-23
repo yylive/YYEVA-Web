@@ -6,6 +6,7 @@ import VideoOptions from 'src/preview/player/VideoOptions'
 import {version} from 'yyeva'
 import VideoMeta from './player/VideoMeta'
 import {useEffectStore} from 'src/preview/store/usePlayerStore'
+import {DashboardOutlined} from '@ant-design/icons'
 /* const Content = () => (
   <div>
     YYEVA（YY Effect
@@ -37,6 +38,11 @@ const Page = () => {
           style={{marginTop: 8}}
           colSpan={{xs: 24, sm: 6, md: 6, lg: 6}}
           title="描述信息 Meta"
+          extra={
+            <a href="https://github.com/yylive/YYEVA" target="_blank" rel="noreferrer">
+              {version}
+            </a>
+          }
           headerBordered
           loading={Object.keys(effect.effect).length === 0}
         >
@@ -46,7 +52,6 @@ const Page = () => {
           style={{marginTop: 8}}
           colSpan={{xs: 24, sm: 12, md: 12, lg: 12}}
           title={`预览 Preview`}
-          extra={`v${version}`}
           layout="center"
           headerBordered
         >
