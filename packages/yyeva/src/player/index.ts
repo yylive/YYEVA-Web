@@ -315,7 +315,12 @@ export default class EVideo {
       logger.debug('[prefetch url]', this.op.videoUrl.length)
     }
     //判断是否存在 audio 默认为 false
-    video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : !VideoEntity.hasAudio
+    if (!VideoEntity.hasAudio) {
+      video.muted = true
+    } else {
+      video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : false
+    }
+    // video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : !VideoEntity.hasAudio
     //
     video.load()
     logger.debug('[video load]')
