@@ -17,11 +17,13 @@ export const useOptionsStore = create(
         showPlayerInfo: true,
         useAccurate: true,
         logLevel: 'info',
+        renderType: 'webgl',
       },
     },
-    set => ({
+    (set, get) => ({
       setOptions(d: any) {
-        set(state => ({options: d}))
+        const {options} = get()
+        set(state => ({options: {...options, ...d}}))
       },
     }),
   ),
@@ -32,6 +34,7 @@ export const useVideoStore = create(
     {
       video: {
         videoUrl: `${host}/yy/yy.mp4`,
+        videoFile: null,
         effects: {
           user_nick: 'girl',
           user_avatar: '/yy/1.jpeg',
@@ -43,6 +46,18 @@ export const useVideoStore = create(
     (set, get) => ({
       setVideo(video: any) {
         set(state => ({video}))
+      },
+    }),
+  ),
+)
+export const useVideoFormStore = create(
+  combine(
+    {
+      videoFormItem: {},
+    },
+    (set, get) => ({
+      setVideoFormItem(videoFormItem: any) {
+        set(state => ({videoFormItem}))
       },
     }),
   ),

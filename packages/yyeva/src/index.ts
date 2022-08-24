@@ -29,6 +29,10 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
     },
     ...options,
   }
+  if (op.videoFile) {
+    op.videoUrl = op.videoFile.name
+    op.useVideoDBCache = false
+  }
   // useMetaData 必须启动usePrefetch
   if (op.useMetaData) {
     op.usePrefetch = true

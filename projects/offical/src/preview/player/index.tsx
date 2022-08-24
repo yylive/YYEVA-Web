@@ -1,37 +1,38 @@
 import {useEffect, useRef} from 'react'
 import {yyEva, YYEvaType} from 'yyeva'
-import {useVideoStore, useOptionsStore, useEffectStore} from '../store/usePlayerStore'
+import {useVideoStore, useOptionsStore, useEffectStore, useVideoFormStore} from '../store/usePlayerStore'
+import UploadVideo from 'src/preview/player/UploadVideo'
 let evideo: YYEvaType
 
-// let i = 0
-const runOnce = async (container: any, videos: any, options: any) => {
-  // const o: any = videos[i]
-  // i = i === videos.length - 1 ? 0 : i + 1
-  // const o = videos
+const runOnce = async (container: any, video: any, options: any) => {
   evideo = await yyEva({
     ...options,
-    // ...o,
-    ...videos,
+    ...video,
     container,
-    onEnd: () => runOnce(container, videos, options),
+    onEnd: () => runOnce(container, video, options),
   })
   evideo.start()
-  // console.log('evideo', evideo?.renderer?.videoEntity?.config)
 }
 let v: HTMLVideoElement
 export const GiftPlayer = () => {
-  const div = useRef<HTMLDivElement>(null)
   const {video} = useVideoStore(state => state)
+  const {videoFormItem, setVideoFormItem} = useVideoFormStore(state => state)
+  const div = useRef<HTMLDivElement>(null)
   const {options} = useOptionsStore(state => state)
-  const {effect, setEffect} = useEffectStore(state => state)
+  const {setEffect} = useEffectStore(state => state)
   useEffect(() => {
-    // i = 0
-    runOnce(div.current, video, options).then(() => setEffect(evideo?.renderer?.videoEntity?.config?.effect))
-
+    runOnce(div.current, video, options).then(() => {
+      setEffect(evideo?.renderer?.videoEntity?.config?.effect)
+      setVideoFormItem({videoUrl: video.videoUrl, ...video.effects})
+    })
     return () => {
       evideo.destroy()
     }
   }, [options, video])
 
-  return <div className={`playbox ${options.mode}`} ref={div}></div>
+  return (
+    <UploadVideo>
+      <div className={`playbox ${options.mode}`} ref={div}></div>
+    </UploadVideo>
+  )
 }

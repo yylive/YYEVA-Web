@@ -6,7 +6,8 @@ import VideoOptions from 'src/preview/player/VideoOptions'
 import {version} from 'yyeva'
 import VideoMeta from './player/VideoMeta'
 import {useEffectStore} from 'src/preview/store/usePlayerStore'
-import {DashboardOutlined} from '@ant-design/icons'
+import {DashboardOutlined, GithubOutlined} from '@ant-design/icons'
+import {Badge} from 'antd'
 /* const Content = () => (
   <div>
     YYEVA（YY Effect
@@ -29,7 +30,7 @@ const Page = () => {
   const effect = useEffectStore(state => state)
   return (
     <PageContainer
-      subTitle="(YY Effect Video Animate)"
+      subTitle="YY Effect Video Animate"
       // content={<Content />}
       title="YYEVA"
     >
@@ -38,24 +39,27 @@ const Page = () => {
           style={{marginTop: 8}}
           colSpan={{xs: 24, sm: 6, md: 6, lg: 6}}
           title="描述信息 Meta"
-          extra={
-            <a href="https://github.com/yylive/YYEVA" target="_blank" rel="noreferrer">
-              {version}
-            </a>
-          }
           headerBordered
-          loading={Object.keys(effect.effect).length === 0}
+          loading={effect.effect && Object.keys(effect.effect).length === 0}
         >
           <VideoMeta />
         </ProCard>
+
         <ProCard
           style={{marginTop: 8}}
           colSpan={{xs: 24, sm: 12, md: 12, lg: 12}}
-          title={`预览 Preview`}
+          title={<>预览 Preview </>}
+          extra={
+            <a href="https://github.com/yylive/YYEVA" target="_blank" rel="noreferrer">
+              <GithubOutlined /> Github
+            </a>
+          }
           layout="center"
           headerBordered
         >
-          <GiftPlayer />
+          <Badge.Ribbon text={<>v{version}</>}>
+            <GiftPlayer />
+          </Badge.Ribbon>
         </ProCard>
         <ProCard style={{marginTop: 8}} colSpan={{xs: 24, sm: 6, md: 6, lg: 6}} title="配置 Config" headerBordered>
           <VideoOptions />

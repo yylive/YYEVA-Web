@@ -23,6 +23,7 @@ export default class EVideo {
   private eventsFn: {[key: string]: (...args: any[]) => void} = {}
   private animator: Animator
   private blobUrl: string
+  private polyfillCreateObjectURL: boolean
   //
   public onStart: EventCallback
   public onResume: EventCallback
@@ -42,6 +43,8 @@ export default class EVideo {
     this.op = op
     this.video = this.videoCreate()
     this.animator = new Animator(this.video, this.op)
+    // 是否创建 object url
+    this.polyfillCreateObjectURL = (polyfill.baidu || polyfill.quark || polyfill.uc) && this.op.forceBlob === false
     //
     if (this.op.renderType === 'canvas2d') {
       this.renderer = new Render2D(this.op)
@@ -309,10 +312,10 @@ export default class EVideo {
     if (this.op.usePrefetch) {
       const url = await this.prefetch()
       video.src = url
-      logger.debug('[prefetch url]', url.length)
+      logger.debug('[prefetch url]', url)
     } else {
       video.src = this.op.videoUrl
-      logger.debug('[prefetch url]', this.op.videoUrl.length)
+      logger.debug('[prefetch url]', this.op.videoUrl)
     }
     //判断是否存在 audio 默认为 false
     if (!VideoEntity.hasAudio) {
@@ -399,53 +402,70 @@ export default class EVideo {
   async prefetch(): Promise<string> {
     // const URL = (window as any).webkitURL || window.URL
     // const polyfillCreateObjectURL = polyfill.baidu || ((polyfill.quark || polyfill.uc) && polyfill.android)
-    const polyfillCreateObjectURL = (polyfill.baidu || polyfill.quark || polyfill.uc) && this.op.forceBlob === false
     //
-    if (this.op.useVideoDBCache && !polyfillCreateObjectURL) {
+    // const polyfillCreateObjectURL = (polyfill.baidu || polyfill.quark || polyfill.uc) && this.op.forceBlob === false
+    //
+    if (this.op.useVideoDBCache && !this.polyfillCreateObjectURL) {
       const url = await this.checkVideoCache()
       if (url) return url
     }
     //
+    let file
+    if (!this.op.videoFile) {
+      file = await this.getVideoByHttp()
+    } else {
+      file = this.op.videoFile
+    }
+    const url = await this.readFileToBlobUrl(file)
+    logger.debug('[prefetch result]', url)
+    return url
+  }
+  private readFileToBlobUrl(file): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader()
+      fileReader.readAsDataURL(file)
+      fileReader.onloadend = () => {
+        const rs = fileReader.result as string
+        /**
+         * 根据 useMetaData 获取 yy视频 metadata 信息
+         */
+        let data
+        if (this.op.useMetaData) {
+          data = parser.getdata(rs)
+          if (data) {
+            this.renderer.videoEntity.setConfig(data)
+          }
+        }
+        //
+        if (!this.polyfillCreateObjectURL) {
+          const raw = atob(rs.slice(rs.indexOf(',') + 1))
+          const buf = Array(raw.length)
+          for (let d = 0; d < raw.length; d++) {
+            buf[d] = raw.charCodeAt(d)
+          }
+          const arr = new Uint8Array(buf)
+          const blob = new Blob([arr], {type: 'video/mp4'})
+          // 返回 metadata 数据
+          if (this.op.useVideoDBCache) {
+            db.model().insert(this.op.videoUrl, {blob, data})
+          }
+          this.blobUrl = this.createObjectURL(blob)
+          resolve(this.blobUrl)
+        } else {
+          //获取 data 后 原路返回
+          resolve(this.op.videoUrl)
+        }
+      }
+    })
+  }
+  private getVideoByHttp() {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
       xhr.open('GET', this.op.videoUrl, true)
       xhr.responseType = 'blob'
       xhr.onload = () => {
         if (xhr.status === 200 || xhr.status === 304) {
-          const fileReader = new FileReader()
-          fileReader.onloadend = () => {
-            const rs = fileReader.result as string
-            /**
-             * 根据 useMetaData 获取 yy视频 metadata 信息
-             */
-            let data
-            if (this.op.useMetaData) {
-              data = parser.getdata(rs)
-              if (data) {
-                this.renderer.videoEntity.setConfig(data)
-              }
-            }
-            //
-            if (!polyfillCreateObjectURL) {
-              const raw = atob(rs.slice(rs.indexOf(',') + 1))
-              const buf = Array(raw.length)
-              for (let d = 0; d < raw.length; d++) {
-                buf[d] = raw.charCodeAt(d)
-              }
-              const arr = new Uint8Array(buf)
-              const blob = new Blob([arr], {type: 'video/mp4'})
-              // 返回 metadata 数据
-              if (this.op.useVideoDBCache) {
-                db.model().insert(this.op.videoUrl, {blob, data})
-              }
-              this.blobUrl = this.createObjectURL(blob)
-              resolve(this.blobUrl)
-            } else {
-              //获取 data 后 原路返回
-              resolve(this.op.videoUrl)
-            }
-          }
-          fileReader.readAsDataURL(xhr.response)
+          resolve(xhr.response)
         } else {
           reject(new Error('http response invalid' + xhr.status))
         }

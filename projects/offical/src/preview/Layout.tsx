@@ -12,9 +12,14 @@ const config: BasicLayoutProps = {
   // headerHeight: 48,
   menuRender: false,
   splitMenus: false,
-  title: 'YYEVA',
+  title: 'YYEVA - 可插入动态元素的MP4动效播放器解决方案',
   headerRender: false,
-  // footerRender: () => <>footer render</>,
+  footerRender: () => (
+    <div className="global-footer">
+      Released under the Apache-2.0 License. <br />
+      Copyright © 2022 YYEVA. All rights reserved. <br />
+    </div>
+  ),
 }
 
 const Layout = () => {

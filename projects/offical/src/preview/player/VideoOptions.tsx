@@ -1,6 +1,7 @@
 import {ProCard, ProForm, ProFormText, ProFormRadio, ProFormSwitch, ProFormSelect} from '@ant-design/pro-components'
 import {useOptionsStore} from 'src/preview/store/usePlayerStore'
-import {message} from 'antd'
+import {Alert, Form, message, Tooltip} from 'antd'
+import {QuestionCircleOutlined} from '@ant-design/icons'
 const VideoOptions = () => {
   const {options, setOptions} = useOptionsStore()
   return (
@@ -140,7 +141,7 @@ const VideoOptions = () => {
         }}
         initialValue={options.showPlayerInfo}
         name="showPlayerInfo"
-        label="显示播放信息"
+        label="播放信息"
       />
       <ProFormRadio.Group
         name="logLevel"
@@ -151,10 +152,31 @@ const VideoOptions = () => {
           span: 24,
         }}
         fieldProps={{
-          // buttonStyle: 'solid',
           size: 'small',
         }}
         options={['debug', 'info', 'warn', 'error']}
+      />
+
+      <ProFormRadio.Group
+        name="renderType"
+        label={
+          <Tooltip title="canvas2d 带 key 开发中">
+            渲染 <QuestionCircleOutlined />
+          </Tooltip>
+        }
+        radioType="button"
+        initialValue={options.renderType}
+        colProps={{
+          span: 24,
+        }}
+        fieldProps={{
+          size: 'small',
+        }}
+        // options={['webgl', 'canvas2d']}
+        valueEnum={{
+          webgl: 'webgl',
+          canvas2d: 'canvas2d',
+        }}
       />
     </ProForm>
   )
