@@ -9,7 +9,9 @@ const runOnce = async (container: any, video: any, options: any) => {
     ...options,
     ...video,
     container,
-    onEnd: () => runOnce(container, video, options),
+    onEnd: e => {
+      if (!e) runOnce(container, video, options)
+    },
   })
   evideo.start()
 }

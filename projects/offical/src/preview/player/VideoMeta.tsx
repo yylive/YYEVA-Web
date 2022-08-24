@@ -1,8 +1,7 @@
 import {useEffectStore, useVideoFormStore, useVideoStore} from 'src/preview/store/usePlayerStore'
 import {ProCard, ProForm, ProFormText, ProFormRadio, ProFormSwitch, ProFormSelect} from '@ant-design/pro-components'
 import {FileOutlined, FileImageOutlined, ApiOutlined} from '@ant-design/icons'
-import {message} from 'antd'
-import {useState, useEffect} from 'react'
+import {message, Spin} from 'antd'
 const VideoForm = () => {
   const {effect, setEffect} = useEffectStore(state => state)
   const {video, setVideo} = useVideoStore(state => state)
@@ -14,13 +13,14 @@ const VideoForm = () => {
       rowProps={{
         gutter: [16, 0],
       }}
-      initialValues={videoFormItem}
-      // request={async () => {
-      //   return videoFormItem
-      // }}
-      onFinish={async (v: any) => {
+      // initialValues={videoFormItem}
+      request={async () => videoFormItem}
+      onFinish={async (v: any = {}) => {
         console.log('onFinish', v)
-        setVideo(video)
+        const videoData = {...video, videoUrl: v.videoUrl}
+        delete v.videoUrl
+        videoData.effects = v
+        setVideo(videoData)
         message.success('描述更新成功！')
       }}
     >
@@ -50,7 +50,6 @@ const VideoForm = () => {
 }
 const VideoMeta = () => {
   const {videoFormItem}: any = useVideoFormStore(state => state)
-  console.log('videoFormItem', videoFormItem)
-  return <>{videoFormItem.videoUrl ? <VideoForm /> : null}</>
+  return <>{videoFormItem.videoUrl ? <VideoForm /> : <Spin tip="Loading..." />}</>
 }
 export default VideoMeta

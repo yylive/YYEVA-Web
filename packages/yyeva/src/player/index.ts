@@ -96,7 +96,7 @@ export default class EVideo {
         }
       }
     } catch (e) {
-      this.onEnd?.()
+      this.onEnd?.(e)
       this.onError?.(e)
       this.destroy()
       logger.error(e)

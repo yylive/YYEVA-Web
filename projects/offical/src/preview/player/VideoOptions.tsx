@@ -31,15 +31,15 @@ const VideoOptions = () => {
         }}
         options={[
           {
-            label: 'AspectFill',
+            label: '竖屏',
             value: 'AspectFill',
           },
           {
-            label: 'AspectFit',
+            label: '横屏',
             value: 'AspectFit',
           },
           {
-            label: 'Fill',
+            label: '满屏',
             value: 'Fill',
           },
         ]}

@@ -13,15 +13,16 @@
 	linear-gradient(hsla(0, 0%, 100%, .2) 1px, transparent 0), 
 	linear-gradient(90deg, hsla(0, 0%, 100%, .2) 1px, transparent 0);
 }
-.playbox,.playbox .wrap{
-    width: 100%;
-    height: 100%;
-}
+
 video {
     position: fixed;
     top: 0;
     right: 0;
     height: 72px;
+}
+.playbox{
+    width: 100%;
+    height: 100%;
 }
 .playbox.AspectFill {
     height: 667px;
