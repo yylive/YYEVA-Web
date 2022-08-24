@@ -32,15 +32,14 @@ const UploadVideo = ({children}: any) => {
     setDragActive(false)
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const f = e.dataTransfer.files[0]
-      setVideoData({videoFile: f, videoUrl: f.name})
-      // console.log('{videoFile: f, videoUrl: f.name}', {videoFile: f, videoUrl: f.name})
+      setVideoData({videoUrl: f})
     }
   }
   const handleChange = (e: any) => {
     e.preventDefault()
     if (e.target.files && e.target.files[0]) {
       const f = e.target.files[0]
-      setVideoData({videoFile: f, videoUrl: f.name})
+      setVideoData({videoUrl: f})
     }
   }
   useEffect(() => {

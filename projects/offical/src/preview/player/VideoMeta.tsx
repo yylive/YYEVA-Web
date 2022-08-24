@@ -28,7 +28,7 @@ const VideoForm = () => {
         name="videoUrl"
         placeholder="video url"
         fieldProps={{
-          prefix: !video.videoFile ? <ApiOutlined /> : <FileImageOutlined />,
+          prefix: typeof video.videoUrl === 'string' ? <ApiOutlined /> : <FileImageOutlined />,
         }}
       />
 

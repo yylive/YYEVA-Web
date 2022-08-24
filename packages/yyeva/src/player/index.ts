@@ -34,12 +34,24 @@ export default class EVideo {
   public onError: EventCallback
   //
   public isPlay = false
+  private videoFile?: HTMLInputElement
+  static url?: string
   /**
    * 记录当前播放资源的 base64,当blob url播放失败时播放
    */
   constructor(op: MixEvideoOptions) {
     if (!op.container) throw new Error('container is need!')
     if (!op.videoUrl) throw new Error('videoUrl is need!')
+    //TODO 考虑到 除了 htmlinputelement http 应该还有 dataUrl 后续拓展
+    if (typeof op.videoUrl !== 'string') {
+      op.useVideoDBCache = false
+      //TODO filename 作为 url 可能会很多重复问题 考虑是否默认屏蔽帧缓存
+      // op.useFrameCache = false
+      this.videoFile = op.videoUrl
+      EVideo.url = this.videoFile.name
+    } else {
+      EVideo.url = op.videoUrl
+    }
     this.op = op
     this.video = this.videoCreate()
     this.animator = new Animator(this.video, this.op)
@@ -150,7 +162,7 @@ export default class EVideo {
            * 暂时自动切换静音
            */
           if (polyfill.safari && polyfill.mac) {
-            logger.debug('切换到静音播放', this.op.videoUrl)
+            logger.debug('切换到静音播放', EVideo.url)
             this.video.muted = true
             this.video.play().catch(e => {
               logger.debug(e)
@@ -159,7 +171,7 @@ export default class EVideo {
             return
           }
           //
-          logger.debug(`切换到静音播放`, this.op.videoUrl, e)
+          logger.debug(`切换到静音播放`, EVideo.url, e)
           this.clickToPlay()
           // 增加弹窗 手动触发 video.play
           if (e?.code === 0 && e?.name === EPlayError.NotAllowedError) {
@@ -186,7 +198,7 @@ export default class EVideo {
     this.eventsFn[e.type] && this.eventsFn[e.type]()
   }
   private videoCreate() {
-    const videoID = this.op.videoID || getVIdeoId(this.op.videoUrl, polyfill.weixin)
+    const videoID = this.op.videoID || getVIdeoId(EVideo.url, polyfill.weixin)
     logger.debug('[videoID]', videoID)
     const videoElm = document.getElementById(videoID)
     let video: HTMLVideoElement
@@ -314,8 +326,8 @@ export default class EVideo {
       video.src = url
       logger.debug('[prefetch url]', url)
     } else {
-      video.src = this.op.videoUrl
-      logger.debug('[prefetch url]', this.op.videoUrl)
+      video.src = EVideo.url
+      logger.debug('[prefetch url]', EVideo.url)
     }
     //判断是否存在 audio 默认为 false
     if (!VideoEntity.hasAudio) {
@@ -383,10 +395,12 @@ export default class EVideo {
     this.renderer = undefined as any
     this.animator = undefined as any
     this.version = undefined as any
+    // 释放 file 文件
+    this.videoFile = undefined
   }
   private async checkVideoCache(): Promise<string | undefined> {
     try {
-      const d = await db.model().find(this.op.videoUrl)
+      const d = await db.model().find(EVideo.url)
       if (d) {
         const {blob, data} = d
         if (data) this.renderer.videoEntity.setConfig(data)
@@ -411,10 +425,10 @@ export default class EVideo {
     }
     //
     let file
-    if (!this.op.videoFile) {
+    if (!this.videoFile) {
       file = await this.getVideoByHttp()
     } else {
-      file = this.op.videoFile
+      file = this.videoFile
     }
     const url = await this.readFileToBlobUrl(file)
     logger.debug('[prefetch result]', url)
@@ -447,13 +461,13 @@ export default class EVideo {
           const blob = new Blob([arr], {type: 'video/mp4'})
           // 返回 metadata 数据
           if (this.op.useVideoDBCache) {
-            db.model().insert(this.op.videoUrl, {blob, data})
+            db.model().insert(EVideo.url, {blob, data})
           }
           this.blobUrl = this.createObjectURL(blob)
           resolve(this.blobUrl)
         } else {
           //获取 data 后 原路返回
-          resolve(this.op.videoUrl)
+          resolve(EVideo.url)
         }
       }
     })
@@ -461,7 +475,7 @@ export default class EVideo {
   private getVideoByHttp() {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
-      xhr.open('GET', this.op.videoUrl, true)
+      xhr.open('GET', EVideo.url, true)
       xhr.responseType = 'blob'
       xhr.onload = () => {
         if (xhr.status === 200 || xhr.status === 304) {

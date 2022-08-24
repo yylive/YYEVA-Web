@@ -25,12 +25,12 @@ video {
     height: 100%;
 }
 .playbox.AspectFill {
-    height: 667px;
-    width: 375px;
+    aspect-ratio: 9 / 16;
+    width: 80%;
+    margin: 0 auto;
 }
 .playbox.AspectFit {
-    height: 375px;
-    width: 667px;
+    aspect-ratio: 16 / 9;
 }
 .global-footer{
     text-align: center;

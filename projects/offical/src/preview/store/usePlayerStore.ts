@@ -34,7 +34,6 @@ export const useVideoStore = create(
     {
       video: {
         videoUrl: `${host}/yy/yy.mp4`,
-        videoFile: null,
         effects: {
           user_nick: 'girl',
           user_avatar: '/yy/1.jpeg',
