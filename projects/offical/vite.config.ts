@@ -24,5 +24,13 @@ export default defineConfig(({mode}) => {
       port: 3001,
       host: true,
     },
+    css: {
+      preprocessorOptions: {
+        less: {
+          javascriptEnabled: true,
+          // additionalData: '@root-entry-name: default;',
+        },
+      },
+    },
   }
 })

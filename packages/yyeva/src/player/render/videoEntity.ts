@@ -129,7 +129,7 @@ export default class VideoEntity {
         return d
       } catch (e) {
         logger.error(e)
-        this.op?.onEnd?.()
+        this.op?.onEnd?.(e)
         return undefined
       }
     }

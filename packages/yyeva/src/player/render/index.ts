@@ -162,7 +162,7 @@ export default class WglRender {
       const ofs = this.webgl.canvas ? this.webgl.canvas : (this.webgl.ofs as HTMLCanvasElement)
       const canvasAspect = ofs.clientWidth / ofs.clientHeight
       const videoAspect = ofs.width / ofs.height
-      // logger.debug(this.op.videoUrl, this.op.mode)
+
       ofs.setAttribute('class', `e-video-${this.op.mode.toLocaleLowerCase()}`)
       switch (this.op.mode) {
         case 'AspectFill':
@@ -289,7 +289,7 @@ export default class WglRender {
     gl.enableVertexAttribArray(aAlphaTexCoord)
     // 将缓冲区对象分配给a_position变量、a_texCoord变量
     const size = view.BYTES_PER_ELEMENT
-    // console.log(view, size, this.videoEntity.op.videoUrl)
+
     gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, size * 6, 0) // 顶点着色器位置
     gl.vertexAttribPointer(aTexCoord, 2, gl.FLOAT, false, size * 6, size * 2) // rgb像素位置
     gl.vertexAttribPointer(aAlphaTexCoord, 2, gl.FLOAT, false, size * 6, size * 4) // rgb像素位置

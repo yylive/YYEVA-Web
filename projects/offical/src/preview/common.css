@@ -1,0 +1,52 @@
+.ant-layout {
+    min-height: 100vh;
+}
+.ant-layout, .ant-layout * {
+    box-sizing: border-box;
+}
+/* .ant-page-header{
+    display: none;
+} */
+.playbox{
+    background: 0 0/15px 15px, 0 0/15px 15px, 0 0/75px 75px, 0 0/75px 75px #222;
+	background-image: 
+	linear-gradient(hsla(0, 0%, 100%, .2) 1px, transparent 0), 
+	linear-gradient(90deg, hsla(0, 0%, 100%, .2) 1px, transparent 0);
+}
+
+video {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 72px;
+}
+.playbox{
+    width: 100%;
+    height: 100%;
+}
+.playbox.AspectFill {
+    aspect-ratio: 9 / 16;
+    width: 80%;
+    margin: 0 auto;
+}
+.playbox.AspectFit {
+    aspect-ratio: 16 / 9;
+}
+.global-footer{
+    text-align: center;
+    margin: 48px 0 24px;
+    padding: 0 16px;
+    color: rgba(0,0,0,.45);
+    font-size: 14px;
+}
+
+
+.drag-file-element {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+  }
