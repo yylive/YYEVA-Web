@@ -48,7 +48,7 @@ const UploadVideo = ({children}: any) => {
   return (
     <>
       <form ref={formRef} onDragEnter={handleDrag} onSubmit={e => e.preventDefault()}>
-        <label className="drapUpload" htmlFor="input-file-upload" ref={uploadLabelRef}>
+        <label className="drapUpload" ref={uploadLabelRef}>
           {children}
         </label>
         <input
