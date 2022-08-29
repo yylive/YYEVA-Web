@@ -156,11 +156,30 @@ const VideoOptions = () => {
         }}
         options={['debug', 'info', 'warn', 'error']}
       />
-
+      <ProFormRadio.Group
+        name="alphaDirection"
+        label={
+          <Tooltip title="视频Alpha素材，默认为右边，带Key素材不需要设置,useMetaData 为 false 生效">
+            alpha位置 <QuestionCircleOutlined />
+          </Tooltip>
+        }
+        radioType="button"
+        initialValue={options.alphaDirection}
+        colProps={{
+          span: 24,
+        }}
+        fieldProps={{
+          size: 'small',
+        }}
+        valueEnum={{
+          left: '左',
+          right: '右',
+        }}
+      />
       <ProFormRadio.Group
         name="renderType"
         label={
-          <Tooltip title="canvas2d 带 key 开发中">
+          <Tooltip title="canvas2d 带 key 开发中,不设置可以自动旋转">
             渲染 <QuestionCircleOutlined />
           </Tooltip>
         }

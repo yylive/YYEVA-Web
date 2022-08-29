@@ -5,9 +5,10 @@ import {GiftPlayer} from './player'
 import VideoOptions from 'src/preview/player/VideoOptions'
 import {version} from 'yyeva'
 import VideoMeta from './player/VideoMeta'
-import {useEffectStore} from 'src/preview/store/usePlayerStore'
-import {DashboardOutlined, GithubOutlined} from '@ant-design/icons'
-import {Badge} from 'antd'
+import {useEffectStore, useOptionsStore} from 'src/preview/store/usePlayerStore'
+import {DashboardOutlined, GithubOutlined, SmileOutlined, SmileFilled} from '@ant-design/icons'
+import {Badge, Typography} from 'antd'
+import SelectVideo from './player/SelectVideo'
 /* const Content = () => (
   <div>
     YYEVA（YY Effect
@@ -28,25 +29,28 @@ import {Badge} from 'antd'
  */
 const Page = () => {
   const effect = useEffectStore(state => state)
+  const {options} = useOptionsStore(state => state)
   return (
     <PageContainer
       subTitle="YY Effect Video Animate"
       // content={<Content />}
       title="YYEVA"
     >
-      <ProCard gutter={8} wrap split={'vertical'}>
+      <ProCard gutter={8} wrap ghost size="default" split={'vertical'}>
         <ProCard
-          style={{marginTop: 8}}
+          style={{marginTop: 8, height: '100%'}}
           colSpan={{xs: 24, sm: 6, md: 6, lg: 6}}
           title="描述信息 Meta"
           headerBordered
           loading={effect.effect && Object.keys(effect.effect).length === 0}
         >
+          <SelectVideo />
+          <br />
           <VideoMeta />
         </ProCard>
 
         <ProCard
-          style={{marginTop: 8}}
+          style={{marginTop: 8, height: '100%'}}
           colSpan={{xs: 24, sm: 12, md: 12, lg: 12}}
           title={<>预览 Preview </>}
           extra={
@@ -61,7 +65,24 @@ const Page = () => {
             <GiftPlayer />
           </Badge.Ribbon>
         </ProCard>
-        <ProCard style={{marginTop: 8}} colSpan={{xs: 24, sm: 6, md: 6, lg: 6}} title="配置 Config" headerBordered>
+        <ProCard
+          style={{marginTop: 8, height: '100%'}}
+          colSpan={{xs: 24, sm: 6, md: 6, lg: 6}}
+          title="配置 Config"
+          extra={
+            <Typography.Paragraph
+              style={{margin: 0}}
+              copyable={{
+                text: `${JSON.stringify(options, null, 2)}`,
+                // icon: [<SmileOutlined key="copy-icon" />, <SmileFilled key="copied-icon" />],
+                tooltips: ['点击复制', '复制成功'],
+              }}
+            >
+              复制配置
+            </Typography.Paragraph>
+          }
+          headerBordered
+        >
           <VideoOptions />
         </ProCard>
       </ProCard>

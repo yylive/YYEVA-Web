@@ -18,13 +18,14 @@ const runOnce = async (container: any, video: any, options: any) => {
 let v: HTMLVideoElement
 export const GiftPlayer = () => {
   const {video} = useVideoStore(state => state)
-  const {videoFormItem, setVideoFormItem} = useVideoFormStore(state => state)
+  const {setVideoFormItem} = useVideoFormStore(state => state)
   const div = useRef<HTMLDivElement>(null)
   const {options} = useOptionsStore(state => state)
   const {setEffect} = useEffectStore(state => state)
   useEffect(() => {
     runOnce(div.current, video, options).then(() => {
       setEffect(evideo?.renderer?.videoEntity?.config?.effect)
+      setVideoFormItem({})
       setVideoFormItem({videoUrl: video.videoUrl, ...video.effects})
     })
     return () => {

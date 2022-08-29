@@ -33,10 +33,10 @@ const VideoForm = () => {
       />
 
       {effect &&
-        effect.map((v: any) => {
+        effect.map((v: any, index: number) => {
           return (
             <ProFormText
-              key={v.effectTag}
+              key={v.effectTag + index}
               name={v.effectTag}
               placeholder={v.effectTag}
               fieldProps={{

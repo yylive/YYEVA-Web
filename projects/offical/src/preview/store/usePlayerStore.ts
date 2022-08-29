@@ -23,7 +23,9 @@ export const useOptionsStore = create(
     (set, get) => ({
       setOptions(d: any) {
         const {options} = get()
-        set(state => ({options: {...options, ...d}}))
+        const op = {...options, ...d}
+        console.log('optons', op)
+        set(state => ({options: op}))
       },
     }),
   ),
@@ -44,6 +46,7 @@ export const useVideoStore = create(
     },
     (set, get) => ({
       setVideo(video: any) {
+        // console.log('video', video)
         set(state => ({video}))
       },
     }),
