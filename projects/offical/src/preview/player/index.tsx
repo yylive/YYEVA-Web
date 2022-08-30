@@ -25,7 +25,7 @@ export const GiftPlayer = () => {
   useEffect(() => {
     runOnce(div.current, video, options).then(() => {
       setEffect(evideo?.renderer?.videoEntity?.config?.effect)
-      setVideoFormItem({})
+      // setVideoFormItem({})
       setVideoFormItem({videoUrl: video.videoUrl, ...video.effects})
     })
     return () => {

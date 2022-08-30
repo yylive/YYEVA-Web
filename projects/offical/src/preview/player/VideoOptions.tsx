@@ -1,11 +1,26 @@
-import {ProCard, ProForm, ProFormText, ProFormRadio, ProFormSwitch, ProFormSelect} from '@ant-design/pro-components'
+import {
+  ProCard,
+  ProForm,
+  ProFormText,
+  ProFormRadio,
+  ProFormSwitch,
+  ProFormSelect,
+  ProFormInstance,
+} from '@ant-design/pro-components'
 import {useOptionsStore} from 'src/preview/store/usePlayerStore'
 import {Alert, Form, message, Tooltip} from 'antd'
 import {QuestionCircleOutlined} from '@ant-design/icons'
-const VideoOptions = () => {
+import {useEffect, useRef} from 'react'
+const VideoOptionsForm = () => {
   const {options, setOptions} = useOptionsStore()
+  const formRef = useRef<ProFormInstance>()
+  useEffect(() => {
+    if (!formRef) return
+    formRef.current?.setFieldsValue(options)
+  }, [options])
   return (
     <ProForm
+      formRef={formRef}
       layout="horizontal"
       grid={true}
       rowProps={{
@@ -16,12 +31,13 @@ const VideoOptions = () => {
         setOptions(v)
         message.success('配置更新成功！')
       }}
+      // request={async () => options}
     >
       <ProFormRadio.Group
         name="mode"
         label="模式"
         radioType="button"
-        initialValue={options.mode}
+        // initialValue={options.mode}
         colProps={{
           span: 24,
         }}
@@ -53,7 +69,7 @@ const VideoOptions = () => {
         }}
         name="mute"
         label="静音"
-        initialValue={options.mute}
+        // initialValue={options.mute}
       />
       <ProFormSwitch
         colProps={{
@@ -62,7 +78,7 @@ const VideoOptions = () => {
         fieldProps={{
           size: 'small',
         }}
-        initialValue={options.loop}
+        // initialValue={options.loop}
         name="loop"
         label="循环"
       />
@@ -73,7 +89,7 @@ const VideoOptions = () => {
         fieldProps={{
           size: 'small',
         }}
-        initialValue={options.useMetaData}
+        // initialValue={options.useMetaData}
         name="useMetaData"
         label="带Key视频"
       />
@@ -84,7 +100,7 @@ const VideoOptions = () => {
         fieldProps={{
           size: 'small',
         }}
-        initialValue={options.useAccurate}
+        // initialValue={options.useAccurate}
         name="useAccurate"
         label="帧同步"
       />
@@ -95,7 +111,7 @@ const VideoOptions = () => {
         fieldProps={{
           size: 'small',
         }}
-        initialValue={options.useFrameCache}
+        // initialValue={options.useFrameCache}
         name="useFrameCache"
         label="帧缓存"
       />
@@ -106,7 +122,7 @@ const VideoOptions = () => {
         fieldProps={{
           size: 'small',
         }}
-        initialValue={options.useVideoDBCache}
+        // initialValue={options.useVideoDBCache}
         name="useVideoDBCache"
         label="本地存储"
       />
@@ -117,7 +133,7 @@ const VideoOptions = () => {
         fieldProps={{
           size: 'small',
         }}
-        initialValue={options.forceBlob}
+        // initialValue={options.forceBlob}
         name="forceBlob"
         label="强制blob"
       />
@@ -128,7 +144,7 @@ const VideoOptions = () => {
         fieldProps={{
           size: 'small',
         }}
-        initialValue={options.showVideo}
+        // initialValue={options.showVideo}
         name="showVideo"
         label="显示MP4"
       />
@@ -139,7 +155,7 @@ const VideoOptions = () => {
         fieldProps={{
           size: 'small',
         }}
-        initialValue={options.showPlayerInfo}
+        // initialValue={options.showPlayerInfo}
         name="showPlayerInfo"
         label="播放信息"
       />
@@ -147,7 +163,7 @@ const VideoOptions = () => {
         name="logLevel"
         label="日志"
         radioType="button"
-        initialValue={options.logLevel}
+        // initialValue={options.logLevel}
         colProps={{
           span: 24,
         }}
@@ -164,7 +180,7 @@ const VideoOptions = () => {
           </Tooltip>
         }
         radioType="button"
-        initialValue={options.alphaDirection}
+        // initialValue={options.alphaDirection}
         colProps={{
           span: 24,
         }}
@@ -184,7 +200,7 @@ const VideoOptions = () => {
           </Tooltip>
         }
         radioType="button"
-        initialValue={options.renderType}
+        // initialValue={options.renderType}
         colProps={{
           span: 24,
         }}
@@ -199,5 +215,8 @@ const VideoOptions = () => {
       />
     </ProForm>
   )
+}
+const VideoOptions = () => {
+  return <VideoOptionsForm />
 }
 export default VideoOptions

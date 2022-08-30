@@ -29,7 +29,7 @@ const selected: any = {
 }
 const SelectVideo = () => {
   const {setVideo} = useVideoStore(state => state)
-  const {setOptions, options} = useOptionsStore(state => state)
+  const {setOptions} = useOptionsStore(state => state)
   return (
     <div>
       <Segmented
@@ -41,7 +41,7 @@ const SelectVideo = () => {
               setOptions({mute: false, mode: 'Fill'})
               break
             case 'aspectFill':
-              console.log('aspectFill')
+              // console.log('aspectFill')
               setOptions({mode: 'AspectFill'})
               break
             case 'aspectFit':
@@ -51,7 +51,7 @@ const SelectVideo = () => {
               setOptions({mode: 'Fill'})
               break
           }
-          console.log('options', options)
+          // console.log('options', options)
           setVideo(selected[k])
         }}
         options={[
