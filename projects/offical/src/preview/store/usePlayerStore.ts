@@ -24,7 +24,7 @@ export const useOptionsStore = create(
       setOptions(d: any) {
         const {options} = get()
         const op = {...options, ...d}
-        console.log('useOptionsStore options:', op)
+        // console.log('useOptionsStore options:', op)
         set(state => ({options: op}))
       },
     }),

@@ -20,11 +20,9 @@ const selected: any = {
   },
   aspectFill: {
     videoUrl: `${host}/yy/aspectFill.mp4`,
-    effects: {},
   },
   aspectFit: {
     videoUrl: `${host}/yy/aspectFit.mp4`,
-    effects: {},
   },
 }
 const SelectVideo = () => {

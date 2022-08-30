@@ -6,7 +6,7 @@ import VideoOptions from 'src/preview/player/VideoOptions'
 import {version} from 'yyeva'
 import VideoMeta from './player/VideoMeta'
 import {useEffectStore, useOptionsStore} from 'src/preview/store/usePlayerStore'
-import {DashboardOutlined, GithubOutlined, SmileOutlined, SmileFilled} from '@ant-design/icons'
+import {DashboardOutlined, GithubOutlined, SmileOutlined, SmileFilled, PlusCircleOutlined} from '@ant-design/icons'
 import {Badge, Typography} from 'antd'
 import SelectVideo from './player/SelectVideo'
 /* const Content = () => (
@@ -34,7 +34,12 @@ const Page = () => {
     <PageContainer
       subTitle="YY Effect Video Animate"
       // content={<Content />}
-      title="YYEVA"
+      title={
+        <>
+          <img className="logo" src="/logo.png" />
+          YYEVA
+        </>
+      }
     >
       <ProCard gutter={8} wrap ghost size="default" split={'vertical'}>
         <ProCard
@@ -52,7 +57,7 @@ const Page = () => {
         <ProCard
           style={{marginTop: 8, height: '100%'}}
           colSpan={{xs: 24, sm: 12, md: 12, lg: 12}}
-          title={<>预览 Preview </>}
+          title={<>预览 Preview</>}
           extra={
             <a href="https://github.com/yylive/YYEVA" target="_blank" rel="noreferrer">
               <GithubOutlined /> Github

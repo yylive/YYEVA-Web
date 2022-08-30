@@ -50,3 +50,8 @@ video {
     bottom: 0px;
     left: 0px;
   }
+  .logo{
+    border-radius: 5px;
+    width: 32px;
+    margin-right: 10px;
+  }
