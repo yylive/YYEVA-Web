@@ -53,6 +53,12 @@ const VideoForm = () => {
               key={v.effectTag + index}
               name={v.effectTag}
               placeholder={v.effectTag}
+              colProps={{
+                xs: 12,
+                sm: 24,
+                md: 24,
+                lg: 24,
+              }}
               fieldProps={{
                 prefix: v.effectType === 'txt' ? <FileOutlined /> : <FileImageOutlined />,
               }}

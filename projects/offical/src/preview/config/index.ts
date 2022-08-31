@@ -2,7 +2,7 @@ export const users = [
   {
     avatar: 'https://avatars.githubusercontent.com/u/3890513?v=4',
     name: 'Ken.Xu',
-    description: 'Web、BdMinapp、Pcyy',
+    description: 'Web、Minapp',
     link: 'https://github.com/ckken',
   },
   {
@@ -22,6 +22,12 @@ export const users = [
     name: 'WickyLeung',
     description: 'iOS Developer',
     link: 'https://github.com/WickyLeung',
+  },
+  {
+    avatar: 'https://avatars.githubusercontent.com/u/10419150?v=4',
+    name: 'Cangwang',
+    description: 'Android Developer',
+    link: 'https://github.com/Cangwang',
   },
   {
     avatar: 'https://avatars.githubusercontent.com/u/49704046?s=400&u=bcb33871f5bceb55d6875ea91cb6d3e60e04093f&v=4',
@@ -47,7 +53,7 @@ export const brands = [
   {name: 'YY', img: '/brand/yy.jpeg'},
   {name: 'Baidu', img: '/brand/baidu.png'},
   {name: '贴吧', img: '/brand/tieba.png'},
-  {name: '百度小程序', img: '/brand/bdapp.png'},
+  {name: '小程序', img: '/brand/bdapp.png'},
   {name: '好看', img: '/brand/haokan.jpeg'},
   {name: '全民', img: '/brand/qm.jpeg'},
 ]

@@ -13,7 +13,7 @@ const List = ({brand}: any) => {
 const WhoUse = () => (
   <Row wrap={true} gutter={[16, 16]}>
     {brands.map(brand => (
-      <Col key={brand.name}>
+      <Col key={brand.name} span={4} xs={8} sm={6} md={4} lg={3}>
         <List brand={brand} />
       </Col>
     ))}

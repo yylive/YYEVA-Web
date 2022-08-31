@@ -11,6 +11,7 @@ import {useOptionsStore} from 'src/preview/store/usePlayerStore'
 import {Alert, Form, message, Tooltip} from 'antd'
 import {QuestionCircleOutlined} from '@ant-design/icons'
 import {useEffect, useRef} from 'react'
+const swithColSpan = {xs: 8, sm: 12, md: 12, lg: 12}
 const VideoOptionsForm = () => {
   const {options, setOptions} = useOptionsStore()
   const formRef = useRef<ProFormInstance>()
@@ -27,7 +28,6 @@ const VideoOptionsForm = () => {
         gutter: [16, 0],
       }}
       onFinish={async (v: any) => {
-        // console.log('options submit', v)
         setOptions(v)
         message.success('配置更新成功！')
       }}
@@ -37,9 +37,11 @@ const VideoOptionsForm = () => {
         name="mode"
         label="模式"
         radioType="button"
-        // initialValue={options.mode}
         colProps={{
-          span: 24,
+          xs: 12,
+          sm: 24,
+          md: 24,
+          lg: 24,
         }}
         fieldProps={{
           // buttonStyle: 'solid',
@@ -59,11 +61,31 @@ const VideoOptionsForm = () => {
             value: 'Fill',
           },
         ]}
-      ></ProFormRadio.Group>
-      <ProFormSwitch
+      />
+      <ProFormRadio.Group
+        name="alphaDirection"
+        label={
+          <Tooltip title="视频Alpha素材，默认为右边，带Key素材不需要设置,useMetaData 为 false 生效">
+            alpha位置 <QuestionCircleOutlined />
+          </Tooltip>
+        }
+        radioType="button"
         colProps={{
-          span: 12,
+          xs: 12,
+          sm: 24,
+          md: 24,
+          lg: 24,
         }}
+        fieldProps={{
+          size: 'small',
+        }}
+        valueEnum={{
+          left: '左',
+          right: '右',
+        }}
+      />
+      <ProFormSwitch
+        colProps={swithColSpan}
         fieldProps={{
           size: 'small',
         }}
@@ -72,9 +94,7 @@ const VideoOptionsForm = () => {
         // initialValue={options.mute}
       />
       <ProFormSwitch
-        colProps={{
-          span: 12,
-        }}
+        colProps={swithColSpan}
         fieldProps={{
           size: 'small',
         }}
@@ -83,9 +103,7 @@ const VideoOptionsForm = () => {
         label="循环"
       />
       <ProFormSwitch
-        colProps={{
-          span: 12,
-        }}
+        colProps={swithColSpan}
         fieldProps={{
           size: 'small',
         }}
@@ -94,9 +112,7 @@ const VideoOptionsForm = () => {
         label="带Key视频"
       />
       <ProFormSwitch
-        colProps={{
-          span: 12,
-        }}
+        colProps={swithColSpan}
         fieldProps={{
           size: 'small',
         }}
@@ -105,9 +121,7 @@ const VideoOptionsForm = () => {
         label="帧同步"
       />
       <ProFormSwitch
-        colProps={{
-          span: 12,
-        }}
+        colProps={swithColSpan}
         fieldProps={{
           size: 'small',
         }}
@@ -116,9 +130,7 @@ const VideoOptionsForm = () => {
         label="帧缓存"
       />
       <ProFormSwitch
-        colProps={{
-          span: 12,
-        }}
+        colProps={swithColSpan}
         fieldProps={{
           size: 'small',
         }}
@@ -127,9 +139,7 @@ const VideoOptionsForm = () => {
         label="本地存储"
       />
       <ProFormSwitch
-        colProps={{
-          span: 12,
-        }}
+        colProps={swithColSpan}
         fieldProps={{
           size: 'small',
         }}
@@ -138,9 +148,7 @@ const VideoOptionsForm = () => {
         label="强制blob"
       />
       <ProFormSwitch
-        colProps={{
-          span: 12,
-        }}
+        colProps={swithColSpan}
         fieldProps={{
           size: 'small',
         }}
@@ -149,9 +157,7 @@ const VideoOptionsForm = () => {
         label="显示MP4"
       />
       <ProFormSwitch
-        colProps={{
-          span: 12,
-        }}
+        colProps={swithColSpan}
         fieldProps={{
           size: 'small',
         }}
@@ -172,26 +178,7 @@ const VideoOptionsForm = () => {
         }}
         options={['debug', 'info', 'warn', 'error']}
       />
-      <ProFormRadio.Group
-        name="alphaDirection"
-        label={
-          <Tooltip title="视频Alpha素材，默认为右边，带Key素材不需要设置,useMetaData 为 false 生效">
-            alpha位置 <QuestionCircleOutlined />
-          </Tooltip>
-        }
-        radioType="button"
-        // initialValue={options.alphaDirection}
-        colProps={{
-          span: 24,
-        }}
-        fieldProps={{
-          size: 'small',
-        }}
-        valueEnum={{
-          left: '左',
-          right: '右',
-        }}
-      />
+
       <ProFormRadio.Group
         name="renderType"
         label={

@@ -55,8 +55,28 @@ video {
     width: 32px;
     margin-right: 10px;
   }
-  .authorAvatar .ant-card-meta-description{
+  .author {
+    text-align: center;
+  }
+  .author .title{
+    margin: 0;
+    line-height: 32px;
+    font-size: 14px;
+  }
+  .author .avatar{
+    width: 100%;
+    border-radius: 5px;
+  }
+  .author .title,
+  .author .description{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .author .description{
    font-size: 12px;
+   color: #888;
+   margin: 0; padding: 0;
   }
 
   .brand{
@@ -64,10 +84,17 @@ video {
   }
   .brand h2{
     font-size: 14px;
-    font-weight: normal;
-
   }
   .brand img {
-    width: 80px;
+    /* width: 80px; */
+    width: 100%;
     margin-bottom: 5px;
+  }
+  /* .metaList{
+
+  } */
+  @media only screen and (max-width: 500px) {
+    .author .title{
+        font-size: 12px;
+       }
   }
