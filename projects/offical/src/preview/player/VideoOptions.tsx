@@ -63,13 +63,14 @@ const VideoOptionsForm = () => {
         ]}
       />
       <ProFormRadio.Group
-        name="alphaDirection"
+        name="renderType"
         label={
-          <Tooltip title="视频Alpha素材，默认为右边，带Key素材不需要设置,useMetaData 为 false 生效">
-            alpha位置 <QuestionCircleOutlined />
+          <Tooltip title="canvas2d 带 key 开发中,不设置可以自动旋转">
+            渲染 <QuestionCircleOutlined />
           </Tooltip>
         }
         radioType="button"
+        // initialValue={options.renderType}
         colProps={{
           xs: 12,
           sm: 24,
@@ -79,9 +80,10 @@ const VideoOptionsForm = () => {
         fieldProps={{
           size: 'small',
         }}
+        // options={['webgl', 'canvas2d']}
         valueEnum={{
-          left: '左',
-          right: '右',
+          webgl: 'webgl',
+          canvas2d: 'canvas2d',
         }}
       />
       <ProFormSwitch
@@ -166,39 +168,42 @@ const VideoOptionsForm = () => {
         label="播放信息"
       />
       <ProFormRadio.Group
+        name="alphaDirection"
+        label={
+          <Tooltip title="视频Alpha素材，默认为右边，带Key素材不需要设置,useMetaData 为 false 生效">
+            alpha位置 <QuestionCircleOutlined />
+          </Tooltip>
+        }
+        radioType="button"
+        colProps={{
+          xs: 8,
+          sm: 24,
+          md: 24,
+          lg: 24,
+        }}
+        fieldProps={{
+          size: 'small',
+        }}
+        valueEnum={{
+          left: '左',
+          right: '右',
+        }}
+      />
+      <ProFormRadio.Group
         name="logLevel"
         label="日志"
         radioType="button"
         // initialValue={options.logLevel}
         colProps={{
-          span: 24,
+          xs: 16,
+          sm: 24,
+          md: 24,
+          lg: 24,
         }}
         fieldProps={{
           size: 'small',
         }}
         options={['debug', 'info', 'warn', 'error']}
-      />
-
-      <ProFormRadio.Group
-        name="renderType"
-        label={
-          <Tooltip title="canvas2d 带 key 开发中,不设置可以自动旋转">
-            渲染 <QuestionCircleOutlined />
-          </Tooltip>
-        }
-        radioType="button"
-        // initialValue={options.renderType}
-        colProps={{
-          span: 24,
-        }}
-        fieldProps={{
-          size: 'small',
-        }}
-        // options={['webgl', 'canvas2d']}
-        valueEnum={{
-          webgl: 'webgl',
-          canvas2d: 'canvas2d',
-        }}
       />
     </ProForm>
   )
