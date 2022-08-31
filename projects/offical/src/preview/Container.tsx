@@ -7,8 +7,10 @@ import {version} from 'yyeva'
 import VideoMeta from './player/VideoMeta'
 import {useEffectStore, useOptionsStore} from 'src/preview/store/usePlayerStore'
 import {DashboardOutlined, GithubOutlined, SmileOutlined, SmileFilled, PlusCircleOutlined} from '@ant-design/icons'
-import {Badge, Typography} from 'antd'
+import {Badge, Card, Typography, Row, Col, Avatar} from 'antd'
 import SelectVideo from './player/SelectVideo'
+import Author from './view/Author'
+import WhoUse from './view/WhoUse'
 /* const Content = () => (
   <div>
     YYEVA（YY Effect
@@ -90,6 +92,13 @@ const Page = () => {
         >
           <VideoOptions />
         </ProCard>
+      </ProCard>
+
+      <ProCard title="Power By" style={{marginTop: '24px'}} gutter={8} wrap ghost size="default" split={'vertical'}>
+        <Author />
+      </ProCard>
+      <ProCard title="Who Use" style={{marginTop: '24px'}} gutter={8} wrap ghost size="default" split={'vertical'}>
+        <WhoUse />
       </ProCard>
     </PageContainer>
   )

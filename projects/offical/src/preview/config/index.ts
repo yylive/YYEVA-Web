@@ -1,0 +1,53 @@
+export const users = [
+  {
+    avatar: 'https://avatars.githubusercontent.com/u/3890513?v=4',
+    name: 'Ken.Xu',
+    description: 'Web、BdMinapp、Pcyy',
+    link: 'https://github.com/ckken',
+  },
+  {
+    avatar: 'https://avatars.githubusercontent.com/u/14030762?v=4&s=80',
+    name: 'GuoyabiniOS',
+    description: 'iOS Developer',
+    link: 'https://github.com/GuoyabiniOS',
+  },
+  {
+    avatar: 'https://avatars.githubusercontent.com/u/44636610?v=4',
+    name: 'Ganpenglong',
+    description: 'iOS Developer',
+    link: 'https://github.com/Ganpenglong',
+  },
+  {
+    avatar: 'https://avatars.githubusercontent.com/u/12680946?v=4',
+    name: 'WickyLeung',
+    description: 'iOS Developer',
+    link: 'https://github.com/WickyLeung',
+  },
+  {
+    avatar: 'https://avatars.githubusercontent.com/u/49704046?s=400&u=bcb33871f5bceb55d6875ea91cb6d3e60e04093f&v=4',
+    name: 'Lin',
+    description: 'PCYY 、Web',
+    link: 'https://github.com/linjunjain',
+  },
+  {
+    avatar: 'https://avatars.githubusercontent.com/u/2680224?v=4',
+    name: 'doerme',
+    description: '🧽🧹🪣',
+    link: 'https://github.com/doerme',
+  },
+  {
+    avatar: 'https://avatars.githubusercontent.com/u/39294000?s=400&u=9ba78044c808e12b78e43418ad0fe31599d04175&v=4',
+    name: 'Alex Zhang',
+    description: 'player bug fix',
+    link: 'https://github.com/alexhaifeng',
+  },
+]
+
+export const brands = [
+  {name: 'YY', img: '/brand/yy.jpeg'},
+  {name: 'Baidu', img: '/brand/baidu.png'},
+  {name: '贴吧', img: '/brand/tieba.png'},
+  {name: '百度小程序', img: '/brand/bdapp.png'},
+  {name: '好看', img: '/brand/haokan.jpeg'},
+  {name: '全民', img: '/brand/qm.jpeg'},
+]

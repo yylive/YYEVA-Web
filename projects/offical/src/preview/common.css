@@ -55,3 +55,19 @@ video {
     width: 32px;
     margin-right: 10px;
   }
+  .authorAvatar .ant-card-meta-description{
+   font-size: 12px;
+  }
+
+  .brand{
+    text-align: center;
+  }
+  .brand h2{
+    font-size: 14px;
+    font-weight: normal;
+
+  }
+  .brand img {
+    width: 80px;
+    margin-bottom: 5px;
+  }
