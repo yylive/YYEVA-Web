@@ -179,6 +179,11 @@ export type MixEvideoOptions = VideoEvent & {
    * @default false
    */
   forceBlob?: boolean
+    /**
+   * 播放超时开关
+   * @default false
+   */
+     checkTimeout?: boolean
 }
 
 export type VideoDataInfoType = {

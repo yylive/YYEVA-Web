@@ -167,6 +167,15 @@ const VideoOptionsForm = () => {
         name="showPlayerInfo"
         label="播放信息"
       />
+      <ProFormSwitch
+        colProps={swithColSpan}
+        fieldProps={{
+          size: 'small',
+        }}
+        // initialValue={options.checkTimeout}
+        name="checkTimeout"
+        label="超时检查"
+      />
       <ProFormRadio.Group
         name="alphaDirection"
         label={

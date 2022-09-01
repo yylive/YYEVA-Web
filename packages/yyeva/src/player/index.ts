@@ -24,6 +24,10 @@ export default class EVideo {
   private animator: Animator
   private blobUrl: string
   private polyfillCreateObjectURL: boolean
+
+  private timeoutId = null
+
+
   //
   public onStart: EventCallback
   public onResume: EventCallback
@@ -83,6 +87,7 @@ export default class EVideo {
       this.animator.onUpdate = frame => {
         this.renderer.render(frame)
       }
+ 
       //
       logger.debug('[setup]', Animator.animationType, Webgl.version)
       // 纯在缓存后不再显示 video标签 节省性能
@@ -131,6 +136,27 @@ export default class EVideo {
     if (!this.renderer) return this.isDestoryed()
     this.startEvent()
   }
+
+  private cleanTimer() {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId)
+      this.timeoutId = null
+    }
+  }
+
+  private beginTimer() {
+    logger.debug('[player]beginTimer..., duration=', this.video.duration, 'loop=', this.loop(), 'checkTimeout=', this.op.checkTimeout)
+    if (!this.loop() && this.op.checkTimeout && this.video.duration > 0) {
+      this.cleanTimer()
+      this.timeoutId = setTimeout(() => {
+        logger.debug('[player] timeout...url:', this.op.videoUrl)        
+        this.stop()
+        this.destroy()
+        this.onEnd && this.onEnd()
+      }, this.video.duration * 1000 + 100)
+    }
+  }
+
   private clickToPlay() {
     if (this.op.onRequestClickPlay) {
       this.op.onRequestClickPlay(this.op.container, this.video)
@@ -142,6 +168,7 @@ export default class EVideo {
     if (this.renderer.isPlay === true) return
     this.setPlay(true)
     this.animator.start()
+    this.beginTimer()
     const videoPromise = this.video.play()
     // 避免 uc 夸克报错
     if (videoPromise) {
@@ -192,11 +219,17 @@ export default class EVideo {
     this.setPlay(false)
     this.animator.stop()
     this.video.pause()
+    this.cleanTimer()
   }
   private videoEvent = (e: any) => {
     logger.debug(`[${e.type}]:`, e)
     this.eventsFn[e.type] && this.eventsFn[e.type]()
   }
+
+  private loop() {
+    return typeof this.op.loop !== 'undefined' ? this.op.loop : true
+  }
+
   private videoCreate() {
     const videoID = this.op.videoID || getVIdeoId(EVideo.url, polyfill.weixin)
     logger.debug('[videoID]', videoID)
@@ -227,7 +260,7 @@ export default class EVideo {
 
     //
     // video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : true
-    video.loop = typeof this.op.loop !== 'undefined' ? this.op.loop : true
+    video.loop = this.loop()
     video.crossOrigin = 'anonymous'
     video.autoplay = true
     // video.preload = 'metadata'
@@ -397,6 +430,7 @@ export default class EVideo {
     this.version = undefined as any
     // 释放 file 文件
     this.videoFile = undefined
+    this.cleanTimer()
   }
   private async checkVideoCache(): Promise<string | undefined> {
     try {

@@ -26,6 +26,7 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
       resizeCanvas: 'percent',
       showPlayerInfo: true,
       forceBlob: false,
+      checkTimeout: false,
     },
     ...options,
   }
