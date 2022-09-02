@@ -47,6 +47,10 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
   if (!self.indexedDB) {
     op.useVideoDBCache = false
   }
+  //百度新内核 支持 requestVideoFrameCallback 播放失效
+  if (polyfill.android && polyfill.baidu) {
+    op.useAccurate = false
+  }
   //
   // setLoggerLevel(op.logLevel)
   // console.log('op.logLevel',op.logLevel)

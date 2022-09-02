@@ -2,11 +2,11 @@ import {logger} from 'src/helper/logger'
 import {MetaDataType, MixEvideoOptions} from 'src/type/mix'
 import VideoEntity from 'src/player/render/videoEntity'
 //
-type reqType = 'requestVideoFrameCallback' | 'requestAnimationFrame' | 'setTimeout'
+export type AnimatorType = 'requestVideoFrameCallback' | 'requestAnimationFrame' | 'setTimeout'
 
 export default class Animator {
   private animateId: any
-  static animationType: reqType
+  static animationType: AnimatorType
   private video: HTMLVideoElement
   // public fps = 20
   // private videoFps = 0

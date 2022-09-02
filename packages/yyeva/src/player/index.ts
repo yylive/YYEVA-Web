@@ -4,7 +4,7 @@ import videoEvents from 'src/player/video/videoEvents'
 import {MixEvideoOptions, EventCallback, WebglVersion, EPlayError, EPlayStep} from 'src/type/mix'
 // import {prefetchVideoStream} from 'src/player/video/mse'
 // import {versionTips} from 'src/helper/logger'
-import Animator from 'src/player/video/animator'
+import Animator, {AnimatorType} from 'src/player/video/animator'
 import {logger} from 'src/helper/logger'
 import parser from 'src/parser'
 import db from 'src/parser/db'
@@ -19,6 +19,7 @@ export default class EVideo {
   private video: HTMLVideoElement
   public renderer: Render | Render2D
   public renderType: 'canvas2d' | 'webgl'
+  public animationType: AnimatorType
   public version: WebglVersion
   private eventsFn: {[key: string]: (...args: any[]) => void} = {}
   private animator: Animator
@@ -26,7 +27,6 @@ export default class EVideo {
   private polyfillCreateObjectURL: boolean
 
   private timeoutId = null
-
 
   //
   public onStart: EventCallback
@@ -87,7 +87,7 @@ export default class EVideo {
       this.animator.onUpdate = frame => {
         this.renderer.render(frame)
       }
- 
+      this.animationType = Animator.animationType
       //
       logger.debug('[setup]', Animator.animationType, Webgl.version)
       // 纯在缓存后不再显示 video标签 节省性能
@@ -145,11 +145,18 @@ export default class EVideo {
   }
 
   private beginTimer() {
-    logger.debug('[player]beginTimer..., duration=', this.video.duration, 'loop=', this.loop(), 'checkTimeout=', this.op.checkTimeout)
+    logger.debug(
+      '[player]beginTimer..., duration=',
+      this.video.duration,
+      'loop=',
+      this.loop(),
+      'checkTimeout=',
+      this.op.checkTimeout,
+    )
     if (!this.loop() && this.op.checkTimeout && this.video.duration > 0) {
       this.cleanTimer()
       this.timeoutId = setTimeout(() => {
-        logger.debug('[player] timeout...url:', this.op.videoUrl)        
+        logger.debug('[player] timeout...url:', this.op.videoUrl)
         this.stop()
         this.destroy()
         this.onEnd && this.onEnd()
