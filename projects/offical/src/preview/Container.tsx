@@ -104,7 +104,16 @@ const Page = () => {
       <ProCard title="Power By" style={{marginTop: '24px'}} gutter={8} wrap ghost size="default" split={'vertical'}>
         <Author />
       </ProCard>
-      <ProCard title="Who Use" style={{marginTop: '24px'}} gutter={8} wrap ghost size="default" split={'vertical'}>
+      <ProCard
+        title="Who Use"
+        extra={<a target="_blank">更多</a>}
+        style={{marginTop: '24px'}}
+        gutter={8}
+        wrap
+        ghost
+        size="default"
+        split={'vertical'}
+      >
         <WhoUse />
       </ProCard>
     </PageContainer>
