@@ -11,6 +11,7 @@ import {Badge, Card, Typography, Row, Col, Avatar} from 'antd'
 import SelectVideo from './player/SelectVideo'
 import Author from './view/Author'
 import WhoUse from './view/WhoUse'
+import GitHubButton from 'react-github-btn'
 /* const Content = () => (
   <div>
     YYEVA（YY Effect
@@ -61,9 +62,15 @@ const Page = () => {
           colSpan={{xs: 24, sm: 12, md: 12, lg: 12}}
           title={<>预览 Preview</>}
           extra={
-            <a href="https://github.com/yylive/YYEVA" target="_blank" rel="noreferrer">
-              <GithubOutlined /> Github
-            </a>
+            <GitHubButton
+              href="https://github.com/yylive/YYEVA"
+              data-color-scheme="no-preference: light; light: light; dark: dark;"
+              data-size="large"
+              data-show-count="true"
+              aria-label="Star yylive/YYEVA on GitHub"
+            >
+              Star
+            </GitHubButton>
           }
           layout="center"
           headerBordered
@@ -85,7 +92,7 @@ const Page = () => {
                 tooltips: ['点击复制', '复制成功'],
               }}
             >
-              复制配置
+              Copy
             </Typography.Paragraph>
           }
           headerBordered
