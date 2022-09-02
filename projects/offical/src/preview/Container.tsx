@@ -92,7 +92,7 @@ const Page = () => {
                 tooltips: ['点击复制', '复制成功'],
               }}
             >
-              Copy
+              复制配置
             </Typography.Paragraph>
           }
           headerBordered
