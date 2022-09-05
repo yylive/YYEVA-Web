@@ -106,7 +106,11 @@ const Page = () => {
       </ProCard>
       <ProCard
         title="Who Use"
-        extra={<a target="_blank">更多</a>}
+        extra={
+          <a href="https://github.com/yylive/YYEVA/issues/7" target="_blank" rel="noreferrer">
+            更多
+          </a>
+        }
         style={{marginTop: '24px'}}
         gutter={8}
         wrap
