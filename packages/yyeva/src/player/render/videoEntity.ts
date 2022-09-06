@@ -41,7 +41,7 @@ export default class VideoEntity {
       this.isUseMeta = true
     }
     /**
-     * 腾讯视频 VAP
+     * polyfill map
      */
     if (op.dataUrl) {
       this.effectHeight = 'h'
@@ -116,23 +116,38 @@ export default class VideoEntity {
   private get isUseBitmap() {
     return !!self.createImageBitmap && this.op.useBitmap
   }
+  //
+  private dataURItoBlob(dataURI: string) {
+    const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0] // mime类型
+    const byteString = self.atob(dataURI.split(',')[1]) //base64 解码
+    const arrayBuffer = new ArrayBuffer(byteString.length) //创建缓冲数组
+    const intArray = new Uint8Array(arrayBuffer) //创建视图
 
-  private async loadImg(url: string): Promise<HTMLImageElement | ImageBitmap | undefined> {
-    if (url.indexOf('http') === -1 && !isDataUrl(url)) {
-      url = `${location.protocol}//${location.host}${url}`
+    for (let i = 0; i < byteString.length; i++) {
+      intArray[i] = byteString.charCodeAt(i)
     }
-    if (this.isUseBitmap && !isDataUrl(url)) {
-      try {
-        const blob = await fetch(url).then(r => r.blob())
-        // 适配 gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1) 解决自动翻转的问题
-        const d = await self.createImageBitmap(blob, {imageOrientation: 'flipY'})
-        return d
-      } catch (e) {
-        logger.error(e)
-        this.op?.onEnd?.(e)
-        return undefined
+    return new Blob([intArray], {type: mimeString})
+  }
+  private fileToDataUrl(file: HTMLInputElement): Promise<string | undefined> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file.files[0])
+      reader.onloadend = () => resolve(reader.result as string)
+      reader.onerror = e => reject(undefined)
+    })
+  }
+  private fileToBlob(file: HTMLInputElement): Promise<Blob | undefined> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsArrayBuffer(file.files[0])
+      reader.onloadend = () => {
+        const blob = new Blob([new Uint8Array(reader.result as ArrayBuffer)], {type: file.type})
+        resolve(blob)
       }
-    }
+      reader.onerror = e => reject(undefined)
+    })
+  }
+  private createImageElement(url): Promise<HTMLImageElement | undefined> {
     return new Promise((resolve, reject) => {
       const img = new Image()
       img.crossOrigin = 'anonymous'
@@ -146,6 +161,41 @@ export default class VideoEntity {
       }
       img.src = url
     })
+  }
+  /**
+   * loadImg
+   * @param url 支持 HTTP DATAURL INPUT-FILE
+   * @returns
+   */
+  private async loadImg(url: string | HTMLInputElement): Promise<HTMLImageElement | ImageBitmap | undefined> {
+    try {
+      const isBase64 = isDataUrl(url)
+      if (this.isUseBitmap) {
+        let blob
+        if (url instanceof HTMLInputElement) {
+          blob = await this.fileToBlob(url)
+        } else {
+          if (isBase64) {
+            blob = this.dataURItoBlob(url)
+          } else {
+            blob = await fetch(url).then(r => r.blob())
+          }
+        }
+        // 适配 gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1) 解决自动翻转的问题
+        return self.createImageBitmap(blob, {imageOrientation: 'flipY'})
+      }
+      if (url instanceof HTMLInputElement) {
+        url = await this.fileToDataUrl(url)
+      } else if (typeof url === 'string' && url.indexOf('http') === -1 && !isBase64) {
+        url = `${location.protocol}//${location.host}${url}`
+      }
+      // url base64 都可以创建 image element
+      return this.createImageElement(url)
+    } catch (e) {
+      logger.error(e)
+      this.op?.onEnd?.(e)
+      return undefined
+    }
   }
 
   private parseFromSrcAndOptions() {
@@ -190,9 +240,10 @@ export default class VideoEntity {
     const w = item[this.effectWidth]
     const h = item[this.effectHeight]
     let img = null
-    if (url && url.length > 0) {
+    if (url) {
       img = await this.loadImg(url)
     }
+    const isBase64 = isDataUrl(url)
     ctx.canvas.width = w
     ctx.canvas.height = h
     if (item.scaleMode && img) {
@@ -220,7 +271,7 @@ export default class VideoEntity {
             //   adapt,
             // )
             ctx.save()
-            if (!isDataUrl(url)) {
+            if (!isBase64) {
               ctx.translate(0, drawHeight)
               ctx.scale(1, -1)
             }
@@ -252,7 +303,7 @@ export default class VideoEntity {
             //   adapt,
             // )
             ctx.save()
-            if (!isDataUrl(url)) {
+            if (!isBase64) {
               ctx.translate(0, drawHeight)
               ctx.scale(1, -1)
             }

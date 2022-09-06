@@ -3,7 +3,8 @@
  * @param url
  * @returns boolean
  */
-export const isDataUrl = (url: string) => {
+export const isDataUrl = (url: string | HTMLInputElement) => {
+  if (url instanceof HTMLInputElement) return false
   const regex =
     /^\s*data:([a-z]+\/[a-z0-9-+.]+(;[a-z-]+=[a-z0-9-]+)?)?(;base64)?,([a-z0-9!$&',()*+;=\-._~:@\/?%\s]*?)\s*$/i
   return regex.test(url)

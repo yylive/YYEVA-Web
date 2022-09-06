@@ -8,14 +8,23 @@ import {
   ProFormSelect,
   ProFormInstance,
 } from '@ant-design/pro-components'
-import {FileOutlined, FileImageOutlined, ApiOutlined} from '@ant-design/icons'
-import {message, Spin} from 'antd'
-import {useEffect, useRef} from 'react'
+import {FileOutlined, FileImageOutlined, ApiOutlined, UploadOutlined} from '@ant-design/icons'
+import {message, Spin, Tooltip} from 'antd'
+import {Fragment, useEffect, useRef} from 'react'
+const fileToDataUrl = (file: HTMLInputElement): Promise<string | undefined> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    if (file.files) reader.readAsDataURL(file.files[0])
+    reader.onloadend = () => resolve(reader.result as string)
+    reader.onerror = e => reject(undefined)
+  })
+}
 const VideoForm = () => {
   const {effect, setEffect} = useEffectStore(state => state)
   const {video, setVideo} = useVideoStore(state => state)
   const {videoFormItem} = useVideoFormStore(state => state)
   const formRef = useRef<ProFormInstance>()
+  const inputRefs: any = {}
   useEffect(() => {
     formRef.current?.setFieldsValue(videoFormItem)
   }, [videoFormItem])
@@ -48,9 +57,9 @@ const VideoForm = () => {
 
       {effect &&
         effect.map((v: any, index: number) => {
-          return (
+          return v.effectType === 'txt' ? (
             <ProFormText
-              key={v.effectTag + index}
+              key={`${v.effectTag}_${index}_${v.effectType}`}
               name={v.effectTag}
               placeholder={v.effectTag}
               colProps={{
@@ -60,9 +69,44 @@ const VideoForm = () => {
                 lg: 24,
               }}
               fieldProps={{
-                prefix: v.effectType === 'txt' ? <FileOutlined /> : <FileImageOutlined />,
+                prefix: <FileOutlined />,
               }}
             />
+          ) : (
+            <Fragment key={`input_${v.effectTag}_${index}`}>
+              <input
+                type="file"
+                ref={ref => {
+                  // console.log('ProFormText', ref)
+                  if (ref) inputRefs[v.effectTag] = ref
+                }}
+                onChange={async e => {
+                  // console.log('file input', v.effectTag, e.target.files)
+                  const dataUrl = await fileToDataUrl(e.target)
+                  // console.log('dataUrl', dataUrl)
+                  formRef.current?.setFieldValue(v.effectTag, dataUrl)
+                  // console.log(formRef)
+                }}
+                style={{display: 'none'}}
+              />
+              <ProFormText
+                name={v.effectTag}
+                placeholder={v.effectTag}
+                colProps={{
+                  xs: 12,
+                  sm: 24,
+                  md: 24,
+                  lg: 24,
+                }}
+                fieldProps={{
+                  prefix: (
+                    <Tooltip placement="topLeft" title={`点击上传`}>
+                      <UploadOutlined onClick={() => inputRefs[v.effectTag].click()} />
+                    </Tooltip>
+                  ),
+                }}
+              />
+            </Fragment>
           )
         })}
     </ProForm>

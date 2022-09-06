@@ -47,7 +47,7 @@ export default class EVideo {
     if (!op.container) throw new Error('container is need!')
     if (!op.videoUrl) throw new Error('videoUrl is need!')
     //TODO 考虑到 除了 htmlinputelement http 应该还有 dataUrl 后续拓展
-    if (typeof op.videoUrl !== 'string') {
+    if (op.videoUrl instanceof HTMLInputElement) {
       op.useVideoDBCache = false
       //TODO filename 作为 url 可能会很多重复问题 考虑是否默认屏蔽帧缓存
       // op.useFrameCache = false
