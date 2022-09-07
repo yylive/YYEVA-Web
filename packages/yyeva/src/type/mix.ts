@@ -54,7 +54,7 @@ export type MixEvideoOptions = VideoEvent & {
   /**
    * video http 连接 或 file 对象
    */
-  videoUrl: string | HTMLInputElement
+  videoUrl: string | File
   /**
    * video id
    * 用来做唯一播放对象处理 不重复注销video标签 适配微信 (目前是支持多video标签)

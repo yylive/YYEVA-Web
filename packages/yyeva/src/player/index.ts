@@ -38,7 +38,7 @@ export default class EVideo {
   public onError: EventCallback
   //
   public isPlay = false
-  private videoFile?: HTMLInputElement
+  private videoFile?: File
   static url?: string
   /**
    * 记录当前播放资源的 base64,当blob url播放失败时播放
@@ -47,7 +47,7 @@ export default class EVideo {
     if (!op.container) throw new Error('container is need!')
     if (!op.videoUrl) throw new Error('videoUrl is need!')
     //TODO 考虑到 除了 htmlinputelement http 应该还有 dataUrl 后续拓展
-    if (op.videoUrl instanceof HTMLInputElement) {
+    if (op.videoUrl instanceof File) {
       op.useVideoDBCache = false
       //TODO filename 作为 url 可能会很多重复问题 考虑是否默认屏蔽帧缓存
       // op.useFrameCache = false
@@ -472,7 +472,7 @@ export default class EVideo {
       file = this.videoFile
     }
     const url = await this.readFileToBlobUrl(file)
-    logger.debug('[prefetch result]', url)
+    logger.debug('[prefetch result]', url, `this.op.useVideoDBCache`, this.op.useVideoDBCache)
     return url
   }
   private readFileToBlobUrl(file): Promise<string> {

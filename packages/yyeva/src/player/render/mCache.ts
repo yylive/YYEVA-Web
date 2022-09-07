@@ -8,8 +8,8 @@ export type MCacheItem = {[frames: number]: ImageBitmap | HTMLImageElement | und
 //
 function setStoreName(op: MixEvideoOptions) {
   const {effects, mode, container} = op
-  // let storeName = isDataUrl(videoUrl) ? videoUrl.substring(22, 88) : videoUrl
-  let storeName = EVideo.url
+  let storeName = isDataUrl(EVideo.url) ? EVideo.url.substring(22, 88) : EVideo.url
+  // let storeName = EVideo.url
   if (effects) {
     const eUrl = Object.keys(effects)
       .map(key => key + '=' + effects[key])
