@@ -72,3 +72,11 @@ export const useEffectStore = create(
     },
   })),
 )
+
+export const useCodeStore = create(
+  combine({opencode: false}, set => ({
+    setOpenCode(opencode: boolean) {
+      set(state => ({opencode}))
+    },
+  })),
+)

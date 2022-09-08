@@ -5,7 +5,7 @@ import {GiftPlayer} from './player'
 import VideoOptions from 'src/preview/player/VideoOptions'
 import {version} from 'yyeva'
 import VideoMeta from './player/VideoMeta'
-import {useEffectStore, useOptionsStore} from 'src/preview/store/usePlayerStore'
+import {useEffectStore, useOptionsStore, useCodeStore} from 'src/preview/store/usePlayerStore'
 import {
   DashboardOutlined,
   GithubOutlined,
@@ -19,7 +19,7 @@ import SelectVideo from './player/SelectVideo'
 import Author from './view/Author'
 import WhoUse from './view/WhoUse'
 import GitHubButton from 'react-github-btn'
-import {useState} from 'react'
+import CodePreview from './player/CodePreview'
 /* const Content = () => (
   <div>
     YYEVA（YY Effect
@@ -41,7 +41,7 @@ import {useState} from 'react'
 const Page = () => {
   const effect = useEffectStore(state => state)
   const {options} = useOptionsStore(state => state)
-  const [openCode, setOpenCode] = useState(false)
+  const {opencode, setOpenCode} = useCodeStore(state => state)
   return (
     <PageContainer
       subTitle="YY Effect Video Animate"
@@ -95,13 +95,9 @@ const Page = () => {
           extra={
             <div className="video_options_extra">
               <Tooltip title="查看代码">
-                <CodepenOutlined onClick={() => setOpenCode(!openCode)} />
+                <CodepenOutlined onClick={() => setOpenCode(!opencode)} />
               </Tooltip>
-              <Modal onCancel={() => setOpenCode(false)} onOk={() => setOpenCode(false)} visible={openCode}>
-                <p>Some contents...</p>
-                <p>Some contents...</p>
-                <p>Some contents...</p>
-              </Modal>
+              <CodePreview />
               <Typography.Paragraph
                 style={{margin: 0}}
                 copyable={{
