@@ -12,10 +12,10 @@ const selected: any = {
     },
   },
   music: {
-    videoUrl: `${host}/yy/music.mp4`,
+    videoUrl: `${host}/yy/card.mp4`,
     effects: {
-      'keyname.png': 'music video',
-      key: '/yy/q1.jpeg',
+      text1: 'music name',
+      image1: '/yy/q1.jpeg',
     },
   },
   aspectFill: {
@@ -36,7 +36,7 @@ const SelectVideo = () => {
         onChange={k => {
           switch (k) {
             case 'music':
-              setOptions({mute: false, mode: 'Fill'})
+              setOptions({mute: false, mode: 'AspectFill'})
               break
             case 'aspectFill':
               // console.log('aspectFill')
