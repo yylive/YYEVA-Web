@@ -9,7 +9,6 @@
 ## 使用
 + 安装、使用、配置项 [说明](packages/yyeva//README.md)
 + Typescript [类型文件](packages/yyeva/src//type//mix.ts)
-+ 项目用例 [DEMO](https://github.com/yylive/YYEVA-Web/blob/main/projects/offical/src/YYDemo.tsx)
 
 ## 平台支持
 + 支持 [Android](https://github.com/yylive/YYEVA-Android)、[IOS](https://github.com/yylive/YYEVA-iOS)、[Web](https://github.com/yylive/YYEVA-Web)   点击了解详细接入
