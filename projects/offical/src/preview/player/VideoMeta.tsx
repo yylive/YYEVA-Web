@@ -100,6 +100,12 @@ const VideoForm = () => {
                 }}
                 fieldProps={{
                   prefix: (
+                    // <Tooltip placement="topLeft" title={`点击上传 或 输入URL`}>
+                    //   <UploadOutlined onClick={() => inputRefs[v.effectTag].click()} />
+                    // </Tooltip>
+                    <FileImageOutlined />
+                  ),
+                  addonAfter: (
                     <Tooltip placement="topLeft" title={`点击上传 或 输入URL`}>
                       <UploadOutlined onClick={() => inputRefs[v.effectTag].click()} />
                     </Tooltip>
