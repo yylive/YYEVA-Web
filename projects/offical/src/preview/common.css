@@ -90,6 +90,11 @@ video {
     width: 100%;
     margin-bottom: 5px;
   }
+  .video_options_extra{
+    display: flex;
+    align-items: center;
+    color: #1890ff;
+  }
   /* .metaList{
 
   } */

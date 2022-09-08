@@ -177,6 +177,8 @@ export default class VideoEntity {
         } else {
           if (isBase64) {
             blob = this.dataURItoBlob(url)
+            // base 64 不需要执行 imageOrientation: 'flipY'
+            return self.createImageBitmap(blob)
           } else {
             blob = await fetch(url).then(r => r.blob())
           }

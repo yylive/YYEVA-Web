@@ -6,12 +6,20 @@ import VideoOptions from 'src/preview/player/VideoOptions'
 import {version} from 'yyeva'
 import VideoMeta from './player/VideoMeta'
 import {useEffectStore, useOptionsStore} from 'src/preview/store/usePlayerStore'
-import {DashboardOutlined, GithubOutlined, SmileOutlined, SmileFilled, PlusCircleOutlined} from '@ant-design/icons'
-import {Badge, Card, Typography, Row, Col, Avatar} from 'antd'
+import {
+  DashboardOutlined,
+  GithubOutlined,
+  SmileOutlined,
+  SmileFilled,
+  PlusCircleOutlined,
+  CodepenOutlined,
+} from '@ant-design/icons'
+import {Badge, Card, Typography, Row, Col, Avatar, Modal, Button, Tooltip} from 'antd'
 import SelectVideo from './player/SelectVideo'
 import Author from './view/Author'
 import WhoUse from './view/WhoUse'
 import GitHubButton from 'react-github-btn'
+import {useState} from 'react'
 /* const Content = () => (
   <div>
     YYEVA（YY Effect
@@ -33,6 +41,7 @@ import GitHubButton from 'react-github-btn'
 const Page = () => {
   const effect = useEffectStore(state => state)
   const {options} = useOptionsStore(state => state)
+  const [openCode, setOpenCode] = useState(false)
   return (
     <PageContainer
       subTitle="YY Effect Video Animate"
@@ -84,16 +93,24 @@ const Page = () => {
           colSpan={{xs: 24, sm: 6, md: 6, lg: 6}}
           title="配置 Config"
           extra={
-            <Typography.Paragraph
-              style={{margin: 0}}
-              copyable={{
-                text: `${JSON.stringify(options, null, 2)}`,
-                // icon: [<SmileOutlined key="copy-icon" />, <SmileFilled key="copied-icon" />],
-                tooltips: ['点击复制', '复制成功'],
-              }}
-            >
-              复制配置
-            </Typography.Paragraph>
+            <div className="video_options_extra">
+              <Tooltip title="查看代码">
+                <CodepenOutlined onClick={() => setOpenCode(!openCode)} />
+              </Tooltip>
+              <Modal onCancel={() => setOpenCode(false)} onOk={() => setOpenCode(false)} visible={openCode}>
+                <p>Some contents...</p>
+                <p>Some contents...</p>
+                <p>Some contents...</p>
+              </Modal>
+              <Typography.Paragraph
+                style={{margin: 0}}
+                copyable={{
+                  text: `${JSON.stringify(options, null, 2)}`,
+                  // icon: [<SmileOutlined key="copy-icon" />, <SmileFilled key="copied-icon" />],
+                  tooltips: ['复制配置', '配置复制成功'],
+                }}
+              />
+            </div>
           }
           headerBordered
         >
