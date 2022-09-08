@@ -3,3 +3,4 @@ node_modules
 dist
 types
 .DS_Store
+projects/offical/public/.DS_Store

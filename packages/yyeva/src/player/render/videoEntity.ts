@@ -128,15 +128,15 @@ export default class VideoEntity {
     }
     return new Blob([intArray], {type: mimeString})
   }
-  private fileToDataUrl(file: HTMLInputElement): Promise<string | undefined> {
+  /* private fileToDataUrl(file: HTMLInputElement): Promise<string | undefined> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
       reader.readAsDataURL(file.files[0])
       reader.onloadend = () => resolve(reader.result as string)
       reader.onerror = e => reject(undefined)
     })
-  }
-  private fileToBlob(file: HTMLInputElement): Promise<Blob | undefined> {
+  } */
+  /* private fileToBlob(file: HTMLInputElement): Promise<Blob | undefined> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
       reader.readAsArrayBuffer(file.files[0])
@@ -146,7 +146,7 @@ export default class VideoEntity {
       }
       reader.onerror = e => reject(undefined)
     })
-  }
+  } */
   private createImageElement(url): Promise<HTMLImageElement | undefined> {
     return new Promise((resolve, reject) => {
       const img = new Image()
@@ -164,31 +164,39 @@ export default class VideoEntity {
   }
   /**
    * loadImg
-   * @param url 支持 HTTP DATAURL INPUT-FILE
+   * @param url 支持 HTTP DATAURL
    * @returns
    */
-  private async loadImg(url: string | HTMLInputElement): Promise<HTMLImageElement | ImageBitmap | undefined> {
+  private async loadImg(url: string): Promise<HTMLImageElement | ImageBitmap | undefined> {
     try {
       const isBase64 = isDataUrl(url)
       if (this.isUseBitmap) {
         let blob
-        if (url instanceof HTMLInputElement) {
-          blob = await this.fileToBlob(url)
+        // 取消 HTMLInputElement 对象
+        // if (url instanceof HTMLInputElement) {
+        //   blob = await this.fileToBlob(url)
+        // } else {
+        if (isBase64) {
+          blob = this.dataURItoBlob(url)
+          // base 64 不需要执行 imageOrientation: 'flipY'
+          // return self.createImageBitmap(blob)
         } else {
-          if (isBase64) {
-            blob = this.dataURItoBlob(url)
-            // base 64 不需要执行 imageOrientation: 'flipY'
-            return self.createImageBitmap(blob)
-          } else {
-            blob = await fetch(url).then(r => r.blob())
-          }
+          blob = await fetch(url).then(r => r.blob())
         }
+        // const img = document.createElement('img')
+        // img.src = URL.createObjectURL(blob)
+        // document.body.appendChild(img)
+        // console.log(blob)
+        // }
         // 适配 gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1) 解决自动翻转的问题
         return self.createImageBitmap(blob, {imageOrientation: 'flipY'})
       }
-      if (url instanceof HTMLInputElement) {
-        url = await this.fileToDataUrl(url)
-      } else if (typeof url === 'string' && url.indexOf('http') === -1 && !isBase64) {
+      // if (url instanceof HTMLInputElement) {
+      //   url = await this.fileToDataUrl(url)
+      // } else if (typeof url === 'string' && url.indexOf('http') === -1 && !isBase64) {
+      //   url = `${location.protocol}//${location.host}${url}`
+      // }
+      if (typeof url === 'string' && url.indexOf('http') === -1 && !isBase64) {
         url = `${location.protocol}//${location.host}${url}`
       }
       // url base64 都可以创建 image element
@@ -245,7 +253,7 @@ export default class VideoEntity {
     if (url) {
       img = await this.loadImg(url)
     }
-    const isBase64 = isDataUrl(url)
+    // const isBase64 = isDataUrl(url)
     ctx.canvas.width = w
     ctx.canvas.height = h
     if (item.scaleMode && img) {
@@ -273,10 +281,10 @@ export default class VideoEntity {
             //   adapt,
             // )
             ctx.save()
-            if (!isBase64) {
-              ctx.translate(0, drawHeight)
-              ctx.scale(1, -1)
-            }
+            // if (!isBase64) {
+            ctx.translate(0, drawHeight)
+            ctx.scale(1, -1)
+            // }
             ctx.drawImage(img, sx, sy, drawWidth, drawHeight)
             ctx.restore()
             return ctx.getImageData(0, 0, w, h)
@@ -305,10 +313,10 @@ export default class VideoEntity {
             //   adapt,
             // )
             ctx.save()
-            if (!isBase64) {
-              ctx.translate(0, drawHeight)
-              ctx.scale(1, -1)
-            }
+            // if (!isBase64) {
+            ctx.translate(0, drawHeight)
+            ctx.scale(1, -1)
+            // }
             ctx.drawImage(img, sx, sy, drawWidth, drawHeight)
             ctx.restore()
             return ctx.getImageData(0, 0, w, h)
