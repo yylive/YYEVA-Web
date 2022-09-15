@@ -1,6 +1,6 @@
 {
   "name": "yyeva",
-  "version": "1.0.0-beta.25",
+  "version": "1.0.0-beta.26",
   "description": "mp4 gift player",
   "files": [
     "dist",
@@ -24,16 +24,13 @@
     "url": "git+https://github.com/yylive/YYEVA-Web.git",
     "directory": "packages/yyeva"
   },
-  "main": "./dist/umd/yyeva.js",
-  "module": "./dist/esm/yyeva.js",
+  "main": "./dist/esm/yyeva.js",
   "types": "./types/index.d.ts",
   "scripts": {
     "build": "npm-run-all --parallel build:**",
     "build:esm": "cross-env FORMAT=esm vite build --mode prod",
-    "build:umd": "cross-env FORMAT=umd vite build --mode prod",
     "build:tsc": "ttsc",
     "dev": "npm-run-all --parallel dev:**",
-    "dev:umd": "cross-env FORMAT=umd vite build -w --mode dev",
     "dev:esm": "cross-env FORMAT=esm vite build -w --mode dev",
     "dev:tsc": "ttsc -w",
     "lint": "eslint ./src --ext js,ts,tsx --fix"

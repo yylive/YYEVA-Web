@@ -388,9 +388,12 @@ export default class VideoEntity {
     return ctx.getImageData(0, 0, w, h)
   }
   getFrame(frame: number) {
-    return this.config?.datas.find(item => {
-      return item[this.frameIndex] === frame
-    })
+    return (
+      this.config.datas &&
+      this.config.datas.find(item => {
+        return item[this.frameIndex] === frame
+      })
+    )
   }
   private getConfig(jsonUrl: string): Promise<VideoDataType> {
     return new Promise((resolve, reject) => {
