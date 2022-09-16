@@ -5,7 +5,7 @@ import {GiftPlayer} from './player'
 import VideoOptions from 'src/preview/player/VideoOptions'
 import {version} from 'yyeva'
 import VideoMeta from './player/VideoMeta'
-import {useEffectStore, useOptionsStore, useCodeStore} from 'src/preview/store/usePlayerStore'
+import {useEffectStore, useOptionsStore, useCodeStore, useClickUploadStore} from 'src/preview/store/usePlayerStore'
 import {
   DashboardOutlined,
   GithubOutlined,
@@ -13,6 +13,8 @@ import {
   SmileFilled,
   PlusCircleOutlined,
   CodepenOutlined,
+  UploadOutlined,
+  QuestionCircleOutlined,
 } from '@ant-design/icons'
 import {Badge, Card, Typography, Row, Col, Avatar, Modal, Button, Tooltip} from 'antd'
 import SelectVideo from './player/SelectVideo'
@@ -20,6 +22,7 @@ import Author from './view/Author'
 import WhoUse from './view/WhoUse'
 import GitHubButton from 'react-github-btn'
 import CodePreview from './player/CodePreview'
+const GitHub: any = GitHubButton
 /* const Content = () => (
   <div>
     YYEVA（YY Effect
@@ -42,6 +45,7 @@ const Page = () => {
   const effect = useEffectStore(state => state)
   const {options} = useOptionsStore(state => state)
   const {opencode, setOpenCode} = useCodeStore(state => state)
+  const {setClickUpload} = useClickUploadStore()
   return (
     <PageContainer
       subTitle="YY Effect Video Animate"
@@ -69,9 +73,19 @@ const Page = () => {
         <ProCard
           style={{marginTop: 8, height: '100%'}}
           colSpan={{xs: 24, sm: 12, md: 12, lg: 12}}
-          title={<>预览 Preview</>}
+          title={
+            <>
+              预览 Preview{' '}
+              <Tooltip title="拖拉到网格 或 点击右边 上传视频">
+                <QuestionCircleOutlined />
+              </Tooltip>{' '}
+              <Button size="small" type="primary" onClick={setClickUpload}>
+                <UploadOutlined />
+              </Button>
+            </>
+          }
           extra={
-            <GitHubButton
+            <GitHub
               href="https://github.com/yylive/YYEVA"
               data-color-scheme="no-preference: light; light: light; dark: dark;"
               data-size="large"
@@ -79,7 +93,7 @@ const Page = () => {
               aria-label="Star yylive/YYEVA on GitHub"
             >
               Star
-            </GitHubButton>
+            </GitHub>
           }
           layout="center"
           headerBordered

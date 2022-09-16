@@ -80,3 +80,11 @@ export const useCodeStore = create(
     },
   })),
 )
+
+export const useClickUploadStore = create(
+  combine({upload: 0}, (set, get) => ({
+    setClickUpload() {
+      set(state => ({upload: get().upload + 1}))
+    },
+  })),
+)
