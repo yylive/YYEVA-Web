@@ -13,6 +13,8 @@ import Webgl from './render/webglEntity'
 import {getVIdeoId} from 'src/helper/utils'
 import {polyfill, clickPlayBtn} from 'src/helper/polyfill'
 import VideoEntity from './render/videoEntity'
+import {LoopChecker} from './LoopChecker'
+
 //
 export default class EVideo {
   public op: MixEvideoOptions
@@ -27,6 +29,8 @@ export default class EVideo {
   private polyfillCreateObjectURL: boolean
 
   private timeoutId = null
+
+  private loopChecker!: LoopChecker
 
   //
   public onStart: EventCallback
@@ -57,6 +61,7 @@ export default class EVideo {
       EVideo.url = op.videoUrl
     }
     this.op = op
+    this.loopChecker = new LoopChecker(this.op.loop)
     this.video = this.videoCreate()
     this.animator = new Animator(this.video, this.op)
     // 是否创建 object url
@@ -76,6 +81,13 @@ export default class EVideo {
     }
     // check IndexDB cache
     db.IndexDB = this.op.useVideoDBCache
+
+    this.loopChecker.onEnd = () => {
+      logger.debug('[player] onEnd...url:', this.op.videoUrl)
+      this.stop()
+      this.destroy()
+      this.onEnd && this.onEnd()
+    }
   }
   public async setup() {
     try {
@@ -85,7 +97,9 @@ export default class EVideo {
       // this.animator.setVideoFps(VideoEntity.fps)
       await this.animator.setup()
       this.animator.onUpdate = frame => {
-        this.renderer.render(frame)
+        if (this.loopChecker.updateFrame(frame)) {
+          this.renderer.render(frame)
+        }
       }
       this.animationType = Animator.animationType
       //
@@ -234,7 +248,7 @@ export default class EVideo {
   }
 
   private loop() {
-    return typeof this.op.loop !== 'undefined' ? this.op.loop : true
+    return this.loopChecker.loopCount > 1
   }
 
   private videoCreate() {

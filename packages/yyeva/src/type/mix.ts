@@ -46,7 +46,7 @@ export type MixEvideoOptions = VideoEvent & {
    * 循环播放
    * @default true
    */
-  loop?: boolean
+  loop?: boolean | number
   /**
    * 动画容器
    */
