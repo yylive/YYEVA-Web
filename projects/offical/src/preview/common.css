@@ -26,8 +26,8 @@ video {
 }
 .playbox.AspectFill {
     aspect-ratio: 9 / 16;
-    width: 80%;
-    margin: 0 auto;
+    /* width: 80%;
+    margin: 0 auto; */
 }
 .playbox.AspectFit {
     aspect-ratio: 16 / 9;
