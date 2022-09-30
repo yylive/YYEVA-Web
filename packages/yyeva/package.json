@@ -1,6 +1,6 @@
 {
   "name": "yyeva",
-  "version": "1.0.0-beta.26",
+  "version": "1.0.0-beta.27",
   "description": "mp4 gift player",
   "files": [
     "dist",
@@ -14,6 +14,10 @@
     {
       "name": "liangxiaoming",
       "email": "liangxiaoming@yy.com"
+    },
+    {
+      "name": "zhanghaifeng",
+      "email": "zhanghaifeng2@yy.com"
     }
   ],
   "engines": {
