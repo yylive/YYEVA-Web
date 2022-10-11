@@ -37,6 +37,7 @@ player.destory() // dstory player
 | options            | effect     | defaults    |required|
 |---------------|--------|--------|--------|
 |videoUrl|mp4 address||*|
+|loop|loop or loop count |true||
 |videoID|to adapt to hosting environments such as WeChat, you need to declare the container ID in advance|e-video-wx-${now}||
 |mode|'AspectFill' / 'AspectFit' / 'contain' / 'cover'|scale proportionally according to the parent container||
 |container|dom container||*|

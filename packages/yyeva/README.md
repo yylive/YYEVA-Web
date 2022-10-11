@@ -37,6 +37,7 @@ player.destory() // dstory player
 | 选项            | 作用     | 默认值    |必填|
 |---------------|--------|--------|--------|
 |videoUrl|mp4地址||*|
+|loop|是否循环、循环次数 |true||
 |videoID|适配微信等需要预先声明的容器|e-video-wx-${now}||
 |mode|显示方式 横竖屏|根据父容器等比缩放||
 |container|html对象 推荐 div||*|
