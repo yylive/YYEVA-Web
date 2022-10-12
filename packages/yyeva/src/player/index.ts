@@ -13,7 +13,7 @@ import Webgl from './render/webglEntity'
 import {getVIdeoId} from 'src/helper/utils'
 import {polyfill, clickPlayBtn} from 'src/helper/polyfill'
 import VideoEntity from './render/videoEntity'
-import {LoopChecker} from './LoopChecker'
+import {LoopChecker} from './loopCheck'
 
 //
 export default class EVideo {
