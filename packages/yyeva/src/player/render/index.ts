@@ -231,7 +231,7 @@ export default class WglRender {
     if (effect) {
       for (const k in effect) {
         const r = effect[k]
-        // console.log('### effect videoEntity', r)
+        console.log('### effect videoEntity', r)
         r.img && this.createTexture(gl, i, r.img)
         const sampler = gl.getUniformLocation(program, `u_image${i}`)
         gl.uniform1i(sampler, i)

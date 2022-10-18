@@ -256,6 +256,7 @@ export default class VideoEntity {
     // const isBase64 = isDataUrl(url)
     ctx.canvas.width = w
     ctx.canvas.height = h
+    console.log(`makeImage`, item.scaleMode, w, h, img)
     if (item.scaleMode && img) {
       switch (item.scaleMode) {
         case EScaleMode.aspectFill: // 最大适配
@@ -268,23 +269,21 @@ export default class VideoEntity {
             }
             const drawWidth = Math.round(img.width * adapt)
             const drawHeight = Math.round(img.height * adapt)
-            const sx = -Math.round(Math.abs(drawWidth - w) / 2)
-            const sy = -Math.round(Math.abs(drawHeight - h) / 2)
-            // console.log(
-            //   `[effect] before draw: w ,h ,drawWidth, drawHeight, sx, sy, adapt`,
-            //   w,
-            //   h,
-            //   drawWidth,
-            //   drawHeight,
-            //   sx,
-            //   sy,
-            //   adapt,
-            // )
+            const sx = Math.round((w - drawWidth) / 2)
+            const sy = Math.round((drawHeight - h) / 2)
+            console.log(
+              `[effect] before draw: w ,h ,drawWidth, drawHeight, sx, sy, adapt`,
+              w,
+              h,
+              drawWidth,
+              drawHeight,
+              sx,
+              sy,
+              adapt,
+            )
             ctx.save()
-            // if (!isBase64) {
             ctx.translate(0, drawHeight)
             ctx.scale(1, -1)
-            // }
             ctx.drawImage(img, sx, sy, drawWidth, drawHeight)
             ctx.restore()
             return ctx.getImageData(0, 0, w, h)
@@ -300,23 +299,21 @@ export default class VideoEntity {
             }
             const drawWidth = Math.round(img.width * adapt)
             const drawHeight = Math.round(img.height * adapt)
-            const sx = -Math.round(Math.abs(drawWidth - w) / 2)
-            const sy = -Math.round(Math.abs(drawHeight - h) / 2)
-            // console.log(
-            //   `[effect] before draw: w ,h ,drawWidth, drawHeight, sx, sy, adapt`,
-            //   w,
-            //   h,
-            //   drawWidth,
-            //   drawHeight,
-            //   sx,
-            //   sy,
-            //   adapt,
-            // )
+            const sx = Math.round((w - drawWidth) / 2)
+            const sy = Math.round((drawHeight - h) / 2)
+            console.log(
+              `[effect] before draw: w ,h ,drawWidth, drawHeight, sx, sy, adapt`,
+              w,
+              h,
+              drawWidth,
+              drawHeight,
+              sx,
+              sy,
+              adapt,
+            )
             ctx.save()
-            // if (!isBase64) {
             ctx.translate(0, drawHeight)
             ctx.scale(1, -1)
-            // }
             ctx.drawImage(img, sx, sy, drawWidth, drawHeight)
             ctx.restore()
             return ctx.getImageData(0, 0, w, h)
