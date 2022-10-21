@@ -5,7 +5,13 @@ import {GiftPlayer} from './player'
 import VideoOptions from 'src/preview/player/VideoOptions'
 import {version} from 'yyeva'
 import VideoMeta from './player/VideoMeta'
-import {useEffectStore, useOptionsStore, useCodeStore, useClickUploadStore} from 'src/preview/store/usePlayerStore'
+import {
+  useEffectStore,
+  useOptionsStore,
+  useCodeStore,
+  useClickUploadStore,
+  useBackgroundColorStore,
+} from 'src/preview/store/usePlayerStore'
 import {
   DashboardOutlined,
   GithubOutlined,
@@ -46,6 +52,7 @@ const Page = () => {
   const {options} = useOptionsStore(state => state)
   const {opencode, setOpenCode} = useCodeStore(state => state)
   const {setClickUpload} = useClickUploadStore()
+  const {backgroundColor, setBackGoundColor} = useBackgroundColorStore()
   return (
     <PageContainer
       subTitle="YY Effect Video Animate"
@@ -82,6 +89,10 @@ const Page = () => {
               <Button size="small" type="primary" onClick={setClickUpload}>
                 <UploadOutlined />
               </Button>
+              {'  '}
+              <Button type="primary" onClick={setBackGoundColor}>
+                切换黑白背景
+              </Button>
             </>
           }
           extra={
@@ -99,7 +110,7 @@ const Page = () => {
           headerBordered
         >
           <Badge.Ribbon text={<>v{version}</>}>
-            <GiftPlayer />
+            <GiftPlayer backgroundColor={backgroundColor} />
           </Badge.Ribbon>
         </ProCard>
         <ProCard

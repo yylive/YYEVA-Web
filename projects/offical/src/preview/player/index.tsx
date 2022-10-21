@@ -16,12 +16,14 @@ const runOnce = async (container: any, video: any, options: any) => {
   evideo.start()
 }
 let v: HTMLVideoElement
-export const GiftPlayer = () => {
+export const GiftPlayer = ({backgroundColor}: any) => {
   const {video} = useVideoStore(state => state)
   const {setVideoFormItem} = useVideoFormStore(state => state)
   const div = useRef<HTMLDivElement>(null)
   const {options} = useOptionsStore(state => state)
   const {setEffect} = useEffectStore(state => state)
+  // console.log('backgroundColor=', backgroundColor)
+
   useEffect(() => {
     runOnce(div.current, video, options).then(() => {
       setEffect(evideo?.renderer?.videoEntity?.config?.effect)
@@ -35,7 +37,7 @@ export const GiftPlayer = () => {
 
   return (
     <UploadVideo>
-      <div className={`playbox ${options.mode}`} ref={div}></div>
+      <div className={`playbox ${options.mode} ${backgroundColor}`} ref={div}></div>
     </UploadVideo>
   )
 }
