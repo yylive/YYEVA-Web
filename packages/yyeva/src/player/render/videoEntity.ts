@@ -271,16 +271,16 @@ export default class VideoEntity {
             const drawHeight = Math.round(img.height * adapt)
             const sx = Math.round((w - drawWidth) / 2)
             const sy = Math.round((drawHeight - h) / 2)
-            console.log(
-              `[effect] before draw: w ,h ,drawWidth, drawHeight, sx, sy, adapt`,
-              w,
-              h,
-              drawWidth,
-              drawHeight,
-              sx,
-              sy,
-              adapt,
-            )
+            // console.log(
+            //   `[effect] before draw: w ,h ,drawWidth, drawHeight, sx, sy, adapt`,
+            //   w,
+            //   h,
+            //   drawWidth,
+            //   drawHeight,
+            //   sx,
+            //   sy,
+            //   adapt,
+            // )
             ctx.save()
             ctx.translate(0, drawHeight)
             ctx.scale(1, -1)
@@ -301,16 +301,16 @@ export default class VideoEntity {
             const drawHeight = Math.round(img.height * adapt)
             const sx = Math.round((w - drawWidth) / 2)
             const sy = Math.round((drawHeight - h) / 2)
-            console.log(
-              `[effect] before draw: w ,h ,drawWidth, drawHeight, sx, sy, adapt`,
-              w,
-              h,
-              drawWidth,
-              drawHeight,
-              sx,
-              sy,
-              adapt,
-            )
+            // console.log(
+            //   `[effect] before draw: w ,h ,drawWidth, drawHeight, sx, sy, adapt`,
+            //   w,
+            //   h,
+            //   drawWidth,
+            //   drawHeight,
+            //   sx,
+            //   sy,
+            //   adapt,
+            // )
             ctx.save()
             ctx.translate(0, drawHeight)
             ctx.scale(1, -1)
@@ -352,23 +352,33 @@ export default class VideoEntity {
     ctx.textBaseline = 'middle'
     ctx.textAlign = 'center'
     const txt = item.text || ''
+    const txtlength = txt.length
+    // console.log(
+    //   `makeTextImg: fontStyle${fontStyle}, fontColor${fontColor}, fontSize${fontSize}, w${w}, h${h}, txt${txt}, txtlength:${txtlength}`,
+    // )
+
     const getFontStyle = (fontSize?: number) => {
-      fontSize = fontSize || Math.min(w / txt.length, h - 8) // 需留一定间隙
+      if (fontSize && Number(fontSize) > 0) {
+        fontSize = fontSize
+      } else {
+        fontSize = Math.min((w / txtlength) * 1, h - 1)
+      }
       const font = ['600', `${Math.round(fontSize)}px`, 'Microsoft YaHei']
       if (fontStyle === 'b') {
         font.unshift('bold')
       }
+      // console.log(`getFontStyle`, font)
       return font.join(' ')
     }
     if (!fontStyle) {
-      const fontStyle = getFontStyle(item.fontSize)
+      const fontStyle = getFontStyle(fontSize)
       ctx.font = fontStyle
       if (fontColor) ctx.fillStyle = fontColor
     } else if (typeof fontStyle == 'string') {
       ctx.font = fontStyle
       if (fontColor) ctx.fillStyle = fontColor
     } else if (typeof fontStyle == 'object') {
-      ctx.font = fontStyle['font'] || getFontStyle()
+      ctx.font = fontStyle['font'] || getFontStyle(fontSize)
       ctx.fillStyle = fontStyle['color'] || fontColor
     } else if (typeof fontStyle == 'function') {
       ctx.font = getFontStyle(fontSize)
