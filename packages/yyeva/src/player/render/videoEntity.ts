@@ -351,23 +351,29 @@ export default class VideoEntity {
     ctx.canvas.height = h
     ctx.textBaseline = 'middle'
     ctx.textAlign = 'center'
-    const txt = item.text || ''
+    let txt = item.text || ''
     const txtlength = txt.length
-    // console.log(
-    //   `makeTextImg: fontStyle${fontStyle}, fontColor${fontColor}, fontSize${fontSize}, w${w}, h${h}, txt${txt}, txtlength:${txtlength}`,
-    // )
+    console.log(
+      `makeTextImg: fontStyle${fontStyle}, fontColor${fontColor}, fontSize${fontSize}, w${w}, h${h}, txt${txt}, txtlength:${txtlength}`,
+      this.op,
+    )
 
     const getFontStyle = (fontSize?: number) => {
-      if (fontSize && Number(fontSize) > 0) {
-        fontSize = fontSize
-      } else {
+      fontSize = fontSize || h - 1
+      if (!this.op?.font?.overflow || this.op.font.overflow === 'cut') {
+        const maxFontLength = Math.ceil(w / fontSize) - 1
+        if (txtlength > maxFontLength) {
+          txt = txt.substring(0, maxFontLength) + '...'
+        }
+      } else if (fontSize * txtlength > w - 1) {
         fontSize = Math.min((w / txtlength) * 1, h - 1)
       }
+
       const font = ['600', `${Math.round(fontSize)}px`, 'Microsoft YaHei']
       if (fontStyle === 'b') {
         font.unshift('bold')
       }
-      // console.log(`getFontStyle`, font)
+      console.log(`getFontStyle`, font)
       return font.join(' ')
     }
     if (!fontStyle) {

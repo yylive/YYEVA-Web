@@ -120,6 +120,9 @@ export type MixEvideoOptions = VideoEvent & {
   color?: string
   style?: string
   fontStyle?: string | any
+  font?: {
+    overflow: 'zoom' | 'cut' //  适配文本框宽度方式,超出文本框时:  'zoom'缩放  'cut'截取后段文本...
+  }
   /**
    * effects
    * 业务内容 k 为 effectTag
