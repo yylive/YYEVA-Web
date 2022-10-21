@@ -59,8 +59,8 @@ export const useBackgroundColorStore = create(
       backgroundColor: 'black',
     },
     (set, get) => ({
-      setBackGoundColor() {
-        set(() => ({backgroundColor: get().backgroundColor === 'black' ? 'white' : 'black'}))
+      setBackGoundColor(value: string) {
+        set(state => ({backgroundColor: value}))
       },
     }),
   ),

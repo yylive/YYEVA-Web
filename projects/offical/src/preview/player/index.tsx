@@ -22,7 +22,7 @@ export const GiftPlayer = ({backgroundColor}: any) => {
   const div = useRef<HTMLDivElement>(null)
   const {options} = useOptionsStore(state => state)
   const {setEffect} = useEffectStore(state => state)
-  // console.log('backgroundColor=', backgroundColor)
+  console.log('backgroundColor=', backgroundColor)
 
   useEffect(() => {
     runOnce(div.current, video, options).then(() => {
@@ -37,7 +37,7 @@ export const GiftPlayer = ({backgroundColor}: any) => {
 
   return (
     <UploadVideo>
-      <div className={`playbox ${options.mode} ${backgroundColor}`} ref={div}></div>
+      <div className={`playbox ${options.mode}`} style={{backgroundColor: backgroundColor}} ref={div}></div>
     </UploadVideo>
   )
 }

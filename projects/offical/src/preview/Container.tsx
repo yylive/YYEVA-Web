@@ -22,12 +22,15 @@ import {
   UploadOutlined,
   QuestionCircleOutlined,
 } from '@ant-design/icons'
-import {Badge, Card, Typography, Row, Col, Avatar, Modal, Button, Tooltip} from 'antd'
+import {Badge, Card, Typography, Row, Col, Avatar, Modal, Button, Tooltip, Select} from 'antd'
 import SelectVideo from './player/SelectVideo'
 import Author from './view/Author'
 import WhoUse from './view/WhoUse'
 import GitHubButton from 'react-github-btn'
 import CodePreview from './player/CodePreview'
+
+const {Option} = Select
+
 const GitHub: any = GitHubButton
 /* const Content = () => (
   <div>
@@ -52,7 +55,13 @@ const Page = () => {
   const {options} = useOptionsStore(state => state)
   const {opencode, setOpenCode} = useCodeStore(state => state)
   const {setClickUpload} = useClickUploadStore()
-  const {backgroundColor, setBackGoundColor} = useBackgroundColorStore()
+  const {backgroundColor, setBackGoundColor} = useBackgroundColorStore(state => state)
+
+  const handleChange = (value: string) => {
+    console.log(`selected ${value}`)
+    setBackGoundColor(value)
+  }
+
   return (
     <PageContainer
       subTitle="YY Effect Video Animate"
@@ -88,11 +97,17 @@ const Page = () => {
               </Tooltip>{' '}
               <Button size="small" type="primary" onClick={setClickUpload}>
                 <UploadOutlined />
-              </Button>
-              {'  '}
-              <Button type="primary" onClick={setBackGoundColor}>
-                切换黑白背景
-              </Button>
+              </Button>{' '}
+              <Select defaultValue="black" size="small" style={{width: 120}} onChange={handleChange}>
+                <Option value="black">black</Option>
+                <Option value="white">white</Option>
+                <Option value="gray">gray</Option>
+                <Option value="red">red</Option>
+                <Option value="green">green</Option>
+                <Option value="blue">blue</Option>
+                <Option value="#9b59b6">amethyst</Option>
+                <Option value="#3498db">Peter River</Option>
+              </Select>
             </>
           }
           extra={

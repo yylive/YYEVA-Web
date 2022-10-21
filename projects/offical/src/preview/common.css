@@ -32,14 +32,6 @@ video {
 .playbox.AspectFit {
     aspect-ratio: 16 / 9;
 }
-.playbox.black {
-  background-color: black;
-}
-.playbox.white {
-  background-color: white;
-}
-
-
 .global-footer{
     text-align: center;
     margin: 48px 0 24px;
