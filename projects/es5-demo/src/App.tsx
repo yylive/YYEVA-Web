@@ -9,14 +9,19 @@ const runPlayer = async (container: HTMLDivElement) => {
     useMetaData: true,
     onEnd: () => runPlayer(container),
     loop: false,
-    videoUrl: `${host}/m64.mp4`,
     usePrefetch: false,
     showVideo: true,
     logLevel: 'info',
+    videoUrl: `${host}/960-360.mp4`,
+    resizeCanvas: undefined,
     effects: {
-      a1: `${host}/a1.png`,
-      a2: `${host}/b1.png`,
+      key1: `ken`,
     },
+    // videoUrl: `${host}/m64.mp4`,
+    // effects: {
+    //   a1: `${host}/a1.png`,
+    //   a2: `${host}/b1.png`,
+    // },
   })
   evideo.start()
 }
@@ -32,7 +37,7 @@ const YYEVA = () => {
   }, [])
   return (
     <div className="yyeva">
-      <h1 className="title">YYEVA {version}</h1>
+      {/* <h1 className="title">YYEVA {version}</h1> */}
       <div className="container" ref={div}></div>
     </div>
   )

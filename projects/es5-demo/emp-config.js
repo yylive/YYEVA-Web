@@ -2,7 +2,7 @@ const {defineConfig} = require('@efox/emp')
 module.exports = defineConfig(() => {
   return {
     server: {
-      https: true,
+      // https: true,
       port: 3333,
     },
     moduleTransform: {
