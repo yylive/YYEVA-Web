@@ -28,9 +28,9 @@ const runPlayer = async (container: HTMLDivElement) => {
     showVideo: true,
     logLevel: 'info',
     videoUrl: `${host}/960-360.mp4`,
-    resizeCanvas: undefined,
+    // resizeCanvas: 'size',
     effects: {
-      key1: `ken`,
+      key1: `时代峰峻首啊fdgdfg `,
     },
     // videoUrl: `${host}/m64.mp4`,
     // effects: {
