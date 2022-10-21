@@ -52,6 +52,20 @@ export const useVideoStore = create(
     }),
   ),
 )
+
+export const useBackgroundColorStore = create(
+  combine(
+    {
+      backgroundColor: 'black',
+    },
+    (set, get) => ({
+      setBackGoundColor(value: string) {
+        set(state => ({backgroundColor: value}))
+      },
+    }),
+  ),
+)
+
 export const useVideoFormStore = create(
   combine(
     {

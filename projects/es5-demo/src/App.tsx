@@ -3,6 +3,21 @@ import {useEffect, useRef} from 'react'
 let evideo: YYEvaType
 const host = `${location.protocol}//${location.host}`
 const runPlayer = async (container: HTMLDivElement) => {
+  // evideo = await yyEva({
+  //   mode: 'AspectFill',
+  //   container,
+  //   useMetaData: true,
+  //   onEnd: () => runPlayer(container),
+  //   loop: false,
+  //   videoUrl: `${host}/m64.mp4`,
+  //   usePrefetch: false,
+  //   showVideo: true,
+  //   logLevel: 'info',
+  //   effects: {
+  //     a1: `${host}/a1.png`,
+  //     a2: `${host}/b1.png`,
+  //   },
+  // })
   evideo = await yyEva({
     mode: 'AspectFill',
     container,
