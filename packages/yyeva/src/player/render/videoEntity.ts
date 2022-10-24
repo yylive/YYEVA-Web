@@ -353,20 +353,21 @@ export default class VideoEntity {
     ctx.textAlign = 'center'
     let txt = item.text || ''
     const txtlength = txt.length
+    const defaultFontSize = h - 2
     console.log(
       `makeTextImg: fontStyle${fontStyle}, fontColor${fontColor}, fontSize${fontSize}, w${w}, h${h}, txt${txt}, txtlength:${txtlength}`,
       this.op,
     )
 
     const getFontStyle = (fontSize?: number) => {
-      fontSize = fontSize || h - 1
+      fontSize = fontSize || defaultFontSize
       if (!this.op?.font?.overflow || this.op.font.overflow === 'cut') {
-        const maxFontLength = Math.ceil(w / fontSize) - 1
+        const maxFontLength = Math.ceil(w / fontSize) - 2
         if (txtlength > maxFontLength) {
           txt = txt.substring(0, maxFontLength) + '...'
         }
       } else if (fontSize * txtlength > w - 1) {
-        fontSize = Math.min((w / txtlength) * 1, h - 1)
+        fontSize = Math.min((w / txtlength) * 1, defaultFontSize)
       }
 
       const font = ['600', `${Math.round(fontSize)}px`, 'Microsoft YaHei']

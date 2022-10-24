@@ -30,7 +30,7 @@ const runPlayer = async (container: HTMLDivElement) => {
     videoUrl: `${host}/960-360.mp4`,
     // resizeCanvas: 'size',
     effects: {
-      key1: `时代峰 时代峰 时代峰`,
+      key1: `abcdeopop`,
     },
     // videoUrl: `${host}/m64.mp4`,
     // effects: {
