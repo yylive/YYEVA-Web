@@ -2,6 +2,8 @@ import {logger} from 'src/helper/logger'
 import {isDataUrl} from 'src/helper/utils'
 import Animator from 'src/player/video/animator'
 import {MixEvideoOptions, VideoAnimateType, VideoAnimateEffectType, VideoDataType, EScaleMode} from 'src/type/mix'
+
+type ContextType = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
 export default class VideoEntity {
   public op: MixEvideoOptions
   static fps = 30
@@ -227,7 +229,7 @@ export default class VideoEntity {
             } else {
               item.text = effects[effectTag].text
             }
-            item.img = await this.makeTextImg(item, effects[effectTag])
+            item.img = await this.makeTextImg(item, effects[effectTag], item.effectHeight)
           }
         } // image
         else if (this.effectTypes.img.indexOf(effectType) > -1) {
@@ -333,11 +335,30 @@ export default class VideoEntity {
       return ctx.getImageData(0, 0, w, h)
     }
   }
+
+  _getText(ctx: ContextType, text: string, maxWidth: number): string {
+    if (!this.op?.font?.overflow || this.op.font.overflow === 'cut') {
+      const textWidth = ctx.measureText(text).width
+      if (maxWidth == undefined) {
+        maxWidth = textWidth
+      } else if (textWidth > maxWidth) {
+        let len = text.length
+        while (ctx.measureText(text + '...').width > maxWidth && len > 0) {
+          len = len - 1
+          text = text.substring(0, len)
+        }
+        text = text + '...'
+      }
+    }
+
+    return text
+  }
+
   /**
    * 文字转换图片
    * @param item
    */
-  private async makeTextImg(item: VideoAnimateEffectType, eOptions: any = {}) {
+  private async makeTextImg(item: VideoAnimateEffectType, eOptions: any = {}, width = 0) {
     if (!this.ctx) return
     const ctx = this.ctx
     if (eOptions.fontStyle) item.fontStyle = eOptions.fontStyle
@@ -351,7 +372,7 @@ export default class VideoEntity {
     ctx.canvas.height = h
     ctx.textBaseline = 'middle'
     ctx.textAlign = 'center'
-    let txt = item.text || ''
+    const txt = item.text || ''
     const txtlength = txt.length
     const defaultFontSize = h - 2
     console.log(
@@ -362,10 +383,10 @@ export default class VideoEntity {
     const getFontStyle = (fontSize?: number) => {
       fontSize = fontSize || defaultFontSize
       if (!this.op?.font?.overflow || this.op.font.overflow === 'cut') {
-        const maxFontLength = Math.ceil(w / fontSize) - 2
-        if (txtlength > maxFontLength) {
-          txt = txt.substring(0, maxFontLength) + '...'
-        }
+        // const maxFontLength = Math.ceil(w / fontSize) - 2
+        // if (txtlength > maxFontLength) {
+        //   txt = txt.substring(0, maxFontLength) + '...'
+        // }
       } else if (fontSize * txtlength > w - 1) {
         fontSize = Math.min((w / txtlength) * 1, defaultFontSize)
       }
@@ -393,7 +414,7 @@ export default class VideoEntity {
       fontStyle(null, ctx, item)
     }
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-    ctx.fillText(txt, w / 2, h / 2)
+    ctx.fillText(this._getText(ctx, txt, w), w / 2, h / 2)
     if (!!self.OffscreenCanvas && this.ofs instanceof OffscreenCanvas) {
       const blob = await this.ofs.convertToBlob()
       const bitmap = await self.createImageBitmap(blob, {imageOrientation: 'flipY'})
