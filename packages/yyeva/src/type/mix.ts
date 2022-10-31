@@ -279,10 +279,6 @@ export type VideoAnimateType = {
    * 动态元素的遮罩描述信息
    */
   effect: VideoAnimateEffectType[]
-  /**
-   * 是否 hevc
-   */
-  isHevc?: boolean
 }
 
 export enum EScaleMode {

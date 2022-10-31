@@ -505,23 +505,28 @@ export default class EVideo {
       const fileReader = new FileReader()
       fileReader.readAsDataURL(file)
       fileReader.onloadend = () => {
-        const rs = fileReader.result as string
+        let rs = fileReader.result as string
+        let raw = atob(rs.slice(rs.indexOf(',') + 1)) //获取视频信息
+        /**
+         * 判断 videoUrl 资源 是否为 H.265
+         */
+        const codecRegex = new RegExp('H.265/HEVC')
+        const isHevc = codecRegex.test(raw)
+        if (isHevc) {
+          this.op.isHevc = true
+        }
         /**
          * 根据 useMetaData 获取 yy视频 metadata 信息
          */
         let data: VideoAnimateType
         if (this.op.useMetaData) {
-          data = parser.getdata(rs)
+          data = parser.getdata(raw)
           if (data) {
             this.renderer.videoEntity.setConfig(data)
-            if (data.isHevc) {
-              this.op.isHevc = true
-            }
           }
         }
         //
         if (!this.polyfillCreateObjectURL) {
-          const raw = atob(rs.slice(rs.indexOf(',') + 1))
           const buf = Array(raw.length)
           for (let d = 0; d < raw.length; d++) {
             buf[d] = raw.charCodeAt(d)
@@ -538,6 +543,9 @@ export default class EVideo {
           //获取 data 后 原路返回
           resolve(EVideo.url)
         }
+        // gc
+        rs = undefined
+        raw = undefined
       }
     })
   }

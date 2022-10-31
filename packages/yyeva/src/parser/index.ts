@@ -11,9 +11,7 @@ class Parser {
   //   const regex = '(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)'
   //   return exact ? new RegExp(`(?:^${regex}?$)`) : new RegExp(regex, 'g')
   // }
-  getdata(resultStr: string): VideoAnimateType | undefined {
-    let raw = atob(resultStr.slice(resultStr.indexOf(',') + 1))
-    // console.log('raw', raw)
+  getdata(raw: string): VideoAnimateType | undefined {
     try {
       const mc = raw.match(yyExp)
       if (!mc) return undefined
@@ -21,12 +19,7 @@ class Parser {
       const u8 = this.inflate(zlibBase64String)
       let d: any = this.unit8Tostring(u8)
       d = JSON.parse(d)
-      const codecRegex = new RegExp('H.265/HEVC')
-      d.isHevc = codecRegex.test(raw)
       logger.debug('[ParserGetData]', d)
-      // console.log(d)
-      raw = undefined
-      resultStr = undefined
       return d
     } catch (e) {
       logger.warn(e)
