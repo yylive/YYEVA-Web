@@ -12,7 +12,8 @@ class Parser {
   //   return exact ? new RegExp(`(?:^${regex}?$)`) : new RegExp(regex, 'g')
   // }
   getdata(resultStr: string): VideoAnimateType | undefined {
-    const raw = atob(resultStr.slice(resultStr.indexOf(',') + 1))
+    let raw = atob(resultStr.slice(resultStr.indexOf(',') + 1))
+    // console.log('raw', raw)
     try {
       const mc = raw.match(yyExp)
       if (!mc) return undefined
@@ -20,7 +21,12 @@ class Parser {
       const u8 = this.inflate(zlibBase64String)
       let d: any = this.unit8Tostring(u8)
       d = JSON.parse(d)
+      const codecRegex = new RegExp('H.265/HEVC')
+      d.isHevc = codecRegex.test(raw)
       logger.debug('[ParserGetData]', d)
+      // console.log(d)
+      raw = undefined
+      resultStr = undefined
       return d
     } catch (e) {
       logger.warn(e)

@@ -1,7 +1,7 @@
 import Render from 'src/player/render'
 import Render2D from 'src/player/render/canvas2d'
 import videoEvents from 'src/player/video/videoEvents'
-import {MixEvideoOptions, EventCallback, WebglVersion, EPlayError, EPlayStep} from 'src/type/mix'
+import {MixEvideoOptions, EventCallback, WebglVersion, EPlayError, EPlayStep, VideoAnimateType} from 'src/type/mix'
 // import {prefetchVideoStream} from 'src/player/video/mse'
 // import {versionTips} from 'src/helper/logger'
 import Animator, {AnimatorType} from 'src/player/video/animator'
@@ -44,6 +44,7 @@ export default class EVideo {
   public isPlay = false
   //
   private videoFile?: File
+  private isSupportHevc = false
   static url?: string
   /**
    * 记录当前播放资源的 base64,当blob url播放失败时播放
@@ -56,9 +57,10 @@ export default class EVideo {
     this.loopChecker = new LoopChecker(this.op.loop)
     this.video = this.videoCreate()
     // check hevc
-    this.op.isHevc = isHevc(this.video)
-    if (this.op.isHevc && op.hevcUrl) {
+    this.isSupportHevc = isHevc(this.video)
+    if (this.isSupportHevc && op.hevcUrl) {
       op.videoUrl = op.hevcUrl
+      this.op.isHevc = true
     }
     //
     // console.log('play video url', op.videoUrl)
@@ -507,11 +509,14 @@ export default class EVideo {
         /**
          * 根据 useMetaData 获取 yy视频 metadata 信息
          */
-        let data
+        let data: VideoAnimateType
         if (this.op.useMetaData) {
           data = parser.getdata(rs)
           if (data) {
             this.renderer.videoEntity.setConfig(data)
+            if (data.isHevc) {
+              this.op.isHevc = true
+            }
           }
         }
         //
