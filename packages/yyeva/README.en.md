@@ -64,8 +64,11 @@ player.destory() // dstory player
 
 ## compatibility
 compatibility list obtained after comprehensive testing [detail](https://github.com/yylive/YYEVA-Web/blob/main/docs/device.en.md)
-### WeChat
+### WeChat H5
 #### IOS
 WeChat ios has been verified and can be played automatically
 #### android
 WeChat Android needs to be manually clicked or customized according to the `onRequestClickPlay` event
+
+### Wechat Miniprogram 
+[NPM Package](https://www.npmjs.com/package/yyeva-wechat)

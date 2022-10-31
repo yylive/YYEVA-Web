@@ -64,8 +64,11 @@ player.destory() // dstory player
 
 ## 兼容性
 综合测试 整理了主流的手机 通过情况 [详细](https://github.com/yylive/YYEVA-Web/blob/main/docs/device.md)
-### 微信
+### 微信 H5
 #### IOS
 微信 ios 已经验证通过，可以自动播放
 #### 安卓
 微信 安卓 需要 手动点击 或者 根据 `onRequestClickPlay` 事件进行自定义提示
+
+### 微信小程序 
+[NPM 安装包](https://www.npmjs.com/package/yyeva-wechat)

@@ -5,6 +5,7 @@ import {GiftPlayer} from './player'
 import VideoOptions from 'src/preview/player/VideoOptions'
 import {version} from 'yyeva'
 import VideoMeta from './player/VideoMeta'
+import {SettingOutlined} from '@ant-design/icons'
 import {
   useEffectStore,
   useOptionsStore,
@@ -80,6 +81,11 @@ const Page = () => {
           title="描述信息 Meta"
           headerBordered
           loading={effect.effect && Object.keys(effect.effect).length === 0}
+          extra={
+            <a href="https://github.com/yylive/YYEVA-Web/tree/main/packages/yyeva" target="_blank" rel="noreferrer">
+              <SettingOutlined />
+            </a>
+          }
         >
           <SelectVideo />
           <br />

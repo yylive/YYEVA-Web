@@ -1,4 +1,11 @@
-import {Segmented, Typography} from 'antd'
+import {Segmented, Typography, Tooltip} from 'antd'
+import {
+  DashboardOutlined,
+  BellOutlined,
+  RightSquareOutlined,
+  UpSquareOutlined,
+  ThunderboltOutlined,
+} from '@ant-design/icons'
 import {useOptionsStore, useVideoStore} from 'src/preview/store/usePlayerStore'
 const host = ''
 const selected: any = {
@@ -23,6 +30,13 @@ const selected: any = {
   },
   aspectFit: {
     videoUrl: `${host}/yy/aspectFit.mp4`,
+  },
+  hevc: {
+    videoUrl: `${host}/yy/fh-264.mp4`,
+    hevcUrl: `${host}/yy/fh-265.mp4`,
+    effects: {
+      anchor_nick: `凤凰坐骑进场秀`,
+    },
   },
 }
 const SelectVideo = () => {
@@ -53,10 +67,46 @@ const SelectVideo = () => {
           setVideo(selected[k])
         }}
         options={[
-          {label: '默认', value: 'default'},
-          {label: '音频', value: 'music'},
-          {label: '竖屏', value: 'aspectFill'},
-          {label: '横屏', value: 'aspectFit'},
+          {
+            label: (
+              <Tooltip title="默认">
+                <DashboardOutlined />
+              </Tooltip>
+            ),
+            value: 'default',
+          },
+          {
+            label: (
+              <Tooltip title="音频">
+                <BellOutlined />
+              </Tooltip>
+            ),
+            value: 'music',
+          },
+          {
+            label: (
+              <Tooltip title="HEVC、H265">
+                <ThunderboltOutlined />
+              </Tooltip>
+            ),
+            value: 'hevc',
+          },
+          {
+            label: (
+              <Tooltip title="竖屏">
+                <UpSquareOutlined />
+              </Tooltip>
+            ),
+            value: 'aspectFill',
+          },
+          {
+            label: (
+              <Tooltip title="横屏">
+                <RightSquareOutlined />
+              </Tooltip>
+            ),
+            value: 'aspectFit',
+          },
         ]}
       />
     </div>
