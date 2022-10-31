@@ -56,6 +56,11 @@ export type MixEvideoOptions = VideoEvent & {
    */
   videoUrl: string | File
   /**
+   * hevc、h265 格式 http 连接 或 file 对象
+   */
+  hevcUrl?: string | File
+  isHevc?: boolean
+  /**
    * video id
    * 用来做唯一播放对象处理 不重复注销video标签 适配微信 (目前是支持多video标签)
    * @default null

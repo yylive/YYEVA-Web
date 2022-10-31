@@ -11,7 +11,7 @@ import db from 'src/parser/db'
 import Webgl from './render/webglEntity'
 
 import {getVIdeoId} from 'src/helper/utils'
-import {polyfill, clickPlayBtn} from 'src/helper/polyfill'
+import {polyfill, clickPlayBtn, isHevc} from 'src/helper/polyfill'
 import VideoEntity from './render/videoEntity'
 import {LoopChecker} from './loopCheck'
 
@@ -42,6 +42,7 @@ export default class EVideo {
   public onError: EventCallback
   //
   public isPlay = false
+  //
   private videoFile?: File
   static url?: string
   /**
@@ -51,6 +52,16 @@ export default class EVideo {
     if (!op.container) throw new Error('container is need!')
     if (!op.videoUrl) throw new Error('videoUrl is need!')
     //TODO 考虑到 除了 htmlinputelement http 应该还有 dataUrl 后续拓展
+    this.op = op
+    this.loopChecker = new LoopChecker(this.op.loop)
+    this.video = this.videoCreate()
+    // check hevc
+    this.op.isHevc = isHevc(this.video)
+    if (this.op.isHevc && op.hevcUrl) {
+      op.videoUrl = op.hevcUrl
+    }
+    //
+    // console.log('play video url', op.videoUrl)
     if (op.videoUrl instanceof File) {
       op.useVideoDBCache = false
       //TODO filename 作为 url 可能会很多重复问题 考虑是否默认屏蔽帧缓存
@@ -60,9 +71,7 @@ export default class EVideo {
     } else {
       EVideo.url = op.videoUrl
     }
-    this.op = op
-    this.loopChecker = new LoopChecker(this.op.loop)
-    this.video = this.videoCreate()
+    //
     this.animator = new Animator(this.video, this.op)
     // 是否创建 object url
     this.polyfillCreateObjectURL = (polyfill.baidu || polyfill.quark || polyfill.uc) && this.op.forceBlob === false

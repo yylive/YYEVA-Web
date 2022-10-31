@@ -95,9 +95,11 @@ export const versionTips = (op: MixEvideoOptions) => {
   console.log(
     `%c ${prefixName} ${config.version} %c ${op.renderType === 'canvas2d' ? op.renderType : `WebGL.${Webgl.version}`}${
       self.devicePixelRatio ? ` DPR.${self.devicePixelRatio}` : ''
-    }${` FPS.${VideoEntity.fps}`}${op.mode ? ` ${op.mode}` : ''}${op.usePrefetch ? ' MSE' : ''}${
-      op.useOfsRender ? ' OfsRender' : ''
-    }${op.useFrameCache ? ` FrameCache` : ''}${op.useVideoDBCache ? ` VideoCache` : ''}${
+    }${` FPS.${VideoEntity.fps}`}${op.mode ? ` ${op.mode}` : ''}${op.isHevc ? ' H265' : ' H264'}${
+      op.usePrefetch ? ' MSE' : ''
+    }${op.useOfsRender ? ' OfsRender' : ''}${op.useFrameCache ? ` FrameCache` : ''}${
+      op.useVideoDBCache ? ` VideoCache` : ''
+    }${
       // op.useAccurate && 'requestVideoFrameCallback' in HTMLVideoElement.prototype ? ' Accurate' : ''
       ` ${Animator.animationType}`
     } %c`,

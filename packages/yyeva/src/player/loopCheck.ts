@@ -17,12 +17,12 @@ export class LoopChecker {
       this.loopCount = Number(loop)
     }
 
-    logger.info('[LoopChecker] this._loopCount=', this.loopCount, ', loop=', loop)
+    // logger.info('[LoopChecker] this._loopCount=', this.loopCount, ', loop=', loop)
   }
 
   public updateFrame(frame: number) {
     if (this.lastFrameIndex > frame && this.loopCount > 1 && this.loopCount != Infinity) {
-      logger.info(
+      /* logger.info(
         '[LoopChecker] this.playedLoopCount=',
         this.playedLoopCount,
         ', this.lastFrameIndex=',
@@ -31,10 +31,10 @@ export class LoopChecker {
         frame,
         ', this.loopCount=',
         this.loopCount,
-      )
+      ) */
       this.playedLoopCount = this.playedLoopCount + 1
       if (this.playedLoopCount == this.loopCount) {
-        logger.info('[LoopChecker] finished.... this.playedLoopCount=', this.playedLoopCount)
+        // logger.info('[LoopChecker] finished.... this.playedLoopCount=', this.playedLoopCount)
         this.onEnd && this.onEnd()
         return false
       }

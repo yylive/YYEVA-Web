@@ -27,11 +27,16 @@ const runPlayer = async (container: HTMLDivElement) => {
     usePrefetch: false,
     showVideo: true,
     logLevel: 'info',
-    videoUrl: `${host}/960-360.mp4`,
-    // resizeCanvas: 'size',
+    videoUrl: `${host}/fh-264.mp4`,
+    hevcUrl: `${host}/fh-265.mp4`,
     effects: {
-      key1: `abcdeopop`,
+      anchor_nick: `ken`,
     },
+    // videoUrl: `${host}/960-360.mp4`,
+    // // resizeCanvas: 'size',
+    // effects: {
+    //   key1: `abcdeopop`,
+    // },
     // videoUrl: `${host}/m64.mp4`,
     // effects: {
     //   a1: `${host}/a1.png`,

@@ -6,5 +6,9 @@ video.loop = true
 video.autoplay = true
 video.muted = true
 root?.appendChild(video)
-video.src = `https://yyeva.yy.com/yy/h265.mp4`
+// video.src = `https://yyeva.yy.com/yy/h265.mp4`
+video.src = '/hevc.mp4'
+video.addEventListener('loadedmetadata', e => {
+  console.log(e)
+})
 video.play()

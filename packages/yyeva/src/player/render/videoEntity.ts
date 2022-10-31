@@ -375,10 +375,10 @@ export default class VideoEntity {
     const txt = item.text || ''
     const txtlength = txt.length
     const defaultFontSize = h - 2
-    console.log(
+    /* console.log(
       `makeTextImg: fontStyle${fontStyle}, fontColor${fontColor}, fontSize${fontSize}, w${w}, h${h}, txt${txt}, txtlength:${txtlength}`,
       this.op,
-    )
+    ) */
 
     const getFontStyle = (fontSize?: number) => {
       fontSize = fontSize || defaultFontSize
@@ -395,7 +395,7 @@ export default class VideoEntity {
       if (fontStyle === 'b') {
         font.unshift('bold')
       }
-      console.log(`getFontStyle`, font)
+      // console.log(`getFontStyle`, font)
       return font.join(' ')
     }
     if (!fontStyle) {
