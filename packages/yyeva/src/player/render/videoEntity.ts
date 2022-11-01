@@ -34,7 +34,7 @@ export default class VideoEntity {
   constructor(op: MixEvideoOptions) {
     this.op = op
     const canvas = !!self.OffscreenCanvas ? new OffscreenCanvas(300, 300) : document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext('2d', {willReadFrequently: true}) // willReadFrequently 表示是否计划有大量的回读操作，频繁调用getImageData()方法时能节省内存
     // canvas.style.display = 'none'
     // document.body.appendChild(canvas)
     this.ctx = ctx
