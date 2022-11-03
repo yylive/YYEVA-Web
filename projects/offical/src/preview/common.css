@@ -95,6 +95,20 @@ video {
     align-items: center;
     color: #1890ff;
   }
+  .platform{
+    text-align: center;
+  }
+  .platform .icon .anticon{
+    display: block;
+    font-size: 60px;
+    margin-bottom: 8px;
+  }
+  .platform .icon img{
+    width: 60px;
+    display: block;
+   margin: 0 auto;
+   padding-bottom: 8px;
+  }
   /* .metaList{
 
   } */

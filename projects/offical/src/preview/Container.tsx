@@ -25,6 +25,7 @@ import {
 } from '@ant-design/icons'
 import {Badge, Card, Typography, Row, Col, Avatar, Modal, Button, Tooltip, Select} from 'antd'
 import SelectVideo from './player/SelectVideo'
+import Platform from './view/Platform'
 import Author from './view/Author'
 import WhoUse from './view/WhoUse'
 import GitHubButton from 'react-github-btn'
@@ -159,7 +160,9 @@ const Page = () => {
           <VideoOptions />
         </ProCard>
       </ProCard>
-
+      <ProCard title="Platform" style={{marginTop: '24px'}} gutter={8} wrap ghost size="default" split={'vertical'}>
+        <Platform />
+      </ProCard>
       <ProCard title="Power By" style={{marginTop: '24px'}} gutter={8} wrap ghost size="default" split={'vertical'}>
         <Author />
       </ProCard>
