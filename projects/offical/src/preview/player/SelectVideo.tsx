@@ -45,7 +45,7 @@ const SelectVideo = () => {
   return (
     <div>
       <Segmented
-        block
+        // block
         defaultValue="default"
         onChange={k => {
           switch (k) {
