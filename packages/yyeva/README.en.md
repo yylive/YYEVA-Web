@@ -56,6 +56,8 @@ player.destory() // dstory player
 |logLevel|log level|`info`||
 |showPlayerInfo|whether the console shows the playback status|||
 |effects|additional material content|||
+|effects.fontColor|define the font color of the effects material|||
+|effects.fontSize|define the font size of the effects material|||
 |checkTimeout|check play timeout|`fasle`||
 |onRequestClickPlay|triggered when the video cannot be played automatically, such as WeChat or "mute=false"|[type](https://github.com/yylive/YYEVA-Web/blob/main/packages/yyeva/src/type/mix.ts#L173) </br> [refer to clickPlayBtn](https://github.com/yylive/YYEVA-Web/blob/main/packages/yyeva/src/helper/polyfill.ts#L39)||
 
