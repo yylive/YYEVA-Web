@@ -229,7 +229,7 @@ export default class VideoEntity {
             } else {
               item.text = effects[effectTag].text
             }
-            item.img = await this.makeTextImg(item, effects[effectTag], item.effectHeight)
+            item.img = await this.makeTextImg(item, effects, item.effectHeight)
           }
         } // image
         else if (this.effectTypes.img.indexOf(effectType) > -1) {
@@ -361,6 +361,7 @@ export default class VideoEntity {
   private async makeTextImg(item: VideoAnimateEffectType, eOptions: any = {}, width = 0) {
     if (!this.ctx) return
     const ctx = this.ctx
+    // console.log(`[makeTextImg] eOptions:`, eOptions)
     if (eOptions.fontStyle) item.fontStyle = eOptions.fontStyle
     if (eOptions.fontColor) item.fontColor = eOptions.fontColor
     if (eOptions.fontSize) item.fontSize = eOptions.fontSize
@@ -375,10 +376,10 @@ export default class VideoEntity {
     const txt = item.text || ''
     const txtlength = txt.length
     const defaultFontSize = h - 2
-    /* console.log(
-      `makeTextImg: fontStyle${fontStyle}, fontColor${fontColor}, fontSize${fontSize}, w${w}, h${h}, txt${txt}, txtlength:${txtlength}`,
-      this.op,
-    ) */
+    // console.log(
+    //   `[makeTextImg]: fontStyle${fontStyle}, fontColor${fontColor}, fontSize${fontSize}, w${w}, h${h}, txt${txt}, txtlength:${txtlength}`,
+    //   this.op,
+    // )
 
     const getFontStyle = (fontSize?: number) => {
       fontSize = fontSize || defaultFontSize
