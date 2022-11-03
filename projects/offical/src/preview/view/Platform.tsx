@@ -100,10 +100,10 @@ const Platform = () => (
               window.open('https://github.com/yylive/YYEVA-Web', '_blank')
             }}
           />,
-          <Tooltip key="comment" title="issue 意见&建议">
-            <CommentOutlined
+          <Tooltip key="info" title="配置说明">
+            <SettingOutlined
               onClick={() => {
-                window.open('https://github.com/yylive/YYEVA-Web/issues', '_blank')
+                window.open('https://github.com/yylive/YYEVA-Web/tree/main/packages/yyeva', '_blank')
               }}
             />
           </Tooltip>,
@@ -111,6 +111,13 @@ const Platform = () => (
             <BugOutlined
               onClick={() => {
                 window.open('https://github.com/yylive/YYEVA-Web/blob/main/docs/device.md', '_blank')
+              }}
+            />
+          </Tooltip>,
+          <Tooltip key="comment" title="issue 意见&建议">
+            <CommentOutlined
+              onClick={() => {
+                window.open('https://github.com/yylive/YYEVA-Web/issues', '_blank')
               }}
             />
           </Tooltip>,
