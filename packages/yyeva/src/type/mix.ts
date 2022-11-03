@@ -56,6 +56,10 @@ export type MixEvideoOptions = VideoEvent & {
    */
   videoUrl: string | File
   /**
+   * 提供给 op传输
+   */
+  videoSource?: string
+  /**
    * hevc、h265 格式 http 连接 或 file 对象
    */
   hevcUrl?: string | File

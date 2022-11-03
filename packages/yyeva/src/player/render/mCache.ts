@@ -3,13 +3,13 @@ import {logger} from 'src/helper/logger'
 import Animator from 'src/player/video/animator'
 import VideoEntity from './videoEntity'
 import {isDataUrl} from 'src/helper/utils'
-import EVideo from 'src/player'
+// import EVideo from 'src/player'
 export type MCacheItem = {[frames: number]: ImageBitmap | HTMLImageElement | undefined}
 //
 function setStoreName(op: MixEvideoOptions) {
   const {effects, mode, container} = op
-  let storeName = isDataUrl(EVideo.url) ? EVideo.url.substring(22, 88) : EVideo.url
-  // let storeName = EVideo.url
+  let storeName = isDataUrl(op.videoSource) ? op.videoSource.substring(22, 88) : op.videoSource
+  // let storeName = op.videoSource
   if (effects) {
     const eUrl = Object.keys(effects)
       .map(key => key + '=' + effects[key])
@@ -39,7 +39,7 @@ export default class MCache {
   requestAnimationFramePercent = 0.95
   private hasRequestAnimationFrame = false
   constructor(op: MixEvideoOptions) {
-    if (!EVideo.url || !op.useFrameCache) return
+    if (!op.videoSource || !op.useFrameCache) return
     this.op = op
     this.storeName = setStoreName(op)
     if (!MCache.caches[this.storeName]) {

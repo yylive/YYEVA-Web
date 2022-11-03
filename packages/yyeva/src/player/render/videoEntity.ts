@@ -258,7 +258,7 @@ export default class VideoEntity {
     // const isBase64 = isDataUrl(url)
     ctx.canvas.width = w
     ctx.canvas.height = h
-    console.log(`makeImage`, item.scaleMode, w, h, img)
+    // console.log(`makeImage`, item.scaleMode, w, h, img)
     if (item.scaleMode && img) {
       switch (item.scaleMode) {
         case EScaleMode.aspectFill: // 最大适配

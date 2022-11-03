@@ -124,8 +124,10 @@ const Platform = () => (
         ]}
       >
         <div className="icon">
-          <Html5Outlined />
-          Web
+          <Tooltip title="Web、H5等浏览器环境">
+            <Html5Outlined />
+            Web
+          </Tooltip>
         </div>
       </PlatformItem>
       <PlatformItem
@@ -147,8 +149,10 @@ const Platform = () => (
         ]}
       >
         <div className="icon">
-          <WechatOutlined />
-          微信小程序
+          <Tooltip title="微信小程序">
+            <WechatOutlined />
+            微信
+          </Tooltip>
         </div>
       </PlatformItem>
       <PlatformItem
@@ -169,8 +173,10 @@ const Platform = () => (
         ]}
       >
         <div className="icon">
-          <img src="/brand/bdapp.png" />
-          百度小程序
+          <Tooltip title="百度小程序">
+            <img src="/brand/bdapp.png" />
+            百度
+          </Tooltip>
         </div>
       </PlatformItem>
     </Row>

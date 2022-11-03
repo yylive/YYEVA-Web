@@ -109,6 +109,13 @@ video {
    margin: 0 auto;
    padding-bottom: 8px;
   }
+  .meta-jcx{
+    height: 135px;
+    width: 360px;
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
   /* .metaList{
 
   } */

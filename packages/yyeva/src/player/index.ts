@@ -45,7 +45,7 @@ export default class EVideo {
   //
   private videoFile?: File
   private isSupportHevc = false
-  static url?: string
+  // static url?: string
   /**
    * 记录当前播放资源的 base64,当blob url播放失败时播放
    */
@@ -56,24 +56,6 @@ export default class EVideo {
     this.op = op
     this.loopChecker = new LoopChecker(this.op.loop)
     this.video = this.videoCreate()
-    // check hevc
-    this.isSupportHevc = isHevc(this.video)
-    if (this.isSupportHevc && op.hevcUrl) {
-      op.videoUrl = op.hevcUrl
-      this.op.isHevc = true
-    }
-    //
-    // console.log('play video url', op.videoUrl)
-    if (op.videoUrl instanceof File) {
-      op.useVideoDBCache = false
-      //TODO filename 作为 url 可能会很多重复问题 考虑是否默认屏蔽帧缓存
-      // op.useFrameCache = false
-      this.videoFile = op.videoUrl
-      EVideo.url = this.videoFile.name
-    } else {
-      EVideo.url = op.videoUrl
-    }
-    //
     this.animator = new Animator(this.video, this.op)
     // 是否创建 object url
     this.polyfillCreateObjectURL = (polyfill.baidu || polyfill.quark || polyfill.uc) && this.op.forceBlob === false
@@ -221,7 +203,7 @@ export default class EVideo {
            * 暂时自动切换静音
            */
           if (polyfill.safari && polyfill.mac) {
-            logger.debug('切换到静音播放', EVideo.url)
+            logger.debug('切换到静音播放', this.op.videoSource)
             this.video.muted = true
             this.video.play().catch(e => {
               logger.debug(e)
@@ -230,7 +212,7 @@ export default class EVideo {
             return
           }
           //
-          logger.debug(`切换到静音播放`, EVideo.url, e)
+          logger.debug(`切换到静音播放`, this.op.videoSource, e)
           this.clickToPlay()
           // 增加弹窗 手动触发 video.play
           if (e?.code === 0 && e?.name === EPlayError.NotAllowedError) {
@@ -263,18 +245,37 @@ export default class EVideo {
   }
 
   private videoCreate() {
-    const videoID = this.op.videoID || getVIdeoId(EVideo.url, polyfill.weixin)
+    let videoID = this.op.videoID || getVIdeoId(this.op.videoSource, polyfill.weixin)
     logger.debug('[videoID]', videoID)
-    const videoElm = document.getElementById(videoID)
+    const videoElm = videoID ? document.getElementById(videoID) : undefined
     let video: HTMLVideoElement
     if (videoElm instanceof HTMLVideoElement) {
       video = videoElm
     } else {
       video = document.createElement('video')
-      video.setAttribute('id', videoID)
       // 插入video 解决IOS不播放问题
       document.body.appendChild(video)
     }
+    // ========== heck hevc ==============
+    const op = this.op
+    this.isSupportHevc = isHevc(video)
+    if (this.isSupportHevc && op.hevcUrl) {
+      op.videoUrl = op.hevcUrl
+      this.op.isHevc = true
+    }
+    if (op.videoUrl instanceof File) {
+      op.useVideoDBCache = false
+      this.videoFile = op.videoUrl
+      this.op.videoSource = this.videoFile.name
+    } else {
+      this.op.videoSource = op.videoUrl
+    }
+    //重置 videoID
+    if (!videoID) {
+      videoID = getVIdeoId(this.op.videoSource, polyfill.weixin)
+      video.setAttribute('id', videoID)
+    }
+    // ========== ============================
     if (!this.op.showVideo) {
       video.style.position = 'fixed' //防止撑开页面
       video.style.opacity = '0'
@@ -391,8 +392,8 @@ export default class EVideo {
       video.src = url
       logger.debug('[prefetch url]', url)
     } else {
-      video.src = EVideo.url
-      logger.debug('[prefetch url]', EVideo.url)
+      video.src = this.op.videoSource
+      logger.debug('[prefetch url]', this.op.videoSource)
     }
     //判断是否存在 audio 默认为 false
     if (!VideoEntity.hasAudio) {
@@ -466,7 +467,7 @@ export default class EVideo {
   }
   private async checkVideoCache(): Promise<string | undefined> {
     try {
-      const d = await db.model().find(EVideo.url)
+      const d = await db.model().find(this.op.videoSource)
       if (d) {
         const {blob, data} = d
         if (data) this.renderer.videoEntity.setConfig(data)
@@ -535,13 +536,13 @@ export default class EVideo {
           const blob = new Blob([arr], {type: 'video/mp4'})
           // 返回 metadata 数据
           if (this.op.useVideoDBCache) {
-            db.model().insert(EVideo.url, {blob, data})
+            db.model().insert(this.op.videoSource, {blob, data})
           }
           this.blobUrl = this.createObjectURL(blob)
           resolve(this.blobUrl)
         } else {
           //获取 data 后 原路返回
-          resolve(EVideo.url)
+          resolve(this.op.videoSource)
         }
         // gc
         rs = undefined
@@ -552,7 +553,7 @@ export default class EVideo {
   private getVideoByHttp() {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
-      xhr.open('GET', EVideo.url, true)
+      xhr.open('GET', this.op.videoSource, true)
       xhr.responseType = 'blob'
       xhr.onload = () => {
         if (xhr.status === 200 || xhr.status === 304) {

@@ -30,6 +30,7 @@ import Author from './view/Author'
 import WhoUse from './view/WhoUse'
 import GitHubButton from 'react-github-btn'
 import CodePreview from './player/CodePreview'
+// import Jcx from './view/Jcx'
 
 const {Option} = Select
 
@@ -68,6 +69,7 @@ const Page = () => {
     <PageContainer
       subTitle="YY Effect Video Animate"
       // content={<Content />}
+      // extra={[<Jcx key={'jcx'} />]}
       title={
         <>
           <img className="logo" src="/logo.png" />
