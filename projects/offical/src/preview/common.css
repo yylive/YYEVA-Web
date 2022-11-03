@@ -103,6 +103,12 @@ video {
     font-size: 60px;
     margin-bottom: 8px;
   }
+  .platform .icon img{
+    width: 60px;
+    display: block;
+   margin: 0 auto;
+   padding-bottom: 8px;
+  }
   /* .metaList{
 
   } */

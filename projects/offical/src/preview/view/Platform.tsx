@@ -169,7 +169,7 @@ const Platform = () => (
         ]}
       >
         <div className="icon">
-          <FileSearchOutlined />
+          <img src="/brand/bdapp.png" />
           百度小程序
         </div>
       </PlatformItem>
