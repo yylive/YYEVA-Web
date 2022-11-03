@@ -30,7 +30,8 @@ const runPlayer = async (container: HTMLDivElement) => {
     videoUrl: `${host}/fh-264.mp4`,
     hevcUrl: `${host}/fh-265.mp4`,
     effects: {
-      anchor_nick: `ken`,
+      anchor_nick: `ken23232`,
+      fontColor: 'green',
     },
     // videoUrl: `${host}/960-360.mp4`,
     // // resizeCanvas: 'size',
