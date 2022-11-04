@@ -43,7 +43,7 @@ const Platform = () => (
         ]}
       >
         <div className="icon">
-          <ToolOutlined />
+          <img src="/brand/ae.png" />
           AE-Plugin
         </div>
       </PlatformItem>
@@ -160,7 +160,7 @@ const Platform = () => (
           <GithubOutlined
             key="setting"
             onClick={() => {
-              window.open('https://github.com/yylive/YYEVA-Web', '_blank')
+              window.open('https://github.com/yylive/YYEVA-Web/blob/main/docs/baidu-smart-program.md', '_blank')
             }}
           />,
           <Tooltip key="comment" title="issue 意见&建议">
