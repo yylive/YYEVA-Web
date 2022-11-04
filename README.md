@@ -4,7 +4,7 @@
 <a href="https://github.com/yylive/YYEVA-Web"><img src="https://img.shields.io/badge/github-YYEVA-blue" alt="github"></a>
 <a href="https://yyeva.netlify.app/"><img src="https://img.shields.io/badge/demo-YYEVA-black" alt="demo"></a>
 
-> 轻量级 高性能 跨平台 MP4 礼物播放器
+> 轻量级 高性能 跨平台 MP4 动效播放器
 
 ## 使用
 + 安装、使用、配置项 [说明](packages/yyeva//README.md)
