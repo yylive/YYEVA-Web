@@ -224,12 +224,23 @@ export default class VideoEntity {
           //   item['fontStyle'] = this.op['fontStyle']
           // }
           if (effects[effectTag]) {
+            const eOptions = {
+              fontStyle: effects.fontStyle,
+              fontColor: effects.fontColor,
+              fontSize: effects.fontSize,
+            }
+
             if (typeof effects[effectTag] === 'string') {
               item.text = effects[effectTag]
             } else {
               item.text = effects[effectTag].text
+
+              const style = effects[effectTag]
+              if (style.fontStyle) eOptions.fontStyle = style.fontStyle
+              if (style.fontColor) eOptions.fontColor = style.fontColor
+              if (style.fontSize) eOptions.fontSize = style.fontSize
             }
-            item.img = await this.makeTextImg(item, effects, item.effectHeight)
+            item.img = await this.makeTextImg(item, eOptions, item.effectHeight)
           }
         } // image
         else if (this.effectTypes.img.indexOf(effectType) > -1) {
