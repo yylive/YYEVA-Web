@@ -38,7 +38,7 @@ export const users = [
   {
     avatar: 'https://avatars.githubusercontent.com/u/2680224?v=4',
     name: 'doerme',
-    description: 'QA',
+    description: 'Web Developer、QA',
     link: 'https://github.com/doerme',
   },
   {
