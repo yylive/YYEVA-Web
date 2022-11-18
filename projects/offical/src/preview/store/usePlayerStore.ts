@@ -66,6 +66,19 @@ export const useBackgroundColorStore = create(
   ),
 )
 
+export const useBackgroundGrid = create(
+  combine(
+    {
+      showGrid: true,
+    },
+    (set, get) => ({
+      setBackGoundGrid(value: boolean) {
+        set(state => ({showGrid: value}))
+      },
+    }),
+  ),
+)
+
 export const useVideoFormStore = create(
   combine(
     {

@@ -13,6 +13,9 @@
 	linear-gradient(hsla(0, 0%, 100%, .2) 1px, transparent 0), 
 	linear-gradient(90deg, hsla(0, 0%, 100%, .2) 1px, transparent 0);
 }
+.playbox.withoutgrid{
+  background: 0 0/15px 15px, 0 0/15px 15px, 0 0/75px 75px, 0 0/75px 75px #222;
+}
 
 video {
     position: fixed;

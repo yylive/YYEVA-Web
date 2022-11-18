@@ -1,6 +1,12 @@
 import {useEffect, useRef} from 'react'
 import {yyEva, YYEvaType} from 'yyeva'
-import {useVideoStore, useOptionsStore, useEffectStore, useVideoFormStore} from '../store/usePlayerStore'
+import {
+  useVideoStore,
+  useOptionsStore,
+  useEffectStore,
+  useVideoFormStore,
+  useBackgroundGrid,
+} from '../store/usePlayerStore'
 import UploadVideo from 'src/preview/player/UploadVideo'
 let evideo: YYEvaType
 
@@ -22,6 +28,7 @@ export const GiftPlayer = ({backgroundColor}: any) => {
   const div = useRef<HTMLDivElement>(null)
   const {options} = useOptionsStore(state => state)
   const {setEffect} = useEffectStore(state => state)
+  const {showGrid} = useBackgroundGrid()
   console.log('backgroundColor=', backgroundColor)
 
   useEffect(() => {
@@ -37,7 +44,11 @@ export const GiftPlayer = ({backgroundColor}: any) => {
 
   return (
     <UploadVideo>
-      <div className={`playbox ${options.mode}`} style={{backgroundColor: backgroundColor}} ref={div}></div>
+      <div
+        className={`playbox ${options.mode} ${showGrid ? '' : 'withoutgrid'}`}
+        style={{backgroundColor: backgroundColor}}
+        ref={div}
+      ></div>
     </UploadVideo>
   )
 }

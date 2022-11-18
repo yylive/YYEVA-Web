@@ -12,6 +12,7 @@ import {
   useCodeStore,
   useClickUploadStore,
   useBackgroundColorStore,
+  useBackgroundGrid,
 } from 'src/preview/store/usePlayerStore'
 import {
   DashboardOutlined,
@@ -23,7 +24,7 @@ import {
   UploadOutlined,
   QuestionCircleOutlined,
 } from '@ant-design/icons'
-import {Badge, Card, Typography, Row, Col, Avatar, Modal, Button, Tooltip, Select} from 'antd'
+import {Badge, Card, Typography, Row, Col, Avatar, Modal, Button, Tooltip, Select, Switch} from 'antd'
 import SelectVideo from './player/SelectVideo'
 import Platform from './view/Platform'
 import Author from './view/Author'
@@ -59,6 +60,7 @@ const Page = () => {
   const {opencode, setOpenCode} = useCodeStore(state => state)
   const {setClickUpload} = useClickUploadStore()
   const {backgroundColor, setBackGoundColor} = useBackgroundColorStore(state => state)
+  const {setBackGoundGrid} = useBackgroundGrid()
 
   const handleChange = (value: string) => {
     console.log(`selected ${value}`)
@@ -116,7 +118,8 @@ const Page = () => {
                 <Option value="blue">blue</Option>
                 <Option value="#9b59b6">amethyst</Option>
                 <Option value="#3498db">Peter River</Option>
-              </Select>
+              </Select>{' '}
+              <Switch checkedChildren="网格" unCheckedChildren="网格" defaultChecked onChange={setBackGoundGrid} />
             </>
           }
           extra={
