@@ -35,13 +35,13 @@ export const useVideoStore = create(
   combine(
     {
       video: {
-        videoUrl: `${host}/yy/out1118.mp4`,
+        videoUrl: `${host}/yy/pld_264_crf12.mp4`,
         effects: {
-          mp4_ext_user_nick: 'girl',
-          mp4_ext_user_avatar: '/yy/1.jpeg',
-          mp4_ext_recv_nick: 'boy',
-          mp4_ext_recv_avatar: '/yy/2.jpeg',
-          mp4_ext_asid: '欢迎使用yyeva',
+          // mp4_ext_user_nick: 'girl',
+          1: '/yy/pld_a.png',
+          // mp4_ext_recv_nick: 'boy',
+          2: '/yy/pld_b.png',
+          key: 'YYEVA',
         },
       },
     },
