@@ -36,11 +36,12 @@ export const useVideoStore = create(
     {
       video: {
         videoUrl: `${host}/yy/pld_264_crf12.mp4`,
+        // videoUrl: 'https://res.yy.com/fts/client/propswf/20397_1.mp4',
         effects: {
           // mp4_ext_user_nick: 'girl',
-          1: '/yy/pld_a.png',
+          1: '/yy/ball_6.png',
           // mp4_ext_recv_nick: 'boy',
-          2: '/yy/pld_b.png',
+          2: '/yy/ball_6 (1).png',
           key: 'YYEVA',
         },
       },
