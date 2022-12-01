@@ -21,8 +21,8 @@ const selected: any = {
       key: 'YYEVA',
     },
     mode: 'Fill',
-    useFrameCache: false,
-    useVideoDBCache: false,
+    useFrameCache: false,//出现播放卡顿问题
+    useVideoDBCache: false,//出现帧不同步问题
   },
   music: {
     videoUrl: `${host}/yy/music.mp4`,
