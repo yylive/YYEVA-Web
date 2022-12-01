@@ -5,6 +5,7 @@ import UploadVideo from 'src/preview/player/UploadVideo'
 let evideo: YYEvaType
 
 const runOnce = async (container: any, video: any) => {
+  // console.log('video',video)
   evideo = await yyEva({
     ...video,
     container,

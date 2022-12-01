@@ -21,7 +21,7 @@ const selected: any = {
       key: 'YYEVA',
     },
     mode: 'Fill',
-    // useFrameCache: false,//出现播放卡顿问题
+    useFrameCache: false,//出现播放卡顿问题
     // useVideoDBCache: false,//出现帧不同步问题
   },
   music: {
