@@ -9,6 +9,7 @@ const Jcx = () => {
         videoUrl: '/jcx/lambo.mp4',
         container: div.current,
         useMetaData: true,
+        mute: true,
         effects: {
           key1: 'YYEVAER',
         },

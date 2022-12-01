@@ -10,7 +10,7 @@ export const useOptionsStore = create(
         useMetaData: true,
         loop: true,
         useFrameCache: true,
-        mute: false,
+        mute: true,
         useVideoDBCache: true,
         forceBlob: false,
         showVideo: false,
