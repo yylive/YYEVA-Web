@@ -1,34 +1,32 @@
 import create from 'zustand'
 import {combine} from 'zustand/middleware'
 import video from 'src/preview/config/video'
-const formatVideoSet = (v: any) => {
-  if (v.hevcUrl) delete v.hevcUrl
-  if (v.mute === false) v.mute = true
-  return v
+const defaultOptions = {
+  alphaDirection: 'right',
+  mode: 'Fill',
+  useMetaData: true,
+  loop: true,
+  useFrameCache: true,
+  useVideoDBCache: true,
+  mute: true,
+  forceBlob: false,
+  showVideo: false,
+  showPlayerInfo: true,
+  useAccurate: true,
+  logLevel: 'info',
+  renderType: 'webgl',
 }
 export const useVideoStore = create(
   combine(
     {
       video: {
-        alphaDirection: 'right',
-        mode: 'Fill',
-        useMetaData: true,
-        loop: true,
-        useFrameCache: true,
-        mute: true,
-        useVideoDBCache: true,
-        forceBlob: false,
-        showVideo: false,
-        showPlayerInfo: true,
-        useAccurate: true,
-        logLevel: 'info',
-        renderType: 'webgl',
+        ...defaultOptions,
         ...video.default,
       },
     },
     (set, get) => ({
       setVideo(video: any) {
-        set(state => ({video: {...formatVideoSet(state.video), ...video}}))
+        set(state => ({video: {...defaultOptions, ...video}}))
       },
     }),
   ),

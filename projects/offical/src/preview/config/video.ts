@@ -21,6 +21,8 @@ const selected: any = {
       key: 'YYEVA',
     },
     mode: 'Fill',
+    useFrameCache: false,
+    useVideoDBCache: false,
   },
   music: {
     videoUrl: `${host}/yy/music.mp4`,
