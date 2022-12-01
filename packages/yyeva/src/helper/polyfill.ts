@@ -38,22 +38,19 @@ export const wxReady = () =>
 
 export const clickPlayBtn = (container: HTMLElement, video: HTMLVideoElement) => {
   // alert('wxAndroidClick')
-  let tips: HTMLElement
-  if (!tips) {
-    tips = document.createElement('div')
-    tips.innerText = 'Click To Play'
-    tips.style.textAlign = 'center'
-    tips.style.background = 'rgba(255,255,255,0.7)'
-    tips.style.position = 'absolute'
-    tips.style.zIndex = '99999'
-    tips.style.top = '50%'
-    tips.style.left = '50%'
-    tips.style.padding = '10px'
-    tips.style.transform = 'translate(-50%,-50%)'
-    tips.style.cursor = 'pointer'
-    tips.style['border-radius'] = '5px'
-    container.appendChild(tips)
-  }
+  const tips: HTMLElement = document.createElement('div')
+  tips.innerText = 'Click To Play'
+  tips.style.textAlign = 'center'
+  tips.style.background = 'rgba(255,255,255,0.7)'
+  tips.style.position = 'absolute'
+  tips.style.zIndex = '99999'
+  tips.style.top = '50%'
+  tips.style.left = '50%'
+  tips.style.padding = '10px'
+  tips.style.transform = 'translate(-50%,-50%)'
+  tips.style.cursor = 'pointer'
+  tips.style['border-radius'] = '5px'
+  container.appendChild(tips)
   // 避免 video 被注销 每次都重新生命 点击事件
   tips.onclick = () => {
     video.play()
