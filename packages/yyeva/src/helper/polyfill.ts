@@ -35,9 +35,10 @@ export const wxReady = () =>
       resolve(wxIsReady)
     })
   })
-let tips: HTMLElement
+
 export const clickPlayBtn = (container: HTMLElement, video: HTMLVideoElement) => {
   // alert('wxAndroidClick')
+  let tips: HTMLElement
   if (!tips) {
     tips = document.createElement('div')
     tips.innerText = 'Click To Play'
