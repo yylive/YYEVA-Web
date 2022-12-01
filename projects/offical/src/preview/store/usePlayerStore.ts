@@ -1,10 +1,15 @@
 import create from 'zustand'
 import {combine} from 'zustand/middleware'
-const host = ''
-export const useOptionsStore = create(
+import video from 'src/preview/config/video'
+const formatVideoSet = (v: any) => {
+  if (v.hevcUrl) delete v.hevcUrl
+  if (v.mute === false) v.mute = true
+  return v
+}
+export const useVideoStore = create(
   combine(
     {
-      options: {
+      video: {
         alphaDirection: 'right',
         mode: 'Fill',
         useMetaData: true,
@@ -18,38 +23,12 @@ export const useOptionsStore = create(
         useAccurate: true,
         logLevel: 'info',
         renderType: 'webgl',
-      },
-    },
-    (set, get) => ({
-      setOptions(d: any) {
-        const {options} = get()
-        const op = {...options, ...d}
-        // console.log('useOptionsStore options:', op)
-        set(state => ({options: op}))
-      },
-    }),
-  ),
-)
-
-export const useVideoStore = create(
-  combine(
-    {
-      video: {
-        videoUrl: `${host}/yy/pld_264_crf12.mp4`,
-        // videoUrl: 'https://res.yy.com/fts/client/propswf/20397_1.mp4',
-        effects: {
-          // mp4_ext_user_nick: 'girl',
-          1: '/yy/ball_6.png',
-          // mp4_ext_recv_nick: 'boy',
-          2: '/yy/ball_6 (1).png',
-          key: 'YYEVA',
-        },
+        ...video.default,
       },
     },
     (set, get) => ({
       setVideo(video: any) {
-        // console.log('video', video)
-        set(state => ({video}))
+        set(state => ({video: {...formatVideoSet(state.video), ...video}}))
       },
     }),
   ),

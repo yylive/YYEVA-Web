@@ -7,18 +7,18 @@ import {
   ProFormSelect,
   ProFormInstance,
 } from '@ant-design/pro-components'
-import {useOptionsStore} from 'src/preview/store/usePlayerStore'
+import {useVideoStore} from 'src/preview/store/usePlayerStore'
 import {Alert, Form, message, Tooltip} from 'antd'
 import {QuestionCircleOutlined} from '@ant-design/icons'
 import {useEffect, useRef} from 'react'
 const swithColSpan = {xs: 8, sm: 12, md: 12, lg: 12}
 const VideoOptionsForm = () => {
-  const {options, setOptions} = useOptionsStore()
+  const {video, setVideo} = useVideoStore()
   const formRef = useRef<ProFormInstance>()
   useEffect(() => {
     if (!formRef) return
-    formRef.current?.setFieldsValue(options)
-  }, [options])
+    formRef.current?.setFieldsValue(video)
+  }, [video])
   return (
     <ProForm
       formRef={formRef}
@@ -28,7 +28,7 @@ const VideoOptionsForm = () => {
         gutter: [16, 0],
       }}
       onFinish={async (v: any) => {
-        setOptions(v)
+        setVideo(v)
         message.success('配置更新成功！')
       }}
       // request={async () => options}

@@ -8,11 +8,11 @@ import VideoMeta from './player/VideoMeta'
 import {SettingOutlined} from '@ant-design/icons'
 import {
   useEffectStore,
-  useOptionsStore,
   useCodeStore,
   useClickUploadStore,
   useBackgroundColorStore,
   useBackgroundGrid,
+  useVideoStore,
 } from 'src/preview/store/usePlayerStore'
 import {
   DashboardOutlined,
@@ -56,7 +56,7 @@ const GitHub: any = GitHubButton
  */
 const Page = () => {
   const effect = useEffectStore(state => state)
-  const {options} = useOptionsStore(state => state)
+  const {video} = useVideoStore(state => state)
   const {opencode, setOpenCode} = useCodeStore(state => state)
   const {setClickUpload} = useClickUploadStore()
   const {backgroundColor, setBackGoundColor} = useBackgroundColorStore(state => state)
@@ -153,7 +153,7 @@ const Page = () => {
               <Typography.Paragraph
                 style={{margin: 0}}
                 copyable={{
-                  text: `${JSON.stringify(options, null, 2)}`,
+                  text: `${JSON.stringify(video, null, 2)}`,
                   // icon: [<SmileOutlined key="copy-icon" />, <SmileFilled key="copied-icon" />],
                   tooltips: ['复制配置', '配置复制成功'],
                 }}
