@@ -15,6 +15,7 @@ const defaultOptions = {
   useAccurate: true,
   logLevel: 'info',
   renderType: 'webgl',
+  hevcUrl:undefined
 }
 export const useVideoStore = create(
   combine(
@@ -25,8 +26,8 @@ export const useVideoStore = create(
       },
     },
     (set, get) => ({
-      setVideo(video: any) {
-        set(state => ({video: {...defaultOptions, ...video}}))
+      setVideo(v: any) {
+        set(state => ({video: {...state.video,...defaultOptions, ...v}}))
       },
     }),
   ),
