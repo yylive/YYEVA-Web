@@ -1,13 +1,13 @@
-import {MixEvideoOptions} from 'src/type/mix'
-import {logger} from 'src/helper/logger'
-import Animator from 'src/player/video/animator'
-import VideoEntity from './videoEntity'
-import {isDataUrl} from 'src/helper/utils'
+import { MixEvideoOptions } from 'src/type/mix'
+import { logger } from 'src/helper/logger'
+import { AnimatorType } from 'src/player/video/animator'
+// import VideoEntity from './videoEntity'
+import { isDataUrl } from 'src/helper/utils'
 // import EVideo from 'src/player'
-export type MCacheItem = {[frames: number]: ImageBitmap | HTMLImageElement | undefined}
+export type MCacheItem = { [frames: number]: ImageBitmap | HTMLImageElement | undefined }
 //
 function setStoreName(op: MixEvideoOptions) {
-  const {effects, mode, container} = op
+  const { effects, mode, container } = op
   let storeName = isDataUrl(op.videoSource) ? op.videoSource.substring(22, 88) : op.videoSource
   // let storeName = op.videoSource
   if (effects) {
@@ -18,9 +18,8 @@ function setStoreName(op: MixEvideoOptions) {
     storeName += eUrl
   }
   if (container && container.clientHeight) {
-    storeName += `${storeName.indexOf('?') > -1 ? '&' : '?'}mode=${mode}&height=${container.clientHeight}&width=${
-      container.clientWidth
-    }`
+    storeName += `${storeName.indexOf('?') > -1 ? '&' : '?'}mode=${mode}&height=${container.clientHeight}&width=${container.clientWidth
+      }`
   }
   storeName = storeName.replace(/\s+/g, '')
   // console.log(`storeName`, storeName)
@@ -28,16 +27,22 @@ function setStoreName(op: MixEvideoOptions) {
 }
 //
 export default class MCache {
-  static caches: {[url: string]: MCacheItem} = {}
+  //=== 帧缓存组合 用 静态类 临时存储
+  static caches: { [url: string]: MCacheItem } = {}
   static cacheKeys: string[] = []
-  static cachesOfs: {[url: string]: HTMLCanvasElement | OffscreenCanvas} = {}
-  static videoDurationTime = 0
-  storeName: string
-  op: MixEvideoOptions
+  static cachesOfs: { [url: string]: HTMLCanvasElement | OffscreenCanvas } = {}
+  //===
+  private storeName: string
+  private op: MixEvideoOptions
   // currentFrame = -1
-  frameCacheCount = 5
-  requestAnimationFramePercent = 0.95
+  private frameCacheCount = 5
+  private requestAnimationFramePercent = 0.95
   private hasRequestAnimationFrame = false
+  //
+  private animationType: AnimatorType
+  private fps = 0
+  private videoDurationTime = 0
+  //
   constructor(op: MixEvideoOptions) {
     if (!op.videoSource || !op.useFrameCache) return
     this.op = op
@@ -52,7 +57,7 @@ export default class MCache {
     }
     logger.debug(
       `[mcache]`,
-      `[constructor] [animationType ${Animator.animationType}]`,
+      `[constructor]`,
       `设置缓存数`,
       this.frameCacheCount,
       `缓存视频`,
@@ -60,27 +65,18 @@ export default class MCache {
     )
     logger.debug(`[mcache]`, this.storeName, `当前缓存帧数 ${Object.keys(MCache.caches[this.storeName] || {}).length}`)
   }
-  /*
-  static getOfs(op) {
-    const storeName = setStoreName(op)
-    if (!MCache.cachesOfs[storeName]) {
-      MCache.cachesOfs[storeName] = !!self.OffscreenCanvas
-        ? new OffscreenCanvas(300, 300)
-        : document.createElement('canvas')
-    }
-    return MCache.cachesOfs[storeName]
-  }*/
+  setOptions({ fps, animationType, videoDurationTime }: any) {
+    this.fps = fps
+    this.animationType = animationType
+    this.videoDurationTime = videoDurationTime
+    logger.debug(`[mcache]`, { fps, animationType, videoDurationTime })
+  }
   public async setup() {
     this.setAnimationStatus()
   }
   setAnimationStatus() {
-    // logger.debug(
-    //   `setAnimationStatus`,
-    //   MCache.videoDurationTime * VideoEntity.fps * this.requestAnimationFramePercent,
-    //   Object.keys(MCache.caches[this.storeName] || {}).length,
-    // )
     if (
-      Animator.animationType !== 'requestVideoFrameCallback' &&
+      this.animationType !== 'requestVideoFrameCallback' &&
       Object.keys(MCache.caches[this.storeName] || {}).length > 0
     ) {
       this.hasRequestAnimationFrame = true
@@ -125,8 +121,8 @@ export default class MCache {
     }
   }
   private checkCache() {
-    if (Animator.animationType !== 'requestVideoFrameCallback') {
-      let needCacheFrameCount = MCache.videoDurationTime * VideoEntity.fps * this.requestAnimationFramePercent
+    if (this.animationType !== 'requestVideoFrameCallback') {
+      let needCacheFrameCount = this.videoDurationTime * this.fps * this.requestAnimationFramePercent
       //防止边界问题导致经常删除缓存
       needCacheFrameCount = Math.round(needCacheFrameCount)
       const cacheItem = MCache.caches[this.storeName] || {}

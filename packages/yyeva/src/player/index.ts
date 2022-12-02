@@ -1,37 +1,31 @@
 import Render from 'src/player/render'
 import Render2D from 'src/player/render/canvas2d'
 import videoEvents from 'src/player/video/videoEvents'
-import {MixEvideoOptions, EventCallback, WebglVersion, EPlayError, EPlayStep, VideoAnimateType} from 'src/type/mix'
+import { MixEvideoOptions, EventCallback, WebglVersion, EPlayError, EPlayStep, VideoAnimateType } from 'src/type/mix'
 // import {prefetchVideoStream} from 'src/player/video/mse'
 // import {versionTips} from 'src/helper/logger'
-import Animator, {AnimatorType} from 'src/player/video/animator'
-import {logger} from 'src/helper/logger'
+import Animator, { AnimatorType } from 'src/player/video/animator'
+import { logger } from 'src/helper/logger'
 import parser from 'src/parser'
 import db from 'src/parser/db'
-import Webgl from './render/webglEntity'
+// import Webgl from './render/webglEntity'
 
-import {getVIdeoId} from 'src/helper/utils'
-import {polyfill, clickPlayBtn, isHevc} from 'src/helper/polyfill'
-import VideoEntity from './render/videoEntity'
-import {LoopChecker} from './loopCheck'
+import { getVIdeoId } from 'src/helper/utils'
+import { polyfill, clickPlayBtn, isHevc } from 'src/helper/polyfill'
+// import VideoEntity from './render/videoEntity'
+import { LoopChecker } from './loopCheck'
 
 //
 export default class EVideo {
-  public op: MixEvideoOptions
   private video: HTMLVideoElement
-  public renderer: Render | Render2D
-  public renderType: 'canvas2d' | 'webgl'
-  public animationType: AnimatorType
-  public version: WebglVersion
-  private eventsFn: {[key: string]: (...args: any[]) => void} = {}
+  private eventsFn: { [key: string]: (...args: any[]) => void } = {}
   private animator: Animator
   private blobUrl: string
   private polyfillCreateObjectURL: boolean
-
   private timeoutId = null
-
   private loopChecker!: LoopChecker
-
+  private videoFile?: File
+  private isSupportHevc = false
   //
   public onStart: EventCallback
   public onResume: EventCallback
@@ -42,10 +36,13 @@ export default class EVideo {
   public onError: EventCallback
   //
   public isPlay = false
-  //
-  private videoFile?: File
-  private isSupportHevc = false
-  // static url?: string
+  public renderer: Render | Render2D
+  public renderType: 'canvas2d' | 'webgl'
+  public animationType: AnimatorType
+  public op: MixEvideoOptions
+  public fps = 0
+  public version: WebglVersion
+  public webglVersion: WebglVersion
   /**
    * 记录当前播放资源的 base64,当blob url播放失败时播放
    */
@@ -67,8 +64,10 @@ export default class EVideo {
       this.renderer = new Render(this.op)
       this.renderType = 'webgl'
     }
+    this.webglVersion = this.renderer.webgl.version
+    //
     //实例化后但是不支持 webgl后降级
-    if (Webgl.version === 'canvas2d') {
+    if (this.webglVersion === 'canvas2d') {
       this.renderer = new Render2D(this.op)
       this.renderType = 'canvas2d'
     }
@@ -87,22 +86,42 @@ export default class EVideo {
       logger.debug('[=== e-video setup ===]')
       await this.videoLoad()
       await this.renderer.setup(this.video)
-      // this.animator.setVideoFps(VideoEntity.fps)
+      //判断是否存在 audio 默认为 false
+      if (!this.renderer.videoEntity.hasAudio) {
+        this.video.muted = true
+      } else {
+        this.video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : false
+      }
+      // video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : !VideoEntity.hasAudio
+      //
+      this.fps = this.renderer.videoEntity.fps
+      logger.debug(`[EVdeo] this.renderer.videoEntity.fps`,this.renderer.videoEntity.fps)
+      this.animator.setVideoFps({
+        fps: this.renderer.videoEntity.fps,
+        videoFps: this.renderer.videoEntity.videoFps
+      })
+      //
       await this.animator.setup()
       this.animator.onUpdate = frame => {
         if (this.loopChecker.updateFrame(frame)) {
           this.renderer.render(frame)
         }
       }
-      this.animationType = Animator.animationType
+      this.animationType = this.animator.animationType
       //
-      logger.debug('[setup]', Animator.animationType, Webgl.version)
+      this.renderer.renderCache.mCache.setOptions({
+        fps:this.fps,
+        animationType:this.animationType,
+        videoDurationTime:this.video.duration
+      })
+      //
+      logger.debug('[setup]', this.animationType, this.webglVersion)
       // 纯在缓存后不再显示 video标签 节省性能
-      if (Webgl.version !== 'canvas2d' && this.op.renderType !== 'canvas2d') {
+      if (this.webglVersion !== 'canvas2d' && this.op.renderType !== 'canvas2d') {
         const render = this.renderer as Render
         const isCache = this.op.useFrameCache ? render.renderCache.isCache() : false
         if (
-          Animator.animationType !== 'requestVideoFrameCallback' &&
+          this.animationType !== 'requestVideoFrameCallback' &&
           !this.op.showVideo &&
           // Webgl.version === 1 &&
           !isCache
@@ -395,14 +414,6 @@ export default class EVideo {
       video.src = this.op.videoSource
       logger.debug('[prefetch url]', this.op.videoSource)
     }
-    //判断是否存在 audio 默认为 false
-    if (!VideoEntity.hasAudio) {
-      video.muted = true
-    } else {
-      video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : false
-    }
-    // video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : !VideoEntity.hasAudio
-    //
     video.load()
     logger.debug('[video load]')
     await this.videoAddEvents()
@@ -469,7 +480,7 @@ export default class EVideo {
     try {
       const d = await db.model().find(this.op.videoSource)
       if (d) {
-        const {blob, data} = d
+        const { blob, data } = d
         if (data) this.renderer.videoEntity.setConfig(data)
         logger.debug('[checkVideoCache]')
         this.blobUrl = this.createObjectURL(blob)
@@ -533,10 +544,10 @@ export default class EVideo {
             buf[d] = raw.charCodeAt(d)
           }
           const arr = new Uint8Array(buf)
-          const blob = new Blob([arr], {type: 'video/mp4'})
+          const blob = new Blob([arr], { type: 'video/mp4' })
           // 返回 metadata 数据
           if (this.op.useVideoDBCache) {
-            db.model().insert(this.op.videoSource, {blob, data})
+            db.model().insert(this.op.videoSource, { blob, data })
           }
           this.blobUrl = this.createObjectURL(blob)
           resolve(this.blobUrl)

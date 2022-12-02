@@ -72,7 +72,7 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
   if (op.onError) player.onError = op.onError
   //
   await player.setup()
-  op.showPlayerInfo && versionTips(op)
+  op.showPlayerInfo && versionTips(op,player)
   // console.log(op)
   return player
 }

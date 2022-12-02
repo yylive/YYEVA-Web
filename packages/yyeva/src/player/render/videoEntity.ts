@@ -6,11 +6,11 @@ import {MixEvideoOptions, VideoAnimateType, VideoAnimateEffectType, VideoDataTyp
 type ContextType = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
 export default class VideoEntity {
   public op: MixEvideoOptions
-  static fps = 30
-  static VideoFps = 30
+  public fps = 30
+  public videoFps = 30
   public config?: VideoAnimateType
   public isUseMeta = false
-  static hasAudio = false
+  public hasAudio = false
   //
   private ofs: HTMLCanvasElement | OffscreenCanvas
   private ctx: CanvasRenderingContext2D | null | OffscreenCanvasRenderingContext2D
@@ -74,21 +74,21 @@ export default class VideoEntity {
     // this.config = data
     this.config = config
     if (config.descript.fps) {
-      VideoEntity.fps = config.descript.fps
-      VideoEntity.VideoFps = config.descript.fps
+      this.fps = config.descript.fps
+      this.videoFps = config.descript.fps
     }
     if (config.descript.hasAudio) {
-      VideoEntity.hasAudio = true
+      this.hasAudio = true
     }
   }
   async setup() {
     if (this.op.dataUrl) {
       const {info, src, frame}: any = await this.getConfig(this.op.dataUrl)
-      VideoEntity.fps = info.fps || VideoEntity.fps
+      this.fps = info.fps || this.fps
       if (info.fps) {
-        VideoEntity.VideoFps = info.fps
+        this.videoFps = info.fps
       }
-      // console.log('info.fps', info.fps, 'VideoEntity.fps', VideoEntity.fps)
+      // console.log('info.fps', info.fps, 'this.fps', this.fps)
       this.config = {
         descript: {
           width: info.videoW,
@@ -103,16 +103,9 @@ export default class VideoEntity {
         datas: frame,
       }
     }
-    if (this.op.fps) VideoEntity.fps = this.op.fps
+    if (this.op.fps) this.fps = this.op.fps
     // *** requestAnimationFrame 需要降帧防止抖动
-    if (
-      Animator.animationType !== 'requestVideoFrameCallback' &&
-      VideoEntity.fps > 20
-      //  && !this.op.fps
-    ) {
-      VideoEntity.fps = 20
-    }
-    // console.log('VideoEntity.fps', VideoEntity.fps)
+    // console.log('this.fps', this.fps)
     await this.parseFromSrcAndOptions()
   }
   private get isUseBitmap() {

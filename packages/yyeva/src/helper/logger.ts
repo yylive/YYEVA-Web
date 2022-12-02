@@ -4,6 +4,7 @@ import {MixEvideoOptions} from 'src/type/mix'
 import Animator from 'src/player/video/animator'
 import VideoEntity from 'src/player/render/videoEntity'
 import Webgl from 'src/player/render/webglEntity'
+import EVideo from 'src/player'
 const prefixName = 'YYEVA'
 export interface ConsoleFn {
   (message?: any, ...optionalParams: any[]): void
@@ -77,31 +78,31 @@ export const logger = new Logger()
 export default logger
 
 // version
-export const versionTips = (op: MixEvideoOptions) => {
+export const versionTips = (op: MixEvideoOptions,player:EVideo) => {
   if (op.showPlayerInfo === 'table') {
     return console.table({
       Version: config.version,
-      RenderType: op.renderType === 'canvas2d' ? op.renderType : `WebGL.${Webgl.version}`,
-      FPS: VideoEntity.fps,
+      RenderType: op.renderType === 'canvas2d' ? op.renderType : `WebGL.${player.webglVersion}`,
+      FPS: player.fps,
       DisplayMode: op.mode,
       LoadType: op.usePrefetch ? ' MSE' : 'src',
       OffScreenRender: !!op.useOfsRender,
       UseFrameCache: !!op.useFrameCache,
       UseVideoDBCache: !!op.useVideoDBCache,
-      AnimationType: Animator.animationType,
+      AnimationType: player.animationType,
       //
     })
   }
   console.log(
-    `%c ${prefixName} ${config.version} %c ${op.renderType === 'canvas2d' ? op.renderType : `WebGL.${Webgl.version}`}${
+    `%c ${prefixName} ${config.version} %c ${op.renderType === 'canvas2d' ? op.renderType : `WebGL.${player.webglVersion}`}${
       self.devicePixelRatio ? ` DPR.${self.devicePixelRatio}` : ''
-    }${` FPS.${VideoEntity.fps}`}${op.mode ? ` ${op.mode}` : ''}${op.isHevc ? ' H265' : ' H264'}${
+    }${` FPS.${player.fps}`}${op.mode ? ` ${op.mode}` : ''}${op.isHevc ? ' H265' : ' H264'}${
       op.usePrefetch ? ' MSE' : ''
     }${op.useOfsRender ? ' OfsRender' : ''}${op.useFrameCache ? ` FrameCache` : ''}${
       op.useVideoDBCache ? ` VideoCache` : ''
     }${
       // op.useAccurate && 'requestVideoFrameCallback' in HTMLVideoElement.prototype ? ' Accurate' : ''
-      ` ${Animator.animationType}`
+      ` ${player.animationType}`
     } %c`,
     'background:#34495e ; padding: 1px; border-radius: 2px 0 0 2px;  color: #fff',
     'background:#16a085 ; padding: 1px; border-radius: 0 2px 2px 0;  color: #fff',

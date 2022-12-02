@@ -8,12 +8,6 @@ const selected: any = {
       anchor_nick: 'boy',
       anchor_avatar: '/yy/2.jpeg',
     }, */
-/*     videoUrl: `${host}/yy/pld_264.mp4`,
-    effects: {
-      souceimage: '/yy/b6.png',
-      comicimage: '/yy/b6c.png',
-      key: 'YYEVA',
-    },  */
     videoUrl: `${host}/yy/pld_264_crf12.mp4`,
     effects: {
       1: '/yy/b6.png',
@@ -21,8 +15,6 @@ const selected: any = {
       key: 'YYEVA',
     },
     mode: 'Fill',
-    useFrameCache: false,//出现播放卡顿问题
-    useVideoDBCache: false,//出现帧不同步问题
   },
   music: {
     videoUrl: `${host}/yy/music.mp4`,

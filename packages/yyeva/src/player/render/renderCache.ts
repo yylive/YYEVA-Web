@@ -31,8 +31,7 @@ class RenderCache {
   /**
    * 申请缓存
    */
-  public async setup(videoDurationTime: number) {
-    MCache.videoDurationTime = videoDurationTime
+  public async setup() {
     if (this.op.useFrameCache) await this.mCache.setup()
   }
   private async createFramesCache(frame: number) {
