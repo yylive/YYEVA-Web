@@ -60,6 +60,8 @@ const SelectVideo = () => {
             value: 'aspectFit',
           },
         ]}
+        onResize={undefined}
+        onResizeCapture={undefined}
       />
     </div>
   )

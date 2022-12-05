@@ -118,6 +118,38 @@ video {
     position: absolute;
     top: 0;
     right: 0;
+   
+  }
+  .ant-layout-content .ant-pro-card-extra{
+    z-index: 101;
+  }
+  .ant-layout-header:first-child{
+    display: none;
+  }
+  .ant-pro-global-header-collapsed-button{
+    display: none;
+  }
+  .yyeva-logo-dom h1{
+    display: inline;
+    margin-left:12px;
+  }
+  .ant-pro-layout .ant-layout-header.ant-pro-layout-header-fixed-header{
+    position: relative;
+  }
+  .ant-pro-card-col.ant-pro-card-split-vertical{
+    border-inline-end:0;
+  }
+  .ant-pro-page-container-children-content{
+    padding-inline:10px;
+  }
+  .yyeva-header-subtitle {
+    margin-left:12px;
+    color: #00000073;
+    font-size: 14px;
+    line-height: 1.5715;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
   /* .metaList{
 
