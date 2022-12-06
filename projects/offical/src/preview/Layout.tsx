@@ -39,7 +39,7 @@ const config: ProLayoutProps = {
     <div className="global-footer">
       Released under the Apache-2.0 License. <br />
       Copyright © 2022-2023 YYEVA. All rights reserved. <br />
-      Site Powered by React 18、React Router 6、Zustand、Antd 5
+      Site Powered by EMP 2.5、 React 18、React Router 6、Zustand、Antd 5
     </div>
   ),
 }
