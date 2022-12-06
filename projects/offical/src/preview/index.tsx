@@ -1,4 +1,4 @@
-import {PageContainer} from '@ant-design/pro-layout'
+import {PageContainer} from '@ant-design/pro-components'
 import {ProCard, ProForm, ProFormText, ProFormRadio, ProFormSwitch, ProFormSelect} from '@ant-design/pro-components'
 // import {Row, Col, Space} from 'antd'
 import {GiftPlayer} from './player'

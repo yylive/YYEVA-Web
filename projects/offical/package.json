@@ -10,8 +10,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.8.0",
-    "@ant-design/pro-components": "^2.3.40",
-    "@ant-design/pro-layout": "^7.3.4",
+    "@ant-design/pro-components": "^2.3.41",
     "@codemirror/lang-javascript": "^6.0.2",
     "@uiw/codemirror-theme-dracula": "^4.12.1",
     "antd": "^5.0.4",

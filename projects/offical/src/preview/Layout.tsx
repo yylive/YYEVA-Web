@@ -1,5 +1,5 @@
-import BasicLayout from '@ant-design/pro-layout'
-import type {ProLayoutProps} from '@ant-design/pro-layout'
+import {ProLayout, ProConfigProvider} from '@ant-design/pro-components'
+import type {ProLayoutProps} from '@ant-design/pro-components'
 // import Page from './Container'
 import {RouterContent} from 'src/router/config'
 import Jcx from './view/Jcx'
@@ -46,10 +46,12 @@ const config: ProLayoutProps = {
 
 const Layout = () => {
   return (
-    <BasicLayout {...config}>
-      {/* <Page /> */}
-      <RouterContent />
-    </BasicLayout>
+    <ProConfigProvider hashed={false}>
+      <ProLayout {...config}>
+        {/* <Page /> */}
+        <RouterContent />
+      </ProLayout>
+    </ProConfigProvider>
   )
 }
 export default Layout

@@ -78,7 +78,6 @@ importers:
     specifiers:
       '@ant-design/icons': ^4.8.0
       '@ant-design/pro-components': ^2.3.40
-      '@ant-design/pro-layout': ^7.3.4
       '@codemirror/lang-javascript': ^6.0.2
       '@types/react': 18.0.26
       '@types/react-dom': ^18.0.9
@@ -96,7 +95,6 @@ importers:
     dependencies:
       '@ant-design/icons': 4.8.0_biqbaboplfbrettd7655fr4n2y
       '@ant-design/pro-components': 2.3.40_oyfmaw7obiocvtyvu3c64vlxvi
-      '@ant-design/pro-layout': 7.3.4_oyfmaw7obiocvtyvu3c64vlxvi
       '@codemirror/lang-javascript': 6.0.2
       '@uiw/codemirror-theme-dracula': 4.12.1
       antd: 5.0.4_biqbaboplfbrettd7655fr4n2y
