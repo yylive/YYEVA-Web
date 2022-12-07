@@ -1,5 +1,5 @@
 [build]
-  command = "npx pnpm@6 install --store-dir=.pnpm --frozen-lockfile && npx pnpm@6 build"
+  command = "npx pnpm@7 install --store-dir=.pnpm --frozen-lockfile && npx pnpm@7 build"
   publish = "projects/offical/dist"
 
 [build.environment]

@@ -1,6 +1,14 @@
-const { defineConfig } = require('@efox/emp')
+const {defineConfig} = require('@efox/emp')
 const compile = require('@efox/emp-compile-swc')
-module.exports = defineConfig(() => {
+//
+const reactVersion = '18.2.0'
+const esmVersion = 'es2018'
+const esm = (name, mode, version, esmVersion, deps) =>
+  `https://esm.sh/${name}${version ? '@' + version : ''}?${mode === 'development' ? 'dev' : ''}&target=${esmVersion}&${
+    deps ? 'deps=' + deps : ''
+  }`
+//
+module.exports = defineConfig(({mode}) => {
   return {
     compile,
     server: {
@@ -9,7 +17,16 @@ module.exports = defineConfig(() => {
     build: {
       sourcemap: true,
       minify: 'swc',
-      target: 'es2018'
+      target: esmVersion,
+    },
+    empShare: {
+      name: 'yyevaOffical',
+      exposes: {},
+      shareLib: {
+        react: esm('react', mode, reactVersion, esmVersion),
+        'react-dom': esm('react-dom', mode, reactVersion, esmVersion),
+        zustand: esm('zustand', mode, '4', esmVersion, `react@${reactVersion},react-dom@${reactVersion}`),
+      },
     },
     html: {
       title: 'YYEVA - 可插入动态元素的MP4动效播放器解决方案',
@@ -25,13 +42,12 @@ module.exports = defineConfig(() => {
           var s = document.getElementsByTagName("script")[0]; 
           s.parentNode.insertBefore(hm, s);
         })();
-        </script>`]
+        </script>`,
+        ],
       },
       files: {
-        css: [
-          'https://cdn.jsdelivr.net/npm/antd@4.22.8/dist/antd.min.css'
-        ]
-      }
+        css: ['https://cdn.jsdelivr.net/npm/antd@4.22.8/dist/antd.min.css'],
+      },
     },
   }
 })
