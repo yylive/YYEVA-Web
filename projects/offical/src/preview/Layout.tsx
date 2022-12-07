@@ -16,8 +16,19 @@ const config: BasicLayoutProps = {
   headerRender: false,
   footerRender: () => (
     <div className="global-footer">
-      Released under the Apache-2.0 License. <br />
-      Copyright © 2022 YYEVA. All rights reserved. <br />
+      <p>Released under the Apache-2.0 License. </p>
+      <p>Copyright © 2022 YYEVA. All rights reserved. </p>
+      <p className="site-info">
+        Site Powered by{' '}
+        <a href="https://github.com/ckken" target="_blank" rel="noreferrer">
+          Ken
+        </a>
+        、
+        <a href="https://emp2.netlify.app/" target="_blank" rel="noreferrer">
+          EMP 2.5
+        </a>
+        、 React 18、Zustand 4、Antd
+      </p>
     </div>
   ),
 }

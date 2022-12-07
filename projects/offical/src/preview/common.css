@@ -42,6 +42,17 @@ video {
     color: rgba(0,0,0,.45);
     font-size: 14px;
 }
+.global-footer p{
+  margin: 0;
+  font-weight: bold;
+}
+.global-footer .site-info{
+  font-size: 12px;
+  font-weight: normal;
+}
+.global-footer .site-info a{
+  color: rgba(0,0,0,.45);
+}
 
 
 .drag-file-element {
