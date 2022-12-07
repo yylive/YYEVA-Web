@@ -1,7 +1,6 @@
 const { defineConfig } = require('@efox/emp')
 const compile = require('@efox/emp-compile-swc')
-//
-module.exports = defineConfig(({mode}) => {
+module.exports = defineConfig(() => {
   return {
     compile,
     server: {
@@ -9,7 +8,8 @@ module.exports = defineConfig(({mode}) => {
     },
     build: {
       sourcemap: true,
-      minify: 'swc'
+      minify: 'swc',
+      target: 'es2018'
     },
     html: {
       title: 'YYEVA - 可插入动态元素的MP4动效播放器解决方案',
