@@ -176,7 +176,17 @@ export default class VideoEntity {
           // base 64 不需要执行 imageOrientation: 'flipY'
           // return self.createImageBitmap(blob)
         } else {
-          blob = await fetch(url).then(r => r.blob())
+          blob = await fetch(url).then(r => {
+            if (r.ok) {
+              return r.blob()
+            } else {
+              logger.error('fetch request failed, url: ' + url)
+              return undefined
+            }
+          }).catch(err => {
+            logger.error('fetch, err=', err)
+            return undefined
+          })
         }
         // const img = document.createElement('img')
         // img.src = URL.createObjectURL(blob)
@@ -184,7 +194,11 @@ export default class VideoEntity {
         // console.log(blob)
         // }
         // 适配 gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1) 解决自动翻转的问题
-        return self.createImageBitmap(blob, {imageOrientation: 'flipY'})
+        if (blob) {
+          return self.createImageBitmap(blob, {imageOrientation: 'flipY'})
+        } else {
+          return undefined
+        }        
       }
       // if (url instanceof HTMLInputElement) {
       //   url = await this.fileToDataUrl(url)
@@ -197,8 +211,8 @@ export default class VideoEntity {
       // url base64 都可以创建 image element
       return this.createImageElement(url)
     } catch (e) {
-      logger.error(e)
-      this.op?.onEnd?.(e)
+      logger.warn('fetch, else err=', e)
+      // this.op?.onEnd?.(e)
       return undefined
     }
   }
