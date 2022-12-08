@@ -49,5 +49,8 @@ module.exports = defineConfig(({mode}) => {
         css: ['https://cdn.jsdelivr.net/npm/antd@4.22.8/dist/antd.min.css'],
       },
     },
+    debug: {
+      clearLog: false,
+    },
   }
 })
