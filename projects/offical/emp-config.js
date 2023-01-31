@@ -14,6 +14,9 @@ module.exports = defineConfig(({mode}) => {
     server: {
       port: 3001,
     },
+    css: {
+      minType: 'swc',
+    },
     build: {
       sourcemap: true,
       minify: 'swc',
