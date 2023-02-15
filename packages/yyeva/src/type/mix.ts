@@ -291,6 +291,12 @@ export enum EScaleMode {
   scaleFill = 'scaleFill',
 }
 
+export enum WINDOW_VISIBLE_STATE { //手工设置窗口状态
+  NONE = 'none',
+  SHOW = 'show',
+  HIDE = 'hide',
+}
+
 export type VideoAnimateEffectType = {
   effectWidth: number //动态元素宽
   effectHeight: number //动态元素高

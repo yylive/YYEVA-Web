@@ -82,7 +82,6 @@ export default class WglRender {
   public render(frame = 0) {
     // console.log('[render]', frame, this.op.useFrameCache)
     if (!this.isPlay || !this.webgl.gl || !this.video || !this.program || this.currentFrame === frame) return
-
     this.currentFrame = frame
     const gl = this.webgl.gl
     //
