@@ -1,7 +1,7 @@
 import Render from 'src/player/render'
 import Render2D from 'src/player/render/canvas2d'
 import videoEvents from 'src/player/video/videoEvents'
-import { MixEvideoOptions, EventCallback, WebglVersion, EPlayError, EPlayStep, VideoAnimateType } from 'src/type/mix'
+import { MixEvideoOptions, EventCallback, WebglVersion, EPlayError, EPlayStep, VideoAnimateType, WINDOW_VISIBLE_STATE } from 'src/type/mix'
 // import {prefetchVideoStream} from 'src/player/video/mse'
 // import {versionTips} from 'src/helper/logger'
 import Animator, { AnimatorType } from 'src/player/video/animator'
@@ -43,6 +43,8 @@ export default class EVideo {
   public fps = 0
   public version: WebglVersion
   public webglVersion: WebglVersion
+
+  private windowState: WINDOW_VISIBLE_STATE = WINDOW_VISIBLE_STATE.SHOW
   /**
    * 记录当前播放资源的 base64,当blob url播放失败时播放
    */
@@ -104,7 +106,7 @@ export default class EVideo {
       await this.animator.setup()
       this.animator.onUpdate = frame => {
         if (this.loopChecker.updateFrame(frame)) {
-          this.renderer.render(frame)
+          this.drawFrame(frame)
         }
       }
       this.animationType = this.animator.animationType
@@ -147,6 +149,15 @@ export default class EVideo {
     //
     // versionTips(this.op, this.renderType)
   }
+  private drawFrame(frame: number) {
+    if (this.windowState == WINDOW_VISIBLE_STATE.HIDE) return
+    this.renderer?.render(frame)
+  }
+
+  public setWindowState(state: WINDOW_VISIBLE_STATE) {
+    this.windowState = state == undefined ? WINDOW_VISIBLE_STATE.SHOW : state
+  }
+  
   private setPlay = (isPlay: boolean) => {
     if (this.renderer) {
       this.renderer.isPlay = isPlay
