@@ -1,24 +1,32 @@
 import Render from 'src/player/render'
 import Render2D from 'src/player/render/canvas2d'
 import videoEvents from 'src/player/video/videoEvents'
-import { MixEvideoOptions, EventCallback, WebglVersion, EPlayError, EPlayStep, VideoAnimateType, WINDOW_VISIBLE_STATE } from 'src/type/mix'
+import {
+  MixEvideoOptions,
+  EventCallback,
+  WebglVersion,
+  EPlayError,
+  EPlayStep,
+  VideoAnimateType,
+  WINDOW_VISIBLE_STATE,
+} from 'src/type/mix'
 // import {prefetchVideoStream} from 'src/player/video/mse'
 // import {versionTips} from 'src/helper/logger'
-import Animator, { AnimatorType } from 'src/player/video/animator'
-import { logger } from 'src/helper/logger'
+import Animator, {AnimatorType} from 'src/player/video/animator'
+import {logger} from 'src/helper/logger'
 import parser from 'src/parser'
 import db from 'src/parser/db'
 // import Webgl from './render/webglEntity'
 
-import { getVIdeoId } from 'src/helper/utils'
-import { polyfill, clickPlayBtn, isHevc } from 'src/helper/polyfill'
+import {getVIdeoId} from 'src/helper/utils'
+import {polyfill, clickPlayBtn, isHevc} from 'src/helper/polyfill'
 // import VideoEntity from './render/videoEntity'
-import { LoopChecker } from './loopCheck'
+import {LoopChecker} from './loopCheck'
 
 //
 export default class EVideo {
   private video: HTMLVideoElement
-  private eventsFn: { [key: string]: (...args: any[]) => void } = {}
+  private eventsFn: {[key: string]: (...args: any[]) => void} = {}
   private animator: Animator
   private blobUrl: string
   private polyfillCreateObjectURL: boolean
@@ -97,10 +105,10 @@ export default class EVideo {
       // video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : !VideoEntity.hasAudio
       //
       this.fps = this.renderer.videoEntity.fps
-      logger.debug(`[EVdeo] this.renderer.videoEntity.fps`,this.renderer.videoEntity.fps)
+      logger.debug(`[EVdeo] this.renderer.videoEntity.fps`, this.renderer.videoEntity.fps)
       this.animator.setVideoFps({
         fps: this.renderer.videoEntity.fps,
-        videoFps: this.renderer.videoEntity.videoFps
+        videoFps: this.renderer.videoEntity.videoFps,
       })
       //
       await this.animator.setup()
@@ -112,9 +120,9 @@ export default class EVideo {
       this.animationType = this.animator.animationType
       //
       this.renderer.renderCache.mCache.setOptions({
-        fps:this.fps,
-        animationType:this.animationType,
-        videoDurationTime:this.video.duration
+        fps: this.fps,
+        animationType: this.animationType,
+        videoDurationTime: this.video.duration,
       })
       //
       logger.debug('[setup]', this.animationType, this.webglVersion)
@@ -150,14 +158,17 @@ export default class EVideo {
     // versionTips(this.op, this.renderType)
   }
   private drawFrame(frame: number) {
-    if (this.windowState == WINDOW_VISIBLE_STATE.HIDE) return
+    if (this.windowState == WINDOW_VISIBLE_STATE.HIDE) {
+      this.renderer?.clear()
+      return
+    }
     this.renderer?.render(frame)
   }
 
   public setWindowState(state: WINDOW_VISIBLE_STATE) {
     this.windowState = state == undefined ? WINDOW_VISIBLE_STATE.SHOW : state
   }
-  
+
   private setPlay = (isPlay: boolean) => {
     if (this.renderer) {
       this.renderer.isPlay = isPlay
@@ -491,7 +502,7 @@ export default class EVideo {
     try {
       const d = await db.model().find(this.op.videoSource)
       if (d) {
-        const { blob, data } = d
+        const {blob, data} = d
         if (data) this.renderer.videoEntity.setConfig(data)
         logger.debug('[checkVideoCache]')
         this.blobUrl = this.createObjectURL(blob)
@@ -555,10 +566,10 @@ export default class EVideo {
             buf[d] = raw.charCodeAt(d)
           }
           const arr = new Uint8Array(buf)
-          const blob = new Blob([arr], { type: 'video/mp4' })
+          const blob = new Blob([arr], {type: 'video/mp4'})
           // 返回 metadata 数据
           if (this.op.useVideoDBCache) {
-            db.model().insert(this.op.videoSource, { blob, data })
+            db.model().insert(this.op.videoSource, {blob, data})
           }
           this.blobUrl = this.createObjectURL(blob)
           resolve(this.blobUrl)

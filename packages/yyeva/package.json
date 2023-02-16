@@ -1,6 +1,6 @@
 {
-  "name": "yyeva",
-  "version": "1.0.0-rc.3",
+  "name": "@gfe/yyeva",
+  "version": "1.0.0-ch.3",
   "description": "mp4 gift player",
   "files": [
     "dist",
@@ -27,6 +27,9 @@
     "type": "git",
     "url": "git+https://github.com/yylive/YYEVA-Web.git",
     "directory": "packages/yyeva"
+  },
+  "publishConfig": {
+    "registry": "https://npm-registry.yy.com/"
   },
   "main": "./dist/esm/yyeva.js",
   "types": "./types/index.d.ts",

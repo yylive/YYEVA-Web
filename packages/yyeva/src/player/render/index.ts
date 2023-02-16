@@ -78,6 +78,10 @@ export default class WglRender {
     this.renderCache.destory()
   }
 
+  public clear() {
+    const {width, height} = this.webgl?.canvas
+    this.webgl?.ctx?.clearRect(0, 0, width, height)
+  }
   // public render(nextFPS: number) {
   public render(frame = 0) {
     // console.log('[render]', frame, this.op.useFrameCache)
