@@ -1,6 +1,6 @@
 {
   "name": "yyeva",
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0-rc.3",
   "description": "mp4 gift player",
   "files": [
     "dist",
@@ -33,6 +33,7 @@
   "scripts": {
     "build": "npm-run-all --parallel build:**",
     "build:esm": "cross-env FORMAT=esm vite build --mode prod",
+    "build:umd": "cross-env FORMAT=umd vite build --mode prod",
     "build:tsc": "ttsc",
     "dev": "npm-run-all --parallel dev:**",
     "dev:esm": "cross-env FORMAT=esm vite build -w --mode dev",
