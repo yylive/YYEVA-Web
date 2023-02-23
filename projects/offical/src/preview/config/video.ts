@@ -1,19 +1,19 @@
 const host = ''
 const selected: any = {
   default: {
-    videoUrl: `${host}/yy/yy.mp4`,
+    /*  videoUrl: `${host}/yy/yy.mp4`,
     effects: {
       user_nick: 'girl',
       user_avatar: '/yy/1.jpeg',
       anchor_nick: 'boy',
       anchor_avatar: '/yy/2.jpeg',
+    }, */
+    videoUrl: `${host}/yy/pld_264_new.mp4`,
+    effects: {
+      1: '/yy/b6.png',
+      2: '/yy/b6c.png',
+      key: 'YYEVA',
     },
-    // videoUrl: `${host}/yy/pld_264_crf12.mp4`,
-    // effects: {
-    //   1: '/yy/b6.png',
-    //   2: '/yy/b6c.png',
-    //   key: 'YYEVA',
-    // },
     mode: 'Fill',
   },
   music: {
