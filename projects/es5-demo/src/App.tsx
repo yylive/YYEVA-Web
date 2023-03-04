@@ -20,6 +20,7 @@ const runPlayer = async (container: HTMLDivElement) => {
   // })
   evideo = await yyEva({
     mode: 'AspectFill',
+    videoID: 'abc10086',
     container,
     useMetaData: true,
     onEnd: () => runPlayer(container),
