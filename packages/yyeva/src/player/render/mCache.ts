@@ -1,13 +1,13 @@
-import { MixEvideoOptions } from 'src/type/mix'
-import { logger } from 'src/helper/logger'
-import { AnimatorType } from 'src/player/video/animator'
+import {MixEvideoOptions} from 'src/type/mix'
+import {logger} from 'src/helper/logger'
+import {AnimatorType} from 'src/player/video/animator'
 // import VideoEntity from './videoEntity'
-import { isDataUrl } from 'src/helper/utils'
+import {isDataUrl} from 'src/helper/utils'
 // import EVideo from 'src/player'
-export type MCacheItem = { [frames: number]: ImageBitmap | HTMLImageElement | undefined }
+export type MCacheItem = {[frames: number]: ImageBitmap | HTMLImageElement | undefined}
 //
 function setStoreName(op: MixEvideoOptions) {
-  const { effects, mode, container } = op
+  const {effects, mode, container} = op
   let storeName = isDataUrl(op.videoSource) ? op.videoSource.substring(22, 88) : op.videoSource
   // let storeName = op.videoSource
   if (effects) {
@@ -18,8 +18,9 @@ function setStoreName(op: MixEvideoOptions) {
     storeName += eUrl
   }
   if (container && container.clientHeight) {
-    storeName += `${storeName.indexOf('?') > -1 ? '&' : '?'}mode=${mode}&height=${container.clientHeight}&width=${container.clientWidth
-      }`
+    storeName += `${storeName.indexOf('?') > -1 ? '&' : '?'}mode=${mode}&height=${container.clientHeight}&width=${
+      container.clientWidth
+    }`
   }
   storeName = storeName.replace(/\s+/g, '')
   // console.log(`storeName`, storeName)
@@ -28,9 +29,9 @@ function setStoreName(op: MixEvideoOptions) {
 //
 export default class MCache {
   //=== 帧缓存组合 用 静态类 临时存储
-  static caches: { [url: string]: MCacheItem } = {}
+  static caches: {[url: string]: MCacheItem} = {}
   static cacheKeys: string[] = []
-  static cachesOfs: { [url: string]: HTMLCanvasElement | OffscreenCanvas } = {}
+  static cachesOfs: {[url: string]: HTMLCanvasElement | OffscreenCanvas} = {}
   //===
   private storeName: string
   private op: MixEvideoOptions
@@ -55,21 +56,14 @@ export default class MCache {
     if (typeof op.useFrameCache === 'number' && op.useFrameCache > 0) {
       this.frameCacheCount = op.useFrameCache
     }
-    logger.debug(
-      `[mcache]`,
-      `[constructor]`,
-      `设置缓存数`,
-      this.frameCacheCount,
-      `缓存视频`,
-      MCache.cacheKeys,
-    )
+    logger.debug(`[mcache]`, `[constructor]`, `设置缓存数`, this.frameCacheCount, `缓存视频`, MCache.cacheKeys)
     logger.debug(`[mcache]`, this.storeName, `当前缓存帧数 ${Object.keys(MCache.caches[this.storeName] || {}).length}`)
   }
-  setOptions({ fps, animationType, videoDurationTime }: any) {
+  setOptions({fps, animationType, videoDurationTime}: any) {
     this.fps = fps
     this.animationType = animationType
     this.videoDurationTime = videoDurationTime
-    logger.debug(`[mcache]`, { fps, animationType, videoDurationTime })
+    logger.debug(`[mcache]`, {fps, animationType, videoDurationTime})
   }
   public async setup() {
     this.setAnimationStatus()
@@ -122,7 +116,8 @@ export default class MCache {
   }
   private checkCache() {
     if (this.animationType !== 'requestVideoFrameCallback') {
-      let needCacheFrameCount = this.videoDurationTime * this.fps * this.requestAnimationFramePercent
+      const frameCount = this.videoDurationTime * this.fps
+      let needCacheFrameCount = frameCount * this.requestAnimationFramePercent
       //防止边界问题导致经常删除缓存
       needCacheFrameCount = Math.round(needCacheFrameCount)
       const cacheItem = MCache.caches[this.storeName] || {}
@@ -132,10 +127,12 @@ export default class MCache {
         Object.keys(cacheItem).length,
         '需要缓存帧数',
         needCacheFrameCount,
+        '缓存总数',
+        frameCount,
       )
       if (cacheItem && Object.keys(cacheItem).length < needCacheFrameCount) {
         this.removeCacheItem(this.storeName)
-        logger.debug('[mCache]', '[checkCache removeCacheItem]', this.storeName)
+        logger.debug('[mCache]', '[checkCache] removeCacheItem', this.storeName)
       }
     }
   }

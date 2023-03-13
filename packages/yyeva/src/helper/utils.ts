@@ -1,3 +1,4 @@
+import {polyfill} from './polyfill'
 /**
  * 判断链接是否 dataUrl (base64)
  * @param url
@@ -10,6 +11,8 @@ export const isDataUrl = (url: string | HTMLInputElement) => {
   return regex.test(url)
 }
 const currentVideoId = Date.now()
-export const getVIdeoId = (url, isWeixin: boolean) => {
-  return !isWeixin ? url : `e-video-wx-${currentVideoId}`
+export const getVIdeoId = url => {
+  if (polyfill.weixin) return `e-video-wx-${currentVideoId}`
+  // if (polyfill.quark) return `quark_${Math.round(Math.random() * 1000)}_${url}`
+  else return url
 }

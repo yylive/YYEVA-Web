@@ -25,6 +25,7 @@ export const polyfill = {
   mac: isMac,
   safari: isSafari,
 }
+export type PolyfillType = typeof polyfill
 
 export let wxIsReady = false
 export const wxReady = () =>

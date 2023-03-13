@@ -176,17 +176,19 @@ export default class VideoEntity {
           // base 64 不需要执行 imageOrientation: 'flipY'
           // return self.createImageBitmap(blob)
         } else {
-          blob = await fetch(url).then(r => {
-            if (r.ok) {
-              return r.blob()
-            } else {
-              logger.error('fetch request failed, url: ' + url)
+          blob = await fetch(url)
+            .then(r => {
+              if (r.ok) {
+                return r.blob()
+              } else {
+                logger.error('fetch request failed, url: ' + url)
+                return undefined
+              }
+            })
+            .catch(err => {
+              logger.error('fetch, err=', err)
               return undefined
-            }
-          }).catch(err => {
-            logger.error('fetch, err=', err)
-            return undefined
-          })
+            })
         }
         // const img = document.createElement('img')
         // img.src = URL.createObjectURL(blob)
@@ -198,7 +200,7 @@ export default class VideoEntity {
           return self.createImageBitmap(blob, {imageOrientation: 'flipY'})
         } else {
           return undefined
-        }        
+        }
       }
       // if (url instanceof HTMLInputElement) {
       //   url = await this.fileToDataUrl(url)

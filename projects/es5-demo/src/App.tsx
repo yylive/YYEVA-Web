@@ -20,14 +20,16 @@ const runPlayer = async (container: HTMLDivElement) => {
   // })
   evideo = await yyEva({
     mode: 'AspectFill',
-    videoID: 'abc10086',
+    // videoID: 'abc10086',
     container,
     useMetaData: true,
     onEnd: () => runPlayer(container),
     loop: false,
-    usePrefetch: false,
-    showVideo: true,
-    logLevel: 'info',
+    // usePrefetch: false,
+    // showVideo: true,
+    useAccurate: false,
+
+    // logLevel: 'info',
     videoUrl: `${host}/demo3/dynamic_264_mid.mp4`,
     // hevcUrl: `${host}/fh-265.mp4`,
     effects: {

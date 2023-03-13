@@ -264,24 +264,8 @@ export default class EVideo {
   }
 
   private videoCreate() {
-    let videoID = this.op.videoID || getVIdeoId(this.op.videoSource, polyfill.weixin)
-    logger.debug('[videoID]', videoID)
-    const videoElm = videoID ? document.getElementById(videoID) : undefined
-    let video: HTMLVideoElement
-    if (videoElm instanceof HTMLVideoElement) {
-      video = videoElm
-    } else {
-      video = document.createElement('video')
-      // 插入video 解决IOS不播放问题
-      document.body.appendChild(video)
-    }
-    // ========== heck hevc ==============
+    //
     const op = this.op
-    this.isSupportHevc = isHevc(video)
-    if (this.isSupportHevc && op.hevcUrl) {
-      op.videoUrl = op.hevcUrl
-      this.op.isHevc = true
-    }
     if (op.videoUrl instanceof File) {
       op.useVideoDBCache = false
       this.videoFile = op.videoUrl
@@ -289,11 +273,37 @@ export default class EVideo {
     } else {
       this.op.videoSource = op.videoUrl
     }
-    //重置 videoID
-    if (!videoID) {
-      videoID = getVIdeoId(this.op.videoSource, polyfill.weixin)
+    // polyfill quark & android
+    if (polyfill.quark && polyfill.android) {
+      const urlSp = this.op.videoSource.indexOf('?') > -1 ? '&' : '?'
+      this.op.videoSource = `${this.op.videoSource}${urlSp}_quark_${Math.round(Math.random() * 100000)}`
+      this.op.useFrameCache = false
+      this.op.useVideoDBCache = false
     }
-    video.setAttribute('id', videoID)
+    //
+    const videoID = this.op.videoID || getVIdeoId(this.op.videoSource)
+    logger.debug('[videoID]', videoID)
+    const videoElm = videoID ? document.getElementById(videoID) : undefined
+    let video: HTMLVideoElement
+    if (videoElm instanceof HTMLVideoElement) {
+      video = videoElm
+    } else {
+      video = document.createElement('video')
+      video.setAttribute('id', videoID)
+      // 插入video 解决IOS不播放问题
+      document.body.appendChild(video)
+    }
+    // ========== check hevc ==============
+    this.isSupportHevc = isHevc(video)
+    if (this.isSupportHevc && op.hevcUrl) {
+      op.videoUrl = op.hevcUrl
+      this.op.isHevc = true
+    }
+    //重置 videoID
+    // if (!videoID) {
+    //   videoID = getVIdeoId(this.op.videoSource)
+    // }
+    // video.setAttribute('id', videoID)
     // ========== ============================
     if (!this.op.showVideo) {
       video.style.position = 'fixed' //防止撑开页面
@@ -442,9 +452,11 @@ export default class EVideo {
     if (this.video) {
       this.video.pause()
       if (!polyfill.weixin && !this.op.videoID) {
-        this.video.src = ''
+        // this.video.src = ''
+        this.video.removeAttribute('src')
         this.video.load()
         this.video.remove()
+        console.log('this.video', this.video, this.video.currentTime, this.video.currentSrc)
       }
     }
   }
