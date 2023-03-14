@@ -69,6 +69,35 @@ player.destory() // dstory player
 ### 微信 H5
 #### IOS
 微信 ios 已经验证通过，可以自动播放
+
+兼容ios微信，需要在`WeixinJSBridgeReady`微信h5内置事件中，提前创建`video`,并且预设`id`。
+```javascript
+document.addEventListener(
+        'WeixinJSBridgeReady',
+        () => {
+          // videoUrl: 'https://lxcode.bs2cdn.yy.com/cca89753-8f7a-44da-8c36-8440bee90584.mp4',
+          console.log(`[big streamer][weixin] after outside WeixinJSBridgeReady ##`)
+          const videoPreAdd = document.createElement('video')
+
+          videoPreAdd.setAttribute('id', 'pre_set_video_id')
+
+          const body = document.body
+          body.appendChild(videoPreAdd)
+
+          document.addEventListener('click', () => {
+            videoA.play()
+			videoB.play()
+          })
+        },
+        false,
+      )
+```
+调用`yyeva`函数时候，把预先创建的`video`的`id`属性，传递到`videoID`中。
+```javascript
+yyeva({
+	videoID: 'pre_set_video_id'
+})
+```
 #### 安卓
 微信 安卓 需要 手动点击 或者 根据 `onRequestClickPlay` 事件进行自定义提示
 
