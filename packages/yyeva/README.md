@@ -85,8 +85,7 @@ document.addEventListener(
           body.appendChild(videoPreAdd)
 
           document.addEventListener('click', () => {
-            videoA.play()
-			videoB.play()
+            videoPreAdd.play()
           })
         },
         false,
