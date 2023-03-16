@@ -59,7 +59,7 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
   // console.log('op.logLevel',op.logLevel)
   logger.setup({level: op.logLevel, showtips: !!op.showPlayerInfo})
   //
-  // if (polyfill.weixin && !wxIsReady && polyfill.ios) await wxReady()
+  if (polyfill.weixin && !wxIsReady && polyfill.ios) await wxReady()
   //
   const player = new Player(op)
   //

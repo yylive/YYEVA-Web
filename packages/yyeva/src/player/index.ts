@@ -10,7 +10,7 @@ import parser from 'src/parser'
 import db from 'src/parser/db'
 // import Webgl from './render/webglEntity'
 
-import {getVIdeoId} from 'src/helper/utils'
+// import {getVIdeoId} from 'src/helper/utils'
 import {polyfill, clickPlayBtn, isHevc} from 'src/helper/polyfill'
 // import VideoEntity from './render/videoEntity'
 import {LoopChecker} from './loopCheck'
@@ -273,7 +273,7 @@ export default class EVideo {
     } else {
       this.op.videoSource = op.videoUrl
     }
-    // polyfill quark & android
+    // quark & android 必须改变URL 否则 video currentTime 不重置
     if (polyfill.quark && polyfill.android) {
       const urlSp = this.op.videoSource.indexOf('?') > -1 ? '&' : '?'
       this.op.videoSource = `${this.op.videoSource}${urlSp}_quark_${Math.round(Math.random() * 100000)}`
@@ -281,7 +281,8 @@ export default class EVideo {
       this.op.useVideoDBCache = false
     }
     //
-    const videoID = this.op.videoID || getVIdeoId(this.op.videoSource)
+    // const videoID = this.op.videoID || getVIdeoId(this.op.videoSource)
+    const videoID = this.op.videoID || this.op.videoSource
     logger.debug('[videoID]', videoID)
     const videoElm = videoID ? document.getElementById(videoID) : undefined
     let video: HTMLVideoElement
@@ -451,12 +452,12 @@ export default class EVideo {
     //
     if (this.video) {
       this.video.pause()
-      if (!polyfill.weixin && !this.op.videoID) {
+      if (!polyfill.weixin && !polyfill.ios && !this.op.videoID) {
         // this.video.src = ''
         this.video.removeAttribute('src')
         this.video.load()
         this.video.remove()
-        console.log('this.video', this.video, this.video.currentTime, this.video.currentSrc)
+        // console.log('this.video', this.video, this.video.currentTime, this.video.currentSrc)
       }
     }
   }

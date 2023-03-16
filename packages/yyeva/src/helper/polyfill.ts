@@ -30,9 +30,20 @@ export type PolyfillType = typeof polyfill
 export let wxIsReady = false
 export const wxReady = () =>
   new Promise(resolve => {
+    // 当异步引用 YYEVA 会引起 WeixinJSBridgeReady 失效 需要手动设置 wxIsReady 为 true
+    // const timer = setInterval(() => {
+    //   console.log('wxReady setInterval', wxIsReady)
+    //   if (wxIsReady === true) {
+    //     clearInterval(timer)
+    //     resolve(wxIsReady)
+    //   }
+    // }, 300)
+    //
     document.addEventListener('WeixinJSBridgeReady', () => {
+      // console.log('wxReady WeixinJSBridgeReady', wxIsReady)
       logger.debug('WeixinJSBridgeReady')
       wxIsReady = true
+      // clearInterval(timer)
       resolve(wxIsReady)
     })
   })
