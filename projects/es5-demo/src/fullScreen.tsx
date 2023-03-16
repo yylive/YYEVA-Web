@@ -21,7 +21,7 @@ const FullScreen = () => {
           useMetaData: true,
           loop: false,
           // usePrefetch: false,
-          showVideo: true,
+          //   showVideo: true,
           useAccurate: false,
           logLevel: 'info',
           videoUrl: getUrl(),
