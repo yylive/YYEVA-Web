@@ -92,17 +92,17 @@ yyeva({
         video.style.visibility = 'hidden'
     })
 ```
-或者引用 yyeva 的兼容方法啊实现 [demo](https://github.com/yylive/YYEVA-Web/blob/main/projects/es5-demo/src/App.tsx#L3) 如： 
+或者引用 yyeva 的兼容方法 实现 [demo](https://github.com/yylive/YYEVA-Web/blob/main/projects/es5-demo/src/App.tsx#L3) 如： 
 ```js
 import {wechatPolyfill} from 'yyeva'
 wechatPolyfill.initVideoIDPosition(['yyeva_right_top_position', 'yyeva_full_screen_position'])
 ```
 
 #### 安卓
-微信 安卓 需要 手动点击 或者 根据 `onRequestClickPlay` 事件进行自定义 `点击事件` 提示
+微信安卓 需要手动点击 触发授权, 可根据 `onRequestClickPlay` 事件进行自定义 `点击事件` 提示
 
 ### UC & 夸克 
-多礼物同时播放存在 卡顿问题，正在推进解决!
+多礼物同时播放存在 卡顿问题，正在推进解决,临时解决可以通过队列错峰播放!
 
 ### 微信小程序 
 [NPM 安装包](https://www.npmjs.com/package/yyeva-wechat)
