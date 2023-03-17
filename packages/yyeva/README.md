@@ -102,7 +102,7 @@ wechatPolyfill.initVideoIDPosition(['yyeva_right_top_position', 'yyeva_full_scre
 微信 安卓 需要 手动点击 或者 根据 `onRequestClickPlay` 事件进行自定义 `点击事件` 提示
 
 ### UC & 夸克 
-多礼物同时播放存在问题，正在推进解决!
+多礼物同时播放存在 卡顿问题，正在推进解决!
 
 ### 微信小程序 
 [NPM 安装包](https://www.npmjs.com/package/yyeva-wechat)
