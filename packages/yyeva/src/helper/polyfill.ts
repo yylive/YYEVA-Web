@@ -59,7 +59,7 @@ export const isHevc = (video: HTMLVideoElement) => {
 }
 // wechat ios polyfill
 const win: any = window
-win.yyeva_wx_is_ready = false
+win.yyeva_wx_is_ready = !!win.yyeva_wx_is_ready
 class WechatPolyfill {
   private isReady = false
   get ready() {
