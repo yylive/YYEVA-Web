@@ -13,7 +13,6 @@ export const isAndroid = /android|adr/i.test(ua)
 //
 export const isUCBrowser = ua.indexOf('ucbrowser') > -1 // UC浏览器
 export const isQuark = ua.indexOf('quark') > -1 // 夸克浏览器
-// console.log('ua', ua, 'isBaidu', isBaidu)
 export const polyfill = {
   baidu: isBaidu,
   weixin: isWeixin,
@@ -25,31 +24,10 @@ export const polyfill = {
   mac: isMac,
   safari: isSafari,
 }
+//
 export type PolyfillType = typeof polyfill
-
-export let wxIsReady = false
-export const wxReady = () =>
-  new Promise(resolve => {
-    // 当异步引用 YYEVA 会引起 WeixinJSBridgeReady 失效 需要手动设置 wxIsReady 为 true
-    // const timer = setInterval(() => {
-    //   console.log('wxReady setInterval', wxIsReady)
-    //   if (wxIsReady === true) {
-    //     clearInterval(timer)
-    //     resolve(wxIsReady)
-    //   }
-    // }, 300)
-    //
-    document.addEventListener('WeixinJSBridgeReady', () => {
-      // console.log('wxReady WeixinJSBridgeReady', wxIsReady)
-      logger.debug('WeixinJSBridgeReady')
-      wxIsReady = true
-      // clearInterval(timer)
-      resolve(wxIsReady)
-    })
-  })
-
+//
 export const clickPlayBtn = (container: HTMLElement, video: HTMLVideoElement) => {
-  // alert('wxAndroidClick')
   const tips: HTMLElement = document.createElement('div')
   tips.innerText = 'Click To Play'
   tips.style.textAlign = 'center'
@@ -79,3 +57,61 @@ export const isHevc = (video: HTMLVideoElement) => {
     video.canPlayType('video/mp4; codecs="hev1.2.4.L120.B0"')
   )
 }
+// wechat ios polyfill
+const win: any = window
+win.yyeva_wx_is_ready = false
+class WechatPolyfill {
+  private isReady = false
+  get ready() {
+    return win.yyeva_wx_is_ready || this.isReady
+  }
+  set ready(b: boolean) {
+    win.yyeva_wx_is_ready = b
+    this.isReady = b
+  }
+  initVideoIDPosition(list: string[]) {
+    if (!polyfill.weixin || !polyfill.ios) {
+      return
+    }
+    //
+    document.addEventListener('WeixinJSBridgeReady', () => {
+      this.ready = true
+      list.map(v => {
+        const video = document.createElement('video')
+        video.setAttribute('id', v)
+        document.body.appendChild(video)
+        video.style.visibility = 'hidden'
+      })
+    })
+  }
+  wxReady() {
+    logger.debug('[wxReady] resolve', this.ready)
+    return new Promise(resolve => {
+      if (!polyfill.weixin || !polyfill.ios) {
+        resolve(true)
+        return
+      }
+      // === 当异步引用 YYEVA 会引起 WeixinJSBridgeReady 失效 需要手动设置 wxIsReady 为 true
+      if (this.ready) {
+        resolve(true)
+        logger.debug('[wxReady] resolve', this.ready)
+        return
+      }
+      const timer = setInterval(() => {
+        logger.debug('[wxReady] setInterval', this.ready)
+        if (this.ready === true) {
+          clearInterval(timer)
+          resolve(true)
+        }
+      }, 300)
+      // === 同时引用时 触发,异步无法触发该方法
+      document.addEventListener('WeixinJSBridgeReady', () => {
+        logger.debug('[wxReady] WeixinJSBridgeReady', this.ready)
+        this.ready = true
+        timer && clearInterval(timer)
+        resolve(true)
+      })
+    })
+  }
+}
+export const wechatPolyfill = new WechatPolyfill()

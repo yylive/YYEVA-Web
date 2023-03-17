@@ -2,7 +2,7 @@ import Player from 'src/player'
 import config from 'src/helper/config'
 import {MixEvideoOptions} from './type/mix'
 import {versionTips, logger} from 'src/helper/logger'
-import {polyfill, wxIsReady, wxReady} from './helper/polyfill'
+import {polyfill, wechatPolyfill} from './helper/polyfill'
 
 async function yyEva(options: MixEvideoOptions): Promise<Player> {
   const op: MixEvideoOptions = {
@@ -59,7 +59,7 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
   // console.log('op.logLevel',op.logLevel)
   logger.setup({level: op.logLevel, showtips: !!op.showPlayerInfo})
   //
-  if (polyfill.weixin && !wxIsReady && polyfill.ios) await wxReady()
+  if (polyfill.weixin && polyfill.ios) await wechatPolyfill.wxReady()
   //
   const player = new Player(op)
   //
@@ -78,7 +78,7 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
 }
 export const version = config.version
 export const mode = config.mode
-export {yyEva}
+export {yyEva, wechatPolyfill}
 export type YYEvaType = Player
 export type YYEvaOptionsType = MixEvideoOptions
 export default yyEva

@@ -452,7 +452,8 @@ export default class EVideo {
     //
     if (this.video) {
       this.video.pause()
-      if (!polyfill.weixin && !polyfill.ios && !this.op.videoID) {
+      // console.log('[removeVideoEvent]', !(polyfill.weixin && polyfill.ios) && !this.op.videoID)
+      if (!this.op.videoID) {
         // this.video.src = ''
         this.video.removeAttribute('src')
         this.video.load()

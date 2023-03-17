@@ -2,7 +2,7 @@ import FullScreen from './fullScreen'
 import Lambo from './lambo'
 const Container = () => (
   <>
-    <Lambo />
+    {/* <Lambo /> */}
     <div className="container">
       <FullScreen />
     </div>

@@ -39,7 +39,7 @@ player.destory() // dstory player
 |videoUrl|mp4 address||*|
 |hevcUrl|mp4 address [hevc、h265]|||
 |loop|loop or loop count |true||
-|videoID|to adapt to hosting environments such as WeChat, you need to declare the container ID in advance|e-video-wx-${now}||
+|videoID|Adapt to containers that require prior declaration such as WeChat, otherwise you need to repeatedly click on authorization|||
 |mode|'AspectFill' / 'AspectFit' / 'contain' / 'cover'|scale proportionally according to the parent container||
 |container|dom container||*|
 |fps|animation frame|get from video source||

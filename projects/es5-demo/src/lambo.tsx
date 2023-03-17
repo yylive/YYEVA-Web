@@ -8,6 +8,7 @@ const Lambo = () => {
     <div className="lambo">
       <Player
         options={{
+          videoID: 'yyeva_right_top_position',
           useMetaData: true,
           loop: false,
           logLevel: 'info',
