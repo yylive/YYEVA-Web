@@ -92,7 +92,7 @@ yyeva({
         video.style.visibility = 'hidden'
     })
 ```
-或者引用 yyeva 的兼容方法啊实现 [demo](/projects/es5-demo/src/app.tsx) 如： 
+或者引用 yyeva 的兼容方法啊实现 [demo](https://github.com/yylive/YYEVA-Web/blob/main/projects/es5-demo/src/App.tsx#L3) 如： 
 ```js
 import {wechatPolyfill} from 'yyeva'
 wechatPolyfill.initVideoIDPosition(['yyeva_right_top_position', 'yyeva_full_screen_position'])
