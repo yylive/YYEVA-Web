@@ -5,6 +5,7 @@ import {versionTips, logger} from 'src/helper/logger'
 import {polyfill, wechatPolyfill} from './helper/polyfill'
 
 async function yyEva(options: MixEvideoOptions): Promise<Player> {
+  // console.log('[yyEva]options=', options)
   const op: MixEvideoOptions = {
     ...{
       showVideo: false,
@@ -17,7 +18,7 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
       // mute: true,
       usePrefetch: true,
       useBitmap: true,
-      useAccurate: true,
+      useAccurate: false,
       useMetaData: false,
       alphaDirection: 'left',
       useVideoDBCache: true,
@@ -33,6 +34,7 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
     },
     ...options,
   }
+  // console.log('[yyEva]op=', op)
   // useMetaData 必须启动usePrefetch
   if (op.useMetaData) {
     op.usePrefetch = true

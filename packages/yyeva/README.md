@@ -45,7 +45,7 @@ player.destory() // dstory player
 |fps|礼物播放动画帧数|根据素材获取||
 |usePrefetch|是否边播边下载、带Key素材默认开启|true||
 |useBitmap|利用bitmap代替 img element|true||
-|useAccurate|启用 requestVideoFrameCallback,自降级|true||
+|useAccurate|启用 requestVideoFrameCallback,自降级|false|，开启后在个别安卓手机可能出现卡顿现象|
 |useVideoDBCache|indexdb 缓存视频|true||
 |useFrameCache|缓存视频帧|5||
 |useOfsRender|利用多canvas渲染|true||

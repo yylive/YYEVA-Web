@@ -45,7 +45,7 @@ player.destory() // dstory player
 |fps|animation frame|get from video source||
 |usePrefetch|whether to download while playing, the material with "key" is enabled by default|true||
 |useBitmap|use bitmaps instead of img elements|true||
-|useAccurate|in the case of supporting requestVideoFrameCallback, use requestVideoFrameCallback first|true||
+|useAccurate|in the case of supporting requestVideoFrameCallback, use requestVideoFrameCallback first|false||
 |useVideoDBCache|enable indexDB video caching|true||
 |useFrameCache|number of video frame buffers|5||
 |useOfsRender|enable multithreaded rendering|true||
