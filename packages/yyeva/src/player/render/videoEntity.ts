@@ -37,7 +37,7 @@ export default class VideoEntity {
     const ctx = canvas.getContext('2d', {willReadFrequently: true}) // willReadFrequently 表示是否计划有大量的回读操作，频繁调用getImageData()方法时能节省内存
     // canvas.style.display = 'none'
     // document.body.appendChild(canvas)
-    this.ctx = ctx
+    this.ctx = ctx as any
     this.ofs = canvas
     if (op.useMetaData) {
       this.isUseMeta = true

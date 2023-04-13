@@ -345,7 +345,7 @@ export default class EVideo {
     const video = this.video
     // register events
     this.eventsFn.canplaythrough = () => {
-      logger.debug('canplaythrough paused', video.paused)
+      logger.debug('[canplaythrough paused] ', video.paused)
       if (video.paused) {
         const videoPromise = video.play()
         if (videoPromise)

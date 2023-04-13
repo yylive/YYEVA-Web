@@ -3,7 +3,7 @@ module.exports = defineConfig(() => {
   return {
     server: {
       // https: true,
-      port: 3333,
+      port: 3000,
     },
     moduleTransform: {
       include: [/yyeva/],
