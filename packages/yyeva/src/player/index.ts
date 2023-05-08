@@ -423,7 +423,11 @@ export default class EVideo {
       logger.debug('[prefetch url]', url)
     } else {
       video.src = this.op.videoSource
-      logger.debug('[prefetch url]', this.op.videoSource)
+      if (this.op.useMetaData) {
+        const file = await this.getVideoFile()
+        await this.readFileToBlobUrl(file)
+      }
+      logger.debug('[videoSource url]', this.op.videoSource)
     }
     video.load()
     logger.debug('[video load]')
@@ -505,6 +509,15 @@ export default class EVideo {
     }
     return undefined
   }
+  async getVideoFile() {
+    let file
+    if (!this.videoFile) {
+      file = await this.getVideoByHttp()
+    } else {
+      file = this.videoFile
+    }
+    return file
+  }
   async prefetch(): Promise<string> {
     // const URL = (window as any).webkitURL || window.URL
     // const polyfillCreateObjectURL = polyfill.baidu || ((polyfill.quark || polyfill.uc) && polyfill.android)
@@ -516,12 +529,7 @@ export default class EVideo {
       if (url) return url
     }
     //
-    let file
-    if (!this.videoFile) {
-      file = await this.getVideoByHttp()
-    } else {
-      file = this.videoFile
-    }
+    const file = await this.getVideoFile()
     const url = await this.readFileToBlobUrl(file)
     logger.debug('[prefetch result]', url, `this.op.useVideoDBCache`, this.op.useVideoDBCache)
     return url

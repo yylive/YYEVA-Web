@@ -36,7 +36,7 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
   }
   // console.log('[yyEva]op=', op)
   // useMetaData 必须启动usePrefetch
-  if (op.useMetaData) {
+  if (op.useMetaData && op.usePrefetch) {
     op.usePrefetch = true
   }
   if (op.useFrameCache) {
