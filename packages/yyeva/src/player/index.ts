@@ -81,6 +81,14 @@ export default class EVideo {
       this.onEnd && this.onEnd()
     }
   }
+
+  private _error(err: any) {
+    logger.error(`[EVdeo] error err:`, err)
+    this.onEnd?.(err)
+    this.onError?.(err)
+    this.destroy()
+  }
+
   public async setup() {
     try {
       logger.debug('[=== e-video setup ===]')
@@ -104,7 +112,12 @@ export default class EVideo {
       await this.animator.setup()
       this.animator.onUpdate = frame => {
         if (this.loopChecker.updateFrame(frame)) {
-          this.renderer.render(frame)
+          try {
+            this.renderer.render(frame)
+          } catch (err) {
+            logger.error(`[EVdeo] render frame error`)
+            this._error(err)
+          }
         }
       }
       this.animationType = this.animator.animationType
