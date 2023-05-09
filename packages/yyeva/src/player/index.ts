@@ -84,6 +84,7 @@ export default class EVideo {
 
   private _error(err: any) {
     logger.error(`[EVdeo] error err:`, err)
+    this.stop()
     this.onEnd?.(err)
     this.onError?.(err)
     this.destroy()
