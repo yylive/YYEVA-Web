@@ -268,6 +268,7 @@ export type VideoEvent = {
   onProcess?: EventCallback
   onEnd?: EventCallback
   onError?: EventCallback
+  onLoopCount?: EventCallback
 }
 
 export type VideoAnimateType = {

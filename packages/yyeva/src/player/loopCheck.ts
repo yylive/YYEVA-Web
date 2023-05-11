@@ -8,6 +8,7 @@ export class LoopChecker {
   private lastFrameIndex = 0
 
   public onEnd: EventCallback
+  public onLoopCount: EventCallback
 
   constructor(loop: boolean | number) {
     const type = typeof loop
@@ -21,7 +22,7 @@ export class LoopChecker {
   }
 
   public updateFrame(frame: number) {
-    if (this.lastFrameIndex > frame && this.loopCount > 1 && this.loopCount != Infinity) {
+    if (this.lastFrameIndex > frame && this.loopCount > 1) {
       /* logger.info(
         '[LoopChecker] this.playedLoopCount=',
         this.playedLoopCount,
@@ -32,8 +33,11 @@ export class LoopChecker {
         ', this.loopCount=',
         this.loopCount,
       ) */
+
       this.playedLoopCount = this.playedLoopCount + 1
-      if (this.playedLoopCount == this.loopCount) {
+      this.onLoopCount && this.onLoopCount({count: this.playedLoopCount})
+
+      if (this.loopCount != Infinity && this.playedLoopCount == this.loopCount) {
         // logger.info('[LoopChecker] finished.... this.playedLoopCount=', this.playedLoopCount)
         this.onEnd && this.onEnd()
         return false

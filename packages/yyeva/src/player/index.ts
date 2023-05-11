@@ -52,6 +52,7 @@ export default class EVideo {
     //TODO 考虑到 除了 htmlinputelement http 应该还有 dataUrl 后续拓展
     this.op = op
     this.loopChecker = new LoopChecker(this.op.loop)
+    this.loopChecker.onLoopCount = this.op.onLoopCount
     this.video = this.videoCreate()
     this.animator = new Animator(this.video, this.op)
     // 是否创建 object url
@@ -85,9 +86,9 @@ export default class EVideo {
   private _error(err: any) {
     logger.error(`[EVdeo] error err:`, err)
     this.stop()
+    this.destroy()
     this.onEnd?.(err)
     this.onError?.(err)
-    this.destroy()
   }
 
   public async setup() {
@@ -394,6 +395,7 @@ export default class EVideo {
       this.onResume && this.onResume()
     }
     this.eventsFn.ended = () => {
+      this.op.onLoopCount && this.op.onLoopCount({count: 1})
       this.destroy()
       this.onEnd && this.onEnd()
     }

@@ -24,6 +24,7 @@ let player:YYEvaType = await yyEva({
 	onStart(){},
 	onStop(){},
 	onEnd(){},
+	onLoopCount(args){},
 	onPause(){},
 	onResume(){},
 	onProcess(){},
