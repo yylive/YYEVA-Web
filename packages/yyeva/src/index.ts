@@ -28,6 +28,7 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
       showPlayerInfo: true,
       forceBlob: false,
       checkTimeout: false,
+      endPause: false,
       font: {
         overflow: 'cut',
       },

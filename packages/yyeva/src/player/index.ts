@@ -51,7 +51,7 @@ export default class EVideo {
     if (!op.videoUrl) throw new Error('videoUrl is need!')
     //TODO 考虑到 除了 htmlinputelement http 应该还有 dataUrl 后续拓展
     this.op = op
-    this.loopChecker = new LoopChecker(this.op.loop)
+    this.loopChecker = new LoopChecker(this.op.loop, this.op.endFrame)
     this.loopChecker.onLoopCount = this.op.onLoopCount
     this.video = this.videoCreate()
     this.animator = new Animator(this.video, this.op)
@@ -77,10 +77,17 @@ export default class EVideo {
 
     this.loopChecker.onEnd = () => {
       logger.debug('[player] onEnd...url:', this.op.videoUrl)
-      this.stop()
-      this.destroy()
-      this.onEnd && this.onEnd()
+      this._onEnd()
     }
+  }
+
+  private _onEnd() {
+    this.stop()
+    if (!this.op.endPause) {
+      this.destroy()
+    }
+
+    this.onEnd && this.onEnd()
   }
 
   private _error(err: any) {
@@ -102,6 +109,7 @@ export default class EVideo {
       } else {
         this.video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : false
       }
+
       // video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : !VideoEntity.hasAudio
       //
       this.fps = this.renderer.videoEntity.fps
@@ -110,6 +118,9 @@ export default class EVideo {
         fps: this.renderer.videoEntity.fps,
         videoFps: this.renderer.videoEntity.videoFps,
       })
+
+      this._updateEndFrame()
+
       //
       await this.animator.setup()
       this.animator.onUpdate = frame => {
@@ -162,6 +173,20 @@ export default class EVideo {
     //
     // versionTips(this.op, this.renderType)
   }
+
+  private _updateEndFrame() {
+    let endFrame = this.op.endFrame
+
+    const duration = this.video.duration
+    const maxFrame = Math.max(0, Math.floor(this.fps * duration) - 5)
+    if (this.op.endPause && (endFrame === undefined || endFrame < 0)) {
+      endFrame = maxFrame
+    }
+    endFrame = Math.min(maxFrame, endFrame || 0)
+    logger.debug('[player]_updateEndFrame, endFrame=', endFrame, ', op.endFrame=', this.op.endFrame)
+    this.loopChecker.setEndFrame(endFrame)
+  }
+
   private setPlay = (isPlay: boolean) => {
     if (this.renderer) {
       this.renderer.isPlay = isPlay
@@ -194,13 +219,14 @@ export default class EVideo {
       'checkTimeout=',
       this.op.checkTimeout,
     )
-    if (!this.loop() && this.op.checkTimeout && this.video.duration > 0) {
+    if (this.loopChecker.loopCount === 1 && this.op.checkTimeout && this.video.duration > 0) {
       this.cleanTimer()
       this.timeoutId = setTimeout(() => {
         logger.debug('[player] timeout...url:', this.op.videoUrl)
-        this.stop()
-        this.destroy()
-        this.onEnd && this.onEnd()
+        this._onEnd()
+        // this.stop()
+        // this.destroy()
+        // this.onEnd && this.onEnd()
       }, this.video.duration * 1000 + 100)
     }
   }
@@ -275,7 +301,10 @@ export default class EVideo {
   }
 
   private loop() {
-    return this.loopChecker.loopCount > 1
+    if (!this.op.endPause) {
+      return this.loopChecker.loopCount > 1
+    }
+    return true // this.loopChecker.loopCount > 1
   }
 
   private videoCreate() {
@@ -360,20 +389,25 @@ export default class EVideo {
     const video = this.video
     // register events
     this.eventsFn.canplaythrough = () => {
-      logger.debug('[canplaythrough paused] ', video.paused)
+      logger.log('[canplaythrough paused] ', video.paused)
       if (video.paused) {
-        const videoPromise = video.play()
-        if (videoPromise)
-          videoPromise.catch(e => {
-            logger.warn(`play() error canplaythrough to play`, e.code, e.message, e.name)
-            if (e?.code === 0 && e?.name === EPlayError.NotAllowedError) {
-              this.op?.onError?.({
-                playError: EPlayError.NotAllowedError,
-                video: this.video,
-                playStep: EPlayStep.canplaythrough,
-              })
-            }
-          })
+        logger.log('[canplaythrough] isPlay=', this.isPlay)
+        if (this.isPlay) {
+          const videoPromise = video.play()
+          if (videoPromise)
+            videoPromise.catch(e => {
+              logger.warn(`play() error canplaythrough to play`, e.code, e.message, e.name)
+              if (e?.code === 0 && e?.name === EPlayError.NotAllowedError) {
+                this.op?.onError?.({
+                  playError: EPlayError.NotAllowedError,
+                  video: this.video,
+                  playStep: EPlayStep.canplaythrough,
+                })
+              }
+            })
+        } else {
+          logger.log('[canplaythrough] isPlay is false!')
+        }
       }
     }
     this.eventsFn.stalled = () => {
@@ -449,19 +483,25 @@ export default class EVideo {
     logger.debug('[video load]')
     await this.videoAddEvents()
   }
+
   /**
    * 页面隐藏时执行
    */
   private videoVisbility = () => {
     logger.debug('[visibilitychange]', document.hidden)
-    if (document.hidden) {
-      logger.debug('[visibilitychange] pause')
-      this.video.pause()
+    if (this.isPlay) {
+      if (document.hidden) {
+        logger.debug('[visibilitychange] pause')
+        this.video.pause()
+      } else {
+        logger.debug('[visibilitychange] play')
+        this.video.play()
+      }
     } else {
-      logger.debug('[visibilitychange] play')
-      this.video.play()
+      logger.debug('[visibilitychange] isPlay is false!!')
     }
   }
+
   private removeVideoEvent() {
     //清除监听事件
     videoEvents.map(name => {

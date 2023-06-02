@@ -48,6 +48,16 @@ export type MixEvideoOptions = VideoEvent & {
    */
   loop?: boolean | number
   /**
+   * 停止到某一帧，默认停止到最后一帧
+   * @default undefined
+   */
+  endFrame?: number
+  /**
+   * 播放完毕后是否暂停, 传true的话，清理时，需要外部调用destroy释放资源
+   * @default false
+   */
+  endPause?: boolean
+  /**
    * 动画容器
    */
   container: HTMLElement
