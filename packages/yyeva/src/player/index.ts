@@ -691,6 +691,7 @@ export default class EVideo {
   getTotalFrame() {
     return this.fps * this.video.duration
   }
+
   getCurrentFrame() {
     return this.currentFrame
   }
