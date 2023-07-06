@@ -78,7 +78,7 @@ export const logger = new Logger()
 export default logger
 
 // version
-export const versionTips = (op: MixEvideoOptions,player:EVideo) => {
+export const versionTips = (op: MixEvideoOptions, player: EVideo) => {
   if (op.showPlayerInfo === 'table') {
     return console.table({
       Version: config.version,
@@ -94,13 +94,13 @@ export const versionTips = (op: MixEvideoOptions,player:EVideo) => {
     })
   }
   console.log(
-    `%c ${prefixName} ${config.version} %c ${op.renderType === 'canvas2d' ? op.renderType : `WebGL.${player.webglVersion}`}${
-      self.devicePixelRatio ? ` DPR.${self.devicePixelRatio}` : ''
-    }${` FPS.${player.fps}`}${op.mode ? ` ${op.mode}` : ''}${op.isHevc ? ' H265' : ' H264'}${
-      op.usePrefetch ? ' MSE' : ''
-    }${op.useOfsRender ? ' OfsRender' : ''}${op.useFrameCache ? ` FrameCache` : ''}${
-      op.useVideoDBCache ? ` VideoCache` : ''
-    }${
+    `%c ${prefixName} ${config.version} %c ${
+      op.renderType === 'canvas2d' ? op.renderType : `WebGL.${player.webglVersion}`
+    }${self.devicePixelRatio ? ` DPR.${self.devicePixelRatio}` : ''}${` FPS.${player.fps}`}${
+      op.mode ? ` ${op.mode}` : ''
+    }${op.isHevc ? ' H265' : ' H264'}${op.usePrefetch ? ' MSE' : ''}${op.useOfsRender ? ' OfsRender' : ''}${
+      op.useFrameCache ? ` FrameCache` : ''
+    }${op.useVideoDBCache ? ` VideoCache` : ''}${
       // op.useAccurate && 'requestVideoFrameCallback' in HTMLVideoElement.prototype ? ' Accurate' : ''
       ` ${player.animationType}`
     } %c`,

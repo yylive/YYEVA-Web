@@ -12,10 +12,10 @@ const defaultOptions = {
   forceBlob: false,
   showVideo: false,
   showPlayerInfo: true,
-  useAccurate: true,
+  useAccurate: false,
   logLevel: 'info',
   renderType: 'webgl',
-  hevcUrl:undefined
+  hevcUrl: undefined,
 }
 export const useVideoStore = create(
   combine(
@@ -27,7 +27,7 @@ export const useVideoStore = create(
     },
     (set, get) => ({
       setVideo(v: any) {
-        set(state => ({video: {...state.video,...defaultOptions, ...v}}))
+        set(state => ({video: {...state.video, ...defaultOptions, ...v}}))
       },
     }),
   ),

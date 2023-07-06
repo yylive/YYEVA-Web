@@ -53,6 +53,7 @@ importers:
       core-js: ^3.22.0
       react: ^18.2.0
       react-dom: ^18.2.0
+      vconsole: ^3.15.0
       yyeva: workspace:*
     dependencies:
       core-js: 3.26.1
@@ -63,6 +64,7 @@ importers:
       '@efox/emp': 2.5.6
       '@types/react': 18.0.26
       '@types/react-dom': 18.0.9
+      vconsole: 3.15.0
 
   projects/hevc:
     specifiers:
@@ -4842,6 +4844,11 @@ packages:
       is-what: 3.14.1
     dev: true
 
+  /copy-text-to-clipboard/3.1.0:
+    resolution: {integrity: sha512-PFM6BnjLnOON/lB3ta/Jg7Ywsv+l9kQGD4TWDCSlRBGmqnnTM5MrDkhAFgw+8HZt0wW6Q2BBE4cmy9sq+s9Qng==}
+    engines: {node: '>=12'}
+    dev: true
+
   /copy-to-clipboard/3.3.3:
     resolution: {integrity: sha512-2KV8NhB5JqC3ky0r9PMCAZKbUHSwtEo4CwCs0KXgruG43gX5PMqDEBbVU4OUzw2MuAWUfsuFmWvEKG5QRfSnJA==}
     dependencies:
@@ -7493,6 +7500,10 @@ packages:
     dependencies:
       dns-packet: 5.4.0
       thunky: 1.1.0
+    dev: true
+
+  /mutation-observer/1.0.3:
+    resolution: {integrity: sha512-M/O/4rF2h776hV7qGMZUH3utZLO/jK7p8rnNgGkjKUw8zCGjRQPxB8z6+5l8+VjRUQ3dNYu4vjqXYLr+U8ZVNA==}
     dev: true
 
   /mute-stream/0.0.8:
@@ -10598,6 +10609,15 @@ packages:
   /vary/1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
+    dev: true
+
+  /vconsole/3.15.0:
+    resolution: {integrity: sha512-8hq7wabPcRucSWQyN7/1tthMawP9JPvM95zgtMHpPknMMMCKj+abpoK7P7oKK4B0qw58C24Mdvo9+raUdpHyVQ==}
+    dependencies:
+      '@babel/runtime': 7.20.6
+      copy-text-to-clipboard: 3.1.0
+      core-js: 3.26.1
+      mutation-observer: 1.0.3
     dev: true
 
   /vite/2.9.15:

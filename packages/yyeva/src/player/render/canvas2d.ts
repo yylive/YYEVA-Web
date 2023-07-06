@@ -5,7 +5,7 @@ import {logger} from 'src/helper/logger'
 //
 export default class Render2D {
   public isPlay = false
-  public webgl :any= {version: 'canvas2d'}
+  public webgl: any = {version: 'canvas2d'}
   public videoEntity: VideoEntity
   public renderCache: RenderCache
   //

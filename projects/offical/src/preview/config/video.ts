@@ -8,7 +8,7 @@ const selected: any = {
       anchor_nick: 'boy',
       anchor_avatar: '/yy/2.jpeg',
     }, */
-    videoUrl: `${host}/yy/pld_264_crf12.mp4`,
+    videoUrl: `${host}/yy/pld_264_new.mp4`,
     effects: {
       1: '/yy/b6.png',
       2: '/yy/b6c.png',
