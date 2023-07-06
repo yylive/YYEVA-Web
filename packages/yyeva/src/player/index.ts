@@ -51,7 +51,7 @@ export default class EVideo {
   public fps = 0
   public version: WebglVersion
   public webglVersion: WebglVersion
-
+  public currentFrame = 0
   private windowState: WINDOW_VISIBLE_STATE = WINDOW_VISIBLE_STATE.SHOW
   /**
    * 记录当前播放资源的 base64,当blob url播放失败时播放
@@ -87,8 +87,8 @@ export default class EVideo {
     this.loopChecker.onEnd = () => {
       logger.debug('[player] onEnd...url:', this.op.videoUrl)
       this.stop()
-      this.destroy()
       this.onEnd && this.onEnd()
+      this.destroy()
     }
   }
   public async setup() {
@@ -158,72 +158,46 @@ export default class EVideo {
     // versionTips(this.op, this.renderType)
   }
   private drawFrame(frame: number) {
+    this.currentFrame = frame
     if (this.windowState == WINDOW_VISIBLE_STATE.HIDE) {
       this.renderer?.clear()
       return
     }
-    this.renderer?.render(frame)
+    this.renderer?.render(this.currentFrame)
   }
 
   public setWindowState(state: WINDOW_VISIBLE_STATE) {
     this.windowState = state == undefined ? WINDOW_VISIBLE_STATE.SHOW : state
-  }
-
-  private setPlay = (isPlay: boolean) => {
-    if (this.renderer) {
-      this.renderer.isPlay = isPlay
-      this.animator.isPlay = isPlay
-      this.isPlay = isPlay
-    }
-  }
-  private isDestoryed() {
-    logger.debug('player is destoryed!')
-  }
-  public start() {
-    //::TODO 做播放兼容性处理
-    if (!this.renderer) return this.isDestoryed()
-    this.startEvent()
-  }
-
-  private cleanTimer() {
-    if (this.timeoutId) {
-      clearTimeout(this.timeoutId)
-      this.timeoutId = null
+    if (this.video) {
+      if (this.windowState == WINDOW_VISIBLE_STATE.HIDE) {
+        this.video.pause()
+      } else {
+        this.video.play()
+      }
     }
   }
 
-  private beginTimer() {
-    logger.debug(
-      '[player]beginTimer..., duration=',
-      this.video.duration,
-      'loop=',
-      this.loop(),
-      'checkTimeout=',
-      this.op.checkTimeout,
-    )
-    if (!this.loop() && this.op.checkTimeout && this.video.duration > 0) {
-      this.cleanTimer()
-      this.timeoutId = setTimeout(() => {
-        logger.debug('[player] timeout...url:', this.op.videoUrl)
-        this.stop()
-        this.destroy()
-        this.onEnd && this.onEnd()
-      }, this.video.duration * 1000 + 100)
-    }
+  getTotalFrame() {
+    return this.fps * this.video.duration
   }
 
-  private clickToPlay() {
-    if (this.op.onRequestClickPlay) {
-      this.op.onRequestClickPlay(this.op.container, this.video)
-    } else {
-      clickPlayBtn(this.op.container, this.video)
+  getCurrentFrame() {
+    return this.currentFrame
+  }
+
+  getVideo() {
+    return this.video
+  }
+
+  setCurrentTime(sec: number) {
+    try {
+      this.video.currentTime = sec
+      this.matchPlay()
+    } catch (e) {
+      //
     }
   }
-  private startEvent() {
-    if (this.renderer.isPlay === true) return
-    this.setPlay(true)
-    this.animator.start()
-    this.beginTimer()
+  private matchPlay() {
     const videoPromise = this.video.play()
     // 避免 uc 夸克报错
     if (videoPromise) {
@@ -267,6 +241,63 @@ export default class EVideo {
     } else {
       this.op?.onEnd?.()
     }
+  }
+  private setPlay = (isPlay: boolean) => {
+    if (this.renderer) {
+      this.renderer.isPlay = isPlay
+      this.animator.isPlay = isPlay
+      this.isPlay = isPlay
+    }
+  }
+  private isDestoryed() {
+    logger.debug('player is destoryed!')
+  }
+  public start() {
+    //::TODO 做播放兼容性处理
+    if (!this.renderer) return this.isDestoryed()
+    this.startEvent()
+  }
+
+  private cleanTimer() {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId)
+      this.timeoutId = null
+    }
+  }
+
+  private beginTimer() {
+    logger.debug(
+      '[player]beginTimer..., duration=',
+      this.video.duration,
+      'loop=',
+      this.loop(),
+      'checkTimeout=',
+      this.op.checkTimeout,
+    )
+    if (!this.loop() && this.op.checkTimeout && this.video.duration > 0) {
+      this.cleanTimer()
+      this.timeoutId = setTimeout(() => {
+        logger.debug('[player] timeout...url:', this.op.videoUrl)
+        this.stop()
+        this.onEnd && this.onEnd()
+        this.destroy()
+      }, this.video.duration * 1000 + 100)
+    }
+  }
+
+  private clickToPlay() {
+    if (this.op.onRequestClickPlay) {
+      this.op.onRequestClickPlay(this.op.container, this.video)
+    } else {
+      clickPlayBtn(this.op.container, this.video)
+    }
+  }
+  private startEvent() {
+    if (this.renderer.isPlay === true) return
+    this.setPlay(true)
+    this.animator.start()
+    this.beginTimer()
+    this.matchPlay()
   }
   public stop() {
     if (!this.renderer) return this.isDestoryed()
@@ -358,6 +389,7 @@ export default class EVideo {
     this.eventsFn.canplaythrough = () => {
       logger.debug('canplaythrough paused', video.paused)
       if (video.paused) {
+        if (this.op.checkWindowStateWhenPlay && this.windowState == WINDOW_VISIBLE_STATE.HIDE) return
         const videoPromise = video.play()
         if (videoPromise)
           videoPromise.catch(e => {
@@ -391,8 +423,8 @@ export default class EVideo {
       this.onResume && this.onResume()
     }
     this.eventsFn.ended = () => {
-      this.destroy()
       this.onEnd && this.onEnd()
+      this.destroy()
     }
     this.eventsFn.progress = () => {
       this.onProcess && this.onProcess()
@@ -496,6 +528,10 @@ export default class EVideo {
     this.version = undefined as any
     // 释放 file 文件
     this.videoFile = undefined
+    this.onEnd = undefined as any
+    this.onStart = undefined as any
+    this.onProcess = undefined as any
+    this.op.onRequestClickPlay = undefined as any
     this.cleanTimer()
   }
   private async checkVideoCache(): Promise<string | undefined> {

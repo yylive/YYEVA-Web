@@ -1,5 +1,5 @@
-import { logger } from 'src/helper/logger'
-import { MetaDataType, MixEvideoOptions } from 'src/type/mix'
+import {logger} from 'src/helper/logger'
+import {MetaDataType, MixEvideoOptions} from 'src/type/mix'
 // import VideoEntity from 'src/player/render/videoEntity'
 //
 export type AnimatorType = 'requestVideoFrameCallback' | 'requestAnimationFrame' | 'setTimeout'
@@ -40,13 +40,10 @@ export default class Animator {
     this.requestAnim = this.returnRequestAnim()
     this.cancelAnim = this.returnCancelAnim()
   }
-  public setVideoFps({ videoFps, fps }: any) {
+  public setVideoFps({videoFps, fps}: any) {
     this.fps = fps
     this.videoFps = videoFps
-    if (
-      this.animationType !== 'requestVideoFrameCallback' &&
-      this.fps > 20
-    ) {
+    if (this.animationType !== 'requestVideoFrameCallback' && this.fps > 20) {
       this.fps = 20
     }
   }
@@ -106,6 +103,7 @@ export default class Animator {
     return Math.round(mediaTime * this.videoFps) + (this.op.offset || 0)
   }
   returnRequestAnim() {
+    console.info('animationType', this.animationType)
     switch (this.animationType) {
       case 'requestVideoFrameCallback':
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
