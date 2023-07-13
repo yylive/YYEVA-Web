@@ -288,6 +288,7 @@ export default class EVideo {
     }
   }
   public stop() {
+    logger.debug('[player]stop.')
     if (!this.renderer) return this.isDestoryed()
     if (this.renderer.isPlay === false) return
     this.setPlay(false)
@@ -421,6 +422,7 @@ export default class EVideo {
       this.onStart && this.onStart()
     }
     this.eventsFn.pause = () => {
+      logger.log('[player]on pause.')
       this.stop()
       this.onPause && this.onPause()
     }
@@ -488,17 +490,13 @@ export default class EVideo {
    * 页面隐藏时执行
    */
   private videoVisbility = () => {
-    logger.debug('[visibilitychange]', document.hidden)
-    if (this.isPlay) {
-      if (document.hidden) {
-        logger.debug('[visibilitychange] pause')
-        this.video.pause()
-      } else {
-        logger.debug('[visibilitychange] play')
-        this.video.play()
-      }
+    logger.debug('[visibilitychange]', document.hidden, 'this.isPlay=', this.isPlay)
+    if (document.hidden) {
+      logger.debug('[visibilitychange] pause')
+      this.video.pause()
     } else {
-      logger.debug('[visibilitychange] isPlay is false!!')
+      logger.debug('[visibilitychange] play')
+      this.video.play()
     }
   }
 
