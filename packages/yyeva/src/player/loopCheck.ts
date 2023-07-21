@@ -26,6 +26,11 @@ export class LoopChecker {
     // logger.info('[LoopChecker] this._loopCount=', this.loopCount, ', loop=', loop)
   }
 
+  reset(): void {
+    this.playedLoopCount = 0
+    this.lastFrameIndex = 0
+  }
+
   public setEndFrame(value: number) {
     logger.info('[LoopChecker]setEndFrame value=', value)
     if (value && value > 0) {

@@ -243,7 +243,9 @@ export default class EVideo {
     this.setPlay(true)
     this.animator.start()
     this.beginTimer()
+    this.loopChecker.reset()
     const videoPromise = this.video.play()
+    this.video.currentTime = 0
     // 避免 uc 夸克报错
     if (videoPromise) {
       videoPromise
