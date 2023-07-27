@@ -425,7 +425,7 @@ export default class EVideo {
     }
     this.eventsFn.pause = () => {
       logger.log('[player]on pause.')
-      this.stop()
+      // this.stop()
       this.onPause && this.onPause()
     }
     this.eventsFn.resume = () => {
@@ -498,7 +498,9 @@ export default class EVideo {
       this.video.pause()
     } else {
       logger.debug('[visibilitychange] play')
-      this.video.play()
+      if (this.isPlay) {
+        this.video.play()
+      }
     }
   }
 
