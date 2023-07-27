@@ -222,6 +222,7 @@ export default class VideoEntity {
   private parseFromSrcAndOptions() {
     if (!this.config?.effect) return
     const effects = this.op.effects || {}
+    // logger.debug('parseFromSrcAndOptions, this.config.effect=', this.config.effect, effects)
     return Promise.all(
       this.config.effect.map(async item => {
         //
@@ -269,8 +270,8 @@ export default class VideoEntity {
     // console.log(`[effect] makeImage:`, item, url)
     if (!this.ctx) return
     const ctx = this.ctx
-    const w = item[this.effectWidth]
-    const h = item[this.effectHeight]
+    const w = Math.ceil(item[this.effectWidth])
+    const h = Math.ceil(item[this.effectHeight])
     let img = null
     if (url) {
       img = await this.loadImg(url)
@@ -387,8 +388,8 @@ export default class VideoEntity {
     if (eOptions.fontSize) item.fontSize = eOptions.fontSize
     const {fontStyle, fontColor, fontSize} = item
     //
-    const w = item[this.effectWidth]
-    const h = item[this.effectHeight]
+    const w = Math.ceil(item[this.effectWidth])
+    const h = Math.ceil(item[this.effectHeight])
     ctx.canvas.width = w
     ctx.canvas.height = h
     ctx.textBaseline = 'middle'
@@ -412,7 +413,7 @@ export default class VideoEntity {
         fontSize = Math.min((w / txtlength) * 1, defaultFontSize)
       }
 
-      const font = ['600', `${Math.round(fontSize)}px`, 'Microsoft YaHei']
+      const font = ['600', `${Math.round(fontSize)}px`, 'SimHei']
       if (fontStyle === 'b') {
         font.unshift('bold')
       }
@@ -434,8 +435,11 @@ export default class VideoEntity {
       if (fontColor) ctx.fillStyle = fontColor
       fontStyle(null, ctx, item)
     }
+    logger.info('getFontStyle, style: ', ctx.font, ', text:', txt)
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-    ctx.fillText(this._getText(ctx, txt, w), w / 2, h / 2)
+    const posx = Math.floor(w / 2)
+    const posy = Math.floor(h / 2)
+    ctx.fillText(this._getText(ctx, txt, w), posx, posy)
     if (!!self.OffscreenCanvas && this.ofs instanceof OffscreenCanvas) {
       const blob = await this.ofs.convertToBlob()
       const bitmap = await self.createImageBitmap(blob, {imageOrientation: 'flipY'})
