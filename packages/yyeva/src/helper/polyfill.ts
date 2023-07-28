@@ -13,6 +13,15 @@ export const isAndroid = /android|adr/i.test(ua)
 //
 export const isUCBrowser = ua.indexOf('ucbrowser') > -1 // UC浏览器
 export const isQuark = ua.indexOf('quark') > -1 // 夸克浏览器
+
+export const getChromeVersion = () => {
+  const s = ua.match(/chrome\/([\d\.]+)/)
+  let v: any = s ? s[1] : '0.0.0'
+  v = v.split('.')[0]
+  v = v ? Number(v) : 0
+  return v
+}
+
 export const polyfill = {
   baidu: isBaidu,
   weixin: isWeixin,

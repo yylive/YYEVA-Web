@@ -1,5 +1,5 @@
 import {logger} from 'src/helper/logger'
-import {isDataUrl} from 'src/helper/utils'
+import {isDataUrl, isOffscreenCanvasSupported} from 'src/helper/utils'
 import Animator from 'src/player/video/animator'
 import {MixEvideoOptions, VideoAnimateType, VideoAnimateEffectType, VideoDataType, EScaleMode} from 'src/type/mix'
 
@@ -33,7 +33,7 @@ export default class VideoEntity {
   //
   constructor(op: MixEvideoOptions) {
     this.op = op
-    const canvas = !!self.OffscreenCanvas ? new OffscreenCanvas(300, 300) : document.createElement('canvas')
+    const canvas = isOffscreenCanvasSupported() ? new OffscreenCanvas(300, 300) : document.createElement('canvas')
     const ctx = canvas.getContext('2d', {willReadFrequently: true}) // willReadFrequently 表示是否计划有大量的回读操作，频繁调用getImageData()方法时能节省内存
     // canvas.style.display = 'none'
     // document.body.appendChild(canvas)
@@ -413,7 +413,7 @@ export default class VideoEntity {
         fontSize = Math.min((w / txtlength) * 1, defaultFontSize)
       }
 
-      const font = ['600', `${Math.round(fontSize)}px`, 'SimHei']
+      const font = ['600', `${Math.round(fontSize)}px`, 'Microsoft YaHei']
       if (fontStyle === 'b') {
         font.unshift('bold')
       }
@@ -440,7 +440,7 @@ export default class VideoEntity {
     const posx = Math.floor(w / 2)
     const posy = Math.floor(h / 2)
     ctx.fillText(this._getText(ctx, txt, w), posx, posy)
-    if (!!self.OffscreenCanvas && this.ofs instanceof OffscreenCanvas) {
+    if (isOffscreenCanvasSupported() && this.ofs instanceof OffscreenCanvas) {
       const blob = await this.ofs.convertToBlob()
       const bitmap = await self.createImageBitmap(blob, {imageOrientation: 'flipY'})
       return bitmap

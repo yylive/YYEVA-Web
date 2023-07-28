@@ -2,6 +2,7 @@ import {MixEvideoOptions, ResizeCanvasType} from 'src/type/mix'
 import VideoEntity from 'src/player/render/videoEntity'
 import RenderCache from './renderCache'
 import {logger} from 'src/helper/logger'
+import {isOffscreenCanvasSupported} from 'src/helper/utils'
 //
 export default class Render2D {
   public isPlay = false
@@ -25,7 +26,7 @@ export default class Render2D {
     this.op = op
     //
     this.ofs =
-      !!self.OffscreenCanvas && !!self.createImageBitmap
+      isOffscreenCanvasSupported() && !!self.createImageBitmap
         ? new OffscreenCanvas(300, 300)
         : document.createElement('canvas')
     //

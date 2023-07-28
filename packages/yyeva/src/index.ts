@@ -3,6 +3,7 @@ import config from 'src/helper/config'
 import {MixEvideoOptions} from './type/mix'
 import {versionTips, logger} from 'src/helper/logger'
 import {polyfill, wechatPolyfill} from './helper/polyfill'
+import {isOffscreenCanvasSupported} from './helper/utils'
 
 async function yyEva(options: MixEvideoOptions): Promise<Player> {
   // console.log('[yyEva]options=', options)
@@ -46,7 +47,7 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
   if (!self.createImageBitmap) {
     op.useBitmap = false
   }
-  if (!self.OffscreenCanvas || !op.useOfsRender) {
+  if (!isOffscreenCanvasSupported() || !op.useOfsRender) {
     op.useOfsRender = false
     op.useFrameCache = false
   }
