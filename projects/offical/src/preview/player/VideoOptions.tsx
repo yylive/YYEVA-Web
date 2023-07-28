@@ -1,29 +1,47 @@
-import {ProCard, ProForm, ProFormText, ProFormRadio, ProFormSwitch, ProFormSelect} from '@ant-design/pro-components'
-import {useOptionsStore} from 'src/preview/store/usePlayerStore'
+import {
+  ProCard,
+  ProForm,
+  ProFormText,
+  ProFormRadio,
+  ProFormSwitch,
+  ProFormSelect,
+  ProFormInstance,
+} from '@ant-design/pro-components'
+import {useVideoStore} from 'src/preview/store/usePlayerStore'
 import {Alert, Form, message, Tooltip} from 'antd'
 import {QuestionCircleOutlined} from '@ant-design/icons'
-const VideoOptions = () => {
-  const {options, setOptions} = useOptionsStore()
+import {useEffect, useRef} from 'react'
+const swithColSpan = {xs: 8, sm: 12, md: 12, lg: 12}
+const VideoOptionsForm = () => {
+  const {video, setVideo} = useVideoStore()
+  const formRef = useRef<ProFormInstance>()
+  useEffect(() => {
+    if (!formRef) return
+    formRef.current?.setFieldsValue(video)
+  }, [video])
   return (
     <ProForm
+      formRef={formRef}
       layout="horizontal"
       grid={true}
       rowProps={{
         gutter: [16, 0],
       }}
       onFinish={async (v: any) => {
-        // console.log('options submit', v)
-        setOptions(v)
+        setVideo(v)
         message.success('配置更新成功！')
       }}
+      // request={async () => options}
     >
       <ProFormRadio.Group
         name="mode"
         label="模式"
         radioType="button"
-        initialValue={options.mode}
         colProps={{
-          span: 24,
+          xs: 12,
+          sm: 24,
+          md: 24,
+          lg: 24,
         }}
         fieldProps={{
           // buttonStyle: 'solid',
@@ -43,131 +61,21 @@ const VideoOptions = () => {
             value: 'Fill',
           },
         ]}
-      ></ProFormRadio.Group>
-      <ProFormSwitch
-        colProps={{
-          span: 12,
-        }}
-        fieldProps={{
-          size: 'small',
-        }}
-        name="mute"
-        label="静音"
-        initialValue={options.mute}
       />
-      <ProFormSwitch
-        colProps={{
-          span: 12,
-        }}
-        fieldProps={{
-          size: 'small',
-        }}
-        initialValue={options.loop}
-        name="loop"
-        label="循环"
-      />
-      <ProFormSwitch
-        colProps={{
-          span: 12,
-        }}
-        fieldProps={{
-          size: 'small',
-        }}
-        initialValue={options.useMetaData}
-        name="useMetaData"
-        label="带Key视频"
-      />
-      <ProFormSwitch
-        colProps={{
-          span: 12,
-        }}
-        fieldProps={{
-          size: 'small',
-        }}
-        initialValue={options.useAccurate}
-        name="useAccurate"
-        label="帧同步"
-      />
-      <ProFormSwitch
-        colProps={{
-          span: 12,
-        }}
-        fieldProps={{
-          size: 'small',
-        }}
-        initialValue={options.useFrameCache}
-        name="useFrameCache"
-        label="帧缓存"
-      />
-      <ProFormSwitch
-        colProps={{
-          span: 12,
-        }}
-        fieldProps={{
-          size: 'small',
-        }}
-        initialValue={options.useVideoDBCache}
-        name="useVideoDBCache"
-        label="本地存储"
-      />
-      <ProFormSwitch
-        colProps={{
-          span: 12,
-        }}
-        fieldProps={{
-          size: 'small',
-        }}
-        initialValue={options.forceBlob}
-        name="forceBlob"
-        label="强制blob"
-      />
-      <ProFormSwitch
-        colProps={{
-          span: 12,
-        }}
-        fieldProps={{
-          size: 'small',
-        }}
-        initialValue={options.showVideo}
-        name="showVideo"
-        label="显示MP4"
-      />
-      <ProFormSwitch
-        colProps={{
-          span: 12,
-        }}
-        fieldProps={{
-          size: 'small',
-        }}
-        initialValue={options.showPlayerInfo}
-        name="showPlayerInfo"
-        label="播放信息"
-      />
-      <ProFormRadio.Group
-        name="logLevel"
-        label="日志"
-        radioType="button"
-        initialValue={options.logLevel}
-        colProps={{
-          span: 24,
-        }}
-        fieldProps={{
-          size: 'small',
-        }}
-        options={['debug', 'info', 'warn', 'error']}
-      />
-
       <ProFormRadio.Group
         name="renderType"
         label={
-          <Tooltip title="canvas2d 带 key 开发中">
+          <Tooltip title="canvas2d 带 key 开发中,不设置可以自动旋转">
             渲染 <QuestionCircleOutlined />
           </Tooltip>
         }
         radioType="button"
-        initialValue={options.renderType}
+        // initialValue={options.renderType}
         colProps={{
-          span: 24,
+          xs: 12,
+          sm: 24,
+          md: 24,
+          lg: 24,
         }}
         fieldProps={{
           size: 'small',
@@ -178,7 +86,146 @@ const VideoOptions = () => {
           canvas2d: 'canvas2d',
         }}
       />
+      <ProFormSwitch
+        colProps={swithColSpan}
+        fieldProps={{
+          size: 'small',
+        }}
+        name="mute"
+        label="静音"
+        // initialValue={options.mute}
+      />
+      <ProFormSwitch
+        colProps={swithColSpan}
+        fieldProps={{
+          size: 'small',
+        }}
+        // initialValue={options.loop}
+        name="loop"
+        label="循环"
+      />
+      <ProFormSwitch
+        colProps={swithColSpan}
+        fieldProps={{
+          size: 'small',
+        }}
+        // initialValue={options.useAccurate}
+        name="useAccurate"
+        label="帧同步"
+      />
+      <ProFormSwitch
+        colProps={swithColSpan}
+        fieldProps={{
+          size: 'small',
+        }}
+        // initialValue={options.useFrameCache}
+        name="useFrameCache"
+        label="帧缓存"
+      />
+      <ProFormSwitch
+        colProps={swithColSpan}
+        fieldProps={{
+          size: 'small',
+        }}
+        // initialValue={options.useVideoDBCache}
+        name="useVideoDBCache"
+        label="本地存储"
+      />
+      <ProFormSwitch
+        colProps={swithColSpan}
+        fieldProps={{
+          size: 'small',
+        }}
+        // initialValue={options.forceBlob}
+        name="forceBlob"
+        label="强制blob"
+      />
+      <ProFormSwitch
+        colProps={swithColSpan}
+        fieldProps={{
+          size: 'small',
+        }}
+        // initialValue={options.showVideo}
+        name="showVideo"
+        label="显示MP4"
+      />
+      <ProFormSwitch
+        colProps={swithColSpan}
+        fieldProps={{
+          size: 'small',
+        }}
+        // initialValue={options.showPlayerInfo}
+        name="showPlayerInfo"
+        label="播放信息"
+      />
+      <ProFormSwitch
+        colProps={swithColSpan}
+        fieldProps={{
+          size: 'small',
+        }}
+        // initialValue={options.checkTimeout}
+        name="checkTimeout"
+        label={
+          <Tooltip title="支持小程序、H5等后台运行程序的切换，正常播放不会停止">
+            超时检查 <QuestionCircleOutlined />
+          </Tooltip>
+        }
+      />
+      <ProFormSwitch
+        colProps={swithColSpan}
+        fieldProps={{
+          size: 'small',
+        }}
+        // initialValue={options.useMetaData}
+        name="useMetaData"
+        label={
+          <Tooltip title="支持内嵌自定义内容、只需要 alphaDirection 的可关闭提升性能">
+            带Key视频 <QuestionCircleOutlined />
+          </Tooltip>
+        }
+      />
+      <ProFormRadio.Group
+        name="alphaDirection"
+        label={
+          <Tooltip title="视频Alpha素材，默认为右边，带Key素材不需要设置,useMetaData 为 false 生效">
+            alpha位置 <QuestionCircleOutlined />
+          </Tooltip>
+        }
+        radioType="button"
+        colProps={{
+          xs: 8,
+          sm: 24,
+          md: 24,
+          lg: 24,
+        }}
+        fieldProps={{
+          size: 'small',
+        }}
+        valueEnum={{
+          left: '左',
+          right: '右',
+        }}
+      />
+      <ProFormRadio.Group
+        name="logLevel"
+        label="日志"
+        radioType="button"
+        // initialValue={options.logLevel}
+        colProps={{
+          xs: 16,
+          sm: 24,
+          md: 24,
+          lg: 24,
+        }}
+        fieldProps={{
+          size: 'small',
+        }}
+        options={['debug', 'info', 'warn', 'error']}
+      />
     </ProForm>
   )
+}
+const VideoOptions = () => {
+  return <VideoOptionsForm />
 }
 export default VideoOptions

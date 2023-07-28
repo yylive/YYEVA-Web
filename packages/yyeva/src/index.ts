@@ -2,9 +2,10 @@ import Player from 'src/player'
 import config from 'src/helper/config'
 import {MixEvideoOptions} from './type/mix'
 import {versionTips, logger} from 'src/helper/logger'
-import {polyfill, wxIsReady, wxReady} from './helper/polyfill'
+import {polyfill, wechatPolyfill} from './helper/polyfill'
 
 async function yyEva(options: MixEvideoOptions): Promise<Player> {
+  // console.log('[yyEva]options=', options)
   const op: MixEvideoOptions = {
     ...{
       showVideo: false,
@@ -17,7 +18,7 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
       // mute: true,
       usePrefetch: true,
       useBitmap: true,
-      useAccurate: true,
+      useAccurate: false,
       useMetaData: false,
       alphaDirection: 'left',
       useVideoDBCache: true,
@@ -26,11 +27,17 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
       resizeCanvas: 'percent',
       showPlayerInfo: true,
       forceBlob: false,
+      checkTimeout: false,
+      endPause: false,
+      font: {
+        overflow: 'cut',
+      },
     },
     ...options,
   }
+  // console.log('[yyEva]op=', op, 'onEnd=', op.onEnd, ', onLoop=', op.onLoop)
   // useMetaData 必须启动usePrefetch
-  if (op.useMetaData) {
+  if (op.useMetaData && op.usePrefetch) {
     op.usePrefetch = true
   }
   if (op.useFrameCache) {
@@ -46,12 +53,16 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
   if (!self.indexedDB) {
     op.useVideoDBCache = false
   }
+  //百度新内核 支持 requestVideoFrameCallback 播放失效
+  if (polyfill.android && polyfill.baidu) {
+    op.useAccurate = false
+  }
   //
   // setLoggerLevel(op.logLevel)
   // console.log('op.logLevel',op.logLevel)
   logger.setup({level: op.logLevel, showtips: !!op.showPlayerInfo})
   //
-  if (polyfill.weixin && !wxIsReady && polyfill.ios) await wxReady()
+  if (polyfill.weixin && polyfill.ios) await wechatPolyfill.wxReady()
   //
   const player = new Player(op)
   //
@@ -64,13 +75,13 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
   if (op.onError) player.onError = op.onError
   //
   await player.setup()
-  op.showPlayerInfo && versionTips(op)
+  op.showPlayerInfo && versionTips(op, player)
   // console.log(op)
   return player
 }
 export const version = config.version
 export const mode = config.mode
-export {yyEva}
+export {yyEva, wechatPolyfill}
 export type YYEvaType = Player
 export type YYEvaOptionsType = MixEvideoOptions
 export default yyEva

@@ -2,13 +2,15 @@ import {logger} from 'src/helper/logger'
 import {isDataUrl} from 'src/helper/utils'
 import Animator from 'src/player/video/animator'
 import {MixEvideoOptions, VideoAnimateType, VideoAnimateEffectType, VideoDataType, EScaleMode} from 'src/type/mix'
+
+type ContextType = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
 export default class VideoEntity {
   public op: MixEvideoOptions
-  static fps = 30
-  static VideoFps = 30
+  public fps = 30
+  public videoFps = 30
   public config?: VideoAnimateType
   public isUseMeta = false
-  static hasAudio = false
+  public hasAudio = false
   //
   private ofs: HTMLCanvasElement | OffscreenCanvas
   private ctx: CanvasRenderingContext2D | null | OffscreenCanvasRenderingContext2D
@@ -32,16 +34,16 @@ export default class VideoEntity {
   constructor(op: MixEvideoOptions) {
     this.op = op
     const canvas = !!self.OffscreenCanvas ? new OffscreenCanvas(300, 300) : document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext('2d', {willReadFrequently: true}) // willReadFrequently 表示是否计划有大量的回读操作，频繁调用getImageData()方法时能节省内存
     // canvas.style.display = 'none'
     // document.body.appendChild(canvas)
-    this.ctx = ctx
+    this.ctx = ctx as any
     this.ofs = canvas
     if (op.useMetaData) {
       this.isUseMeta = true
     }
     /**
-     * 腾讯视频 VAP
+     * polyfill map
      */
     if (op.dataUrl) {
       this.effectHeight = 'h'
@@ -72,21 +74,21 @@ export default class VideoEntity {
     // this.config = data
     this.config = config
     if (config.descript.fps) {
-      VideoEntity.fps = config.descript.fps
-      VideoEntity.VideoFps = config.descript.fps
+      this.fps = config.descript.fps
+      this.videoFps = config.descript.fps
     }
     if (config.descript.hasAudio) {
-      VideoEntity.hasAudio = true
+      this.hasAudio = true
     }
   }
   async setup() {
     if (this.op.dataUrl) {
       const {info, src, frame}: any = await this.getConfig(this.op.dataUrl)
-      VideoEntity.fps = info.fps || VideoEntity.fps
+      this.fps = info.fps || this.fps
       if (info.fps) {
-        VideoEntity.VideoFps = info.fps
+        this.videoFps = info.fps
       }
-      // console.log('info.fps', info.fps, 'VideoEntity.fps', VideoEntity.fps)
+      // console.log('info.fps', info.fps, 'this.fps', this.fps)
       this.config = {
         descript: {
           width: info.videoW,
@@ -101,38 +103,46 @@ export default class VideoEntity {
         datas: frame,
       }
     }
-    if (this.op.fps) VideoEntity.fps = this.op.fps
+    if (this.op.fps) this.fps = this.op.fps
     // *** requestAnimationFrame 需要降帧防止抖动
-    if (
-      Animator.animationType !== 'requestVideoFrameCallback' &&
-      VideoEntity.fps > 20
-      //  && !this.op.fps
-    ) {
-      VideoEntity.fps = 20
-    }
-    // console.log('VideoEntity.fps', VideoEntity.fps)
+    // console.log('this.fps', this.fps)
     await this.parseFromSrcAndOptions()
   }
   private get isUseBitmap() {
     return !!self.createImageBitmap && this.op.useBitmap
   }
+  //
+  private dataURItoBlob(dataURI: string) {
+    const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0] // mime类型
+    const byteString = self.atob(dataURI.split(',')[1]) //base64 解码
+    const arrayBuffer = new ArrayBuffer(byteString.length) //创建缓冲数组
+    const intArray = new Uint8Array(arrayBuffer) //创建视图
 
-  private async loadImg(url: string): Promise<HTMLImageElement | ImageBitmap | undefined> {
-    if (url.indexOf('http') === -1 && !isDataUrl(url)) {
-      url = `${location.protocol}//${location.host}${url}`
+    for (let i = 0; i < byteString.length; i++) {
+      intArray[i] = byteString.charCodeAt(i)
     }
-    if (this.isUseBitmap && !isDataUrl(url)) {
-      try {
-        const blob = await fetch(url).then(r => r.blob())
-        // 适配 gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1) 解决自动翻转的问题
-        const d = await self.createImageBitmap(blob, {imageOrientation: 'flipY'})
-        return d
-      } catch (e) {
-        logger.error(e)
-        this.op?.onEnd?.(e)
-        return undefined
+    return new Blob([intArray], {type: mimeString})
+  }
+  /* private fileToDataUrl(file: HTMLInputElement): Promise<string | undefined> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file.files[0])
+      reader.onloadend = () => resolve(reader.result as string)
+      reader.onerror = e => reject(undefined)
+    })
+  } */
+  /* private fileToBlob(file: HTMLInputElement): Promise<Blob | undefined> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsArrayBuffer(file.files[0])
+      reader.onloadend = () => {
+        const blob = new Blob([new Uint8Array(reader.result as ArrayBuffer)], {type: file.type})
+        resolve(blob)
       }
-    }
+      reader.onerror = e => reject(undefined)
+    })
+  } */
+  private createImageElement(url): Promise<HTMLImageElement | undefined> {
     return new Promise((resolve, reject) => {
       const img = new Image()
       img.crossOrigin = 'anonymous'
@@ -147,10 +157,72 @@ export default class VideoEntity {
       img.src = url
     })
   }
+  /**
+   * loadImg
+   * @param url 支持 HTTP DATAURL
+   * @returns
+   */
+  private async loadImg(url: string): Promise<HTMLImageElement | ImageBitmap | undefined> {
+    try {
+      const isBase64 = isDataUrl(url)
+      if (this.isUseBitmap) {
+        let blob
+        // 取消 HTMLInputElement 对象
+        // if (url instanceof HTMLInputElement) {
+        //   blob = await this.fileToBlob(url)
+        // } else {
+        if (isBase64) {
+          blob = this.dataURItoBlob(url)
+          // base 64 不需要执行 imageOrientation: 'flipY'
+          // return self.createImageBitmap(blob)
+        } else {
+          blob = await fetch(url)
+            .then(r => {
+              if (r.ok) {
+                return r.blob()
+              } else {
+                logger.error('fetch request failed, url: ' + url)
+                return undefined
+              }
+            })
+            .catch(err => {
+              logger.error('fetch, err=', err)
+              return undefined
+            })
+        }
+        // const img = document.createElement('img')
+        // img.src = URL.createObjectURL(blob)
+        // document.body.appendChild(img)
+        // console.log(blob)
+        // }
+        // 适配 gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1) 解决自动翻转的问题
+        if (blob) {
+          return self.createImageBitmap(blob, {imageOrientation: 'flipY'})
+        } else {
+          return undefined
+        }
+      }
+      // if (url instanceof HTMLInputElement) {
+      //   url = await this.fileToDataUrl(url)
+      // } else if (typeof url === 'string' && url.indexOf('http') === -1 && !isBase64) {
+      //   url = `${location.protocol}//${location.host}${url}`
+      // }
+      if (typeof url === 'string' && url.indexOf('http') === -1 && !isBase64) {
+        url = `${location.protocol}//${location.host}${url}`
+      }
+      // url base64 都可以创建 image element
+      return this.createImageElement(url)
+    } catch (e) {
+      logger.warn('fetch, else err=', e)
+      // this.op?.onEnd?.(e)
+      return undefined
+    }
+  }
 
   private parseFromSrcAndOptions() {
     if (!this.config?.effect) return
     const effects = this.op.effects || {}
+    // logger.debug('parseFromSrcAndOptions, this.config.effect=', this.config.effect, effects)
     return Promise.all(
       this.config.effect.map(async item => {
         //
@@ -162,12 +234,23 @@ export default class VideoEntity {
           //   item['fontStyle'] = this.op['fontStyle']
           // }
           if (effects[effectTag]) {
+            const eOptions = {
+              fontStyle: effects.fontStyle,
+              fontColor: effects.fontColor,
+              fontSize: effects.fontSize,
+            }
+
             if (typeof effects[effectTag] === 'string') {
               item.text = effects[effectTag]
             } else {
               item.text = effects[effectTag].text
+
+              const style = effects[effectTag]
+              if (style.fontStyle) eOptions.fontStyle = style.fontStyle
+              if (style.fontColor) eOptions.fontColor = style.fontColor
+              if (style.fontSize) eOptions.fontSize = style.fontSize
             }
-            item.img = await this.makeTextImg(item, effects[effectTag])
+            item.img = await this.makeTextImg(item, eOptions, item.effectHeight)
           }
         } // image
         else if (this.effectTypes.img.indexOf(effectType) > -1) {
@@ -187,14 +270,16 @@ export default class VideoEntity {
     // console.log(`[effect] makeImage:`, item, url)
     if (!this.ctx) return
     const ctx = this.ctx
-    const w = item[this.effectWidth]
-    const h = item[this.effectHeight]
+    const w = Math.ceil(item[this.effectWidth])
+    const h = Math.ceil(item[this.effectHeight])
     let img = null
-    if (url && url.length > 0) {
+    if (url) {
       img = await this.loadImg(url)
     }
+    // const isBase64 = isDataUrl(url)
     ctx.canvas.width = w
     ctx.canvas.height = h
+    // console.log(`makeImage`, item.scaleMode, w, h, img)
     if (item.scaleMode && img) {
       switch (item.scaleMode) {
         case EScaleMode.aspectFill: // 最大适配
@@ -207,8 +292,8 @@ export default class VideoEntity {
             }
             const drawWidth = Math.round(img.width * adapt)
             const drawHeight = Math.round(img.height * adapt)
-            const sx = -Math.round(Math.abs(drawWidth - w) / 2)
-            const sy = -Math.round(Math.abs(drawHeight - h) / 2)
+            const sx = Math.round((w - drawWidth) / 2)
+            const sy = Math.round((drawHeight - h) / 2)
             // console.log(
             //   `[effect] before draw: w ,h ,drawWidth, drawHeight, sx, sy, adapt`,
             //   w,
@@ -220,10 +305,8 @@ export default class VideoEntity {
             //   adapt,
             // )
             ctx.save()
-            if (!isDataUrl(url)) {
-              ctx.translate(0, drawHeight)
-              ctx.scale(1, -1)
-            }
+            ctx.translate(0, drawHeight)
+            ctx.scale(1, -1)
             ctx.drawImage(img, sx, sy, drawWidth, drawHeight)
             ctx.restore()
             return ctx.getImageData(0, 0, w, h)
@@ -239,8 +322,8 @@ export default class VideoEntity {
             }
             const drawWidth = Math.round(img.width * adapt)
             const drawHeight = Math.round(img.height * adapt)
-            const sx = -Math.round(Math.abs(drawWidth - w) / 2)
-            const sy = -Math.round(Math.abs(drawHeight - h) / 2)
+            const sx = Math.round((w - drawWidth) / 2)
+            const sy = Math.round((drawHeight - h) / 2)
             // console.log(
             //   `[effect] before draw: w ,h ,drawWidth, drawHeight, sx, sy, adapt`,
             //   w,
@@ -252,10 +335,8 @@ export default class VideoEntity {
             //   adapt,
             // )
             ctx.save()
-            if (!isDataUrl(url)) {
-              ctx.translate(0, drawHeight)
-              ctx.scale(1, -1)
-            }
+            ctx.translate(0, drawHeight)
+            ctx.scale(1, -1)
             ctx.drawImage(img, sx, sy, drawWidth, drawHeight)
             ctx.restore()
             return ctx.getImageData(0, 0, w, h)
@@ -275,50 +356,90 @@ export default class VideoEntity {
       return ctx.getImageData(0, 0, w, h)
     }
   }
+
+  _getText(ctx: ContextType, text: string, maxWidth: number): string {
+    if (!this.op?.font?.overflow || this.op.font.overflow === 'cut') {
+      const textWidth = ctx.measureText(text).width
+      if (maxWidth == undefined) {
+        maxWidth = textWidth
+      } else if (textWidth > maxWidth) {
+        let len = text.length
+        while (ctx.measureText(text + '...').width > maxWidth && len > 0) {
+          len = len - 1
+          text = text.substring(0, len)
+        }
+        text = text + '...'
+      }
+    }
+
+    return text
+  }
+
   /**
    * 文字转换图片
    * @param item
    */
-  private async makeTextImg(item: VideoAnimateEffectType, eOptions: any = {}) {
+  private async makeTextImg(item: VideoAnimateEffectType, eOptions: any = {}, width = 0) {
     if (!this.ctx) return
     const ctx = this.ctx
+    // console.log(`[makeTextImg] eOptions:`, eOptions)
     if (eOptions.fontStyle) item.fontStyle = eOptions.fontStyle
     if (eOptions.fontColor) item.fontColor = eOptions.fontColor
     if (eOptions.fontSize) item.fontSize = eOptions.fontSize
     const {fontStyle, fontColor, fontSize} = item
     //
-    const w = item[this.effectWidth]
-    const h = item[this.effectHeight]
+    const w = Math.ceil(item[this.effectWidth])
+    const h = Math.ceil(item[this.effectHeight])
     ctx.canvas.width = w
     ctx.canvas.height = h
     ctx.textBaseline = 'middle'
     ctx.textAlign = 'center'
     const txt = item.text || ''
+    const txtlength = txt.length
+    const defaultFontSize = h - 2
+    // console.log(
+    //   `[makeTextImg]: fontStyle${fontStyle}, fontColor${fontColor}, fontSize${fontSize}, w${w}, h${h}, txt${txt}, txtlength:${txtlength}`,
+    //   this.op,
+    // )
+
     const getFontStyle = (fontSize?: number) => {
-      fontSize = fontSize || Math.min(w / txt.length, h - 8) // 需留一定间隙
-      const font = ['600', `${Math.round(fontSize)}px`, 'Microsoft YaHei']
+      fontSize = fontSize || defaultFontSize
+      if (!this.op?.font?.overflow || this.op.font.overflow === 'cut') {
+        // const maxFontLength = Math.ceil(w / fontSize) - 2
+        // if (txtlength > maxFontLength) {
+        //   txt = txt.substring(0, maxFontLength) + '...'
+        // }
+      } else if (fontSize * txtlength > w - 1) {
+        fontSize = Math.min((w / txtlength) * 1, defaultFontSize)
+      }
+
+      const font = ['600', `${Math.round(fontSize)}px`, 'SimHei']
       if (fontStyle === 'b') {
         font.unshift('bold')
       }
+      // console.log(`getFontStyle`, font)
       return font.join(' ')
     }
     if (!fontStyle) {
-      const fontStyle = getFontStyle(item.fontSize)
+      const fontStyle = getFontStyle(fontSize)
       ctx.font = fontStyle
       if (fontColor) ctx.fillStyle = fontColor
     } else if (typeof fontStyle == 'string') {
       ctx.font = fontStyle
       if (fontColor) ctx.fillStyle = fontColor
     } else if (typeof fontStyle == 'object') {
-      ctx.font = fontStyle['font'] || getFontStyle()
+      ctx.font = fontStyle['font'] || getFontStyle(fontSize)
       ctx.fillStyle = fontStyle['color'] || fontColor
     } else if (typeof fontStyle == 'function') {
       ctx.font = getFontStyle(fontSize)
       if (fontColor) ctx.fillStyle = fontColor
       fontStyle(null, ctx, item)
     }
+    logger.info('getFontStyle, style: ', ctx.font, ', text:', txt)
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-    ctx.fillText(txt, w / 2, h / 2)
+    const posx = Math.floor(w / 2)
+    const posy = Math.floor(h / 2)
+    ctx.fillText(this._getText(ctx, txt, w), posx, posy)
     if (!!self.OffscreenCanvas && this.ofs instanceof OffscreenCanvas) {
       const blob = await this.ofs.convertToBlob()
       const bitmap = await self.createImageBitmap(blob, {imageOrientation: 'flipY'})
@@ -327,9 +448,12 @@ export default class VideoEntity {
     return ctx.getImageData(0, 0, w, h)
   }
   getFrame(frame: number) {
-    return this.config?.datas.find(item => {
-      return item[this.frameIndex] === frame
-    })
+    return (
+      this.config.datas &&
+      this.config.datas.find(item => {
+        return item[this.frameIndex] === frame
+      })
+    )
   }
   private getConfig(jsonUrl: string): Promise<VideoDataType> {
     return new Promise((resolve, reject) => {

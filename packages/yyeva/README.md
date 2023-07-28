@@ -24,6 +24,7 @@ let player:YYEvaType = await yyEva({
 	onStart(){},
 	onStop(){},
 	onEnd(){},
+	onLoopCount(args){},
 	onPause(){},
 	onResume(){},
 	onProcess(){},
@@ -37,13 +38,15 @@ player.destory() // dstory player
 | 选项            | 作用     | 默认值    |必填|
 |---------------|--------|--------|--------|
 |videoUrl|mp4地址||*|
-|videoID|适配微信等需要预先声明的容器|e-video-wx-${now}||
+|hevcUrl|mp4地址 [hevc、h265]|不支持h265会降级到h264||
+|loop|是否循环、循环次数 |true||
+|videoID|适配微信等需要预先声明的容器,否则需要重复点击授权|||
 |mode|显示方式 横竖屏|根据父容器等比缩放||
 |container|html对象 推荐 div||*|
 |fps|礼物播放动画帧数|根据素材获取||
 |usePrefetch|是否边播边下载、带Key素材默认开启|true||
 |useBitmap|利用bitmap代替 img element|true||
-|useAccurate|启用 requestVideoFrameCallback,自降级|true||
+|useAccurate|启用 requestVideoFrameCallback,自降级|false|，开启后在个别安卓手机可能出现卡顿现象|
 |useVideoDBCache|indexdb 缓存视频|true||
 |useFrameCache|缓存视频帧|5||
 |useOfsRender|利用多canvas渲染|true||
@@ -54,6 +57,9 @@ player.destory() // dstory player
 |logLevel|日志级别|`info`||
 |showPlayerInfo|是否控制台显示播放状态|||
 |effects|根据素材传入相应的素材内容|||
+|effects.fontColor|定义传入素材的字体颜色|||
+|effects.fontSize|定义传入素材的字体大小|||
+|checkTimeout|检查播放超时|`fasle`||
 |onRequestClickPlay|微信 或者 `mute=false` 会触发这个事件，不定义则显示默认样式|[类型](https://github.com/yylive/YYEVA-Web/blob/main/packages/yyeva/src/type/mix.ts#L173) [参考 clickPlayBtn](https://github.com/yylive/YYEVA-Web/blob/main/packages/yyeva/src/helper/polyfill.ts#L39)||
 
 ## 注意
@@ -61,8 +67,43 @@ player.destory() // dstory player
 
 ## 兼容性
 综合测试 整理了主流的手机 通过情况 [详细](https://github.com/yylive/YYEVA-Web/blob/main/docs/device.md)
-### 微信
+
+### 微信 WEB & H5
+> IOS 与安卓都需要设置 `videoID` 避免重复授权点击 如:
+
+```javascript
+yyeva({
+	videoID: 'yyeva_full_screen_position'
+})
+...
+yyeva({
+	videoID: 'yyeva_right_top_position'
+})
+```
 #### IOS
 微信 ios 已经验证通过，可以自动播放
+
+兼容ios微信，需要在`WeixinJSBridgeReady`微信h5内置事件中，提前创建`video`,并且预设`id` 
+```javascript
+    document.addEventListener('WeixinJSBridgeReady', () => {
+        window.yyeva_wx_is_ready = true //告诉 yyeva ios wchat 已经 ready
+        const video = document.createElement('video')
+        video.setAttribute('id', 'YYEVA_VIDEO_ID')
+        document.body.appendChild(video)
+        video.style.visibility = 'hidden'
+    })
+```
+或者引用 yyeva 的兼容方法 实现 [demo](https://github.com/yylive/YYEVA-Web/blob/main/projects/es5-demo/src/App.tsx#L3) 如： 
+```js
+import {wechatPolyfill} from 'yyeva'
+wechatPolyfill.initVideoIDPosition(['yyeva_right_top_position', 'yyeva_full_screen_position'])
+```
+
 #### 安卓
-微信 安卓 需要 手动点击 或者 根据 `onRequestClickPlay` 事件进行自定义提示
+微信安卓 需要手动点击 触发授权, 可根据 `onRequestClickPlay` 事件进行自定义 `点击事件` 提示
+
+### UC & 夸克 
+多礼物同时播放存在 卡顿问题，正在推进解决,临时解决可以通过队列错峰播放!
+
+### 微信小程序 
+[NPM 安装包](https://www.npmjs.com/package/yyeva-wechat)

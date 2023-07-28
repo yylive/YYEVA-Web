@@ -41,7 +41,7 @@ export default class WglRender {
   public async setup(video?: HTMLVideoElement) {
     if (!video) throw new Error('video must support!')
     // MCache.videoDurationTime = video.duration
-    await this.renderCache.setup(video.duration)
+    await this.renderCache.setup()
     await this.videoEntity.setup()
     this.video = video
     //

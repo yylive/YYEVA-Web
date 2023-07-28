@@ -1,15 +1,15 @@
 import {logger} from 'src/helper/logger'
 import {MetaDataType, MixEvideoOptions} from 'src/type/mix'
-import VideoEntity from 'src/player/render/videoEntity'
+// import VideoEntity from 'src/player/render/videoEntity'
 //
-type reqType = 'requestVideoFrameCallback' | 'requestAnimationFrame' | 'setTimeout'
+export type AnimatorType = 'requestVideoFrameCallback' | 'requestAnimationFrame' | 'setTimeout'
 
 export default class Animator {
   private animateId: any
-  static animationType: reqType
+  public animationType: AnimatorType
   private video: HTMLVideoElement
-  // public fps = 20
-  // private videoFps = 0
+  private fps = 20
+  private videoFps = 0
   private frameDelay = 0
   private frameStartTime = 0
   private op: MixEvideoOptions
@@ -26,11 +26,11 @@ export default class Animator {
     this.isPlay = false
 
     if ('requestVideoFrameCallback' in HTMLVideoElement.prototype && this.op.useAccurate) {
-      Animator.animationType = 'requestVideoFrameCallback'
+      this.animationType = 'requestVideoFrameCallback'
     } else if (typeof requestAnimationFrame !== 'undefined') {
-      Animator.animationType = 'requestAnimationFrame'
+      this.animationType = 'requestAnimationFrame'
     } else {
-      Animator.animationType = 'setTimeout'
+      this.animationType = 'setTimeout'
     }
     //
     // if (this.op.fps) {
@@ -40,15 +40,15 @@ export default class Animator {
     this.requestAnim = this.returnRequestAnim()
     this.cancelAnim = this.returnCancelAnim()
   }
-  // public setVideoFps(videoFps?: number) {
-  //   if (videoFps && videoFps > 0) {
-  //     if (!this.op.fps) this.fps = videoFps
-  //     this.videoFps = videoFps
-  //   }
-  //   this.frameDelay = 1000 / this.fps
-  // }
+  public setVideoFps({videoFps, fps}: any) {
+    this.fps = fps
+    this.videoFps = videoFps
+    if (this.animationType !== 'requestVideoFrameCallback' && this.fps > 20) {
+      this.fps = 20
+    }
+  }
   public async setup() {
-    this.frameDelay = 1000 / VideoEntity.fps
+    this.frameDelay = 1000 / this.fps
   }
   private currentTimeMillsecond: () => number = () => {
     if (typeof performance === 'undefined') {
@@ -57,8 +57,8 @@ export default class Animator {
     return performance.now()
   }
   start() {
-    if (this.frameDelay === 0 && VideoEntity.fps > 0) this.frameDelay = 1000 / VideoEntity.fps
-    logger.debug('animator start', this.animateId, this.frameDelay, VideoEntity.fps)
+    if (this.frameDelay === 0 && this.fps > 0) this.frameDelay = 1000 / this.fps
+    logger.debug('animator start', this.animateId, this.frameDelay, this.fps)
     this.frameStartTime = this.currentTimeMillsecond()
     this.cancelAnim()
     this.requestAnim(this.drawFrame)
@@ -96,14 +96,14 @@ export default class Animator {
         this.frameStartTime = now - (delta % this.frameDelay)
       }
     }
-		*/
+    */
   }
   getCurrentFrame(mediaTime = 0) {
     // const videoFps = this.videoFps || this.fps
-    return Math.round(mediaTime * VideoEntity.VideoFps) + (this.op.offset || 0)
+    return Math.round(mediaTime * this.videoFps) + (this.op.offset || 0)
   }
   returnRequestAnim() {
-    switch (Animator.animationType) {
+    switch (this.animationType) {
       case 'requestVideoFrameCallback':
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
@@ -122,11 +122,11 @@ export default class Animator {
           })
         }
       default:
-        return (fn: () => void) => (this.animateId = setTimeout(fn, 1000 / VideoEntity.fps))
+        return (fn: () => void) => (this.animateId = setTimeout(fn, 1000 / this.fps))
     }
   }
   returnCancelAnim() {
-    switch (Animator.animationType) {
+    switch (this.animationType) {
       case 'requestVideoFrameCallback':
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore

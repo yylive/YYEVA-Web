@@ -5,9 +5,37 @@ import {GiftPlayer} from './player'
 import VideoOptions from 'src/preview/player/VideoOptions'
 import {version} from 'yyeva'
 import VideoMeta from './player/VideoMeta'
-import {useEffectStore} from 'src/preview/store/usePlayerStore'
-import {DashboardOutlined, GithubOutlined} from '@ant-design/icons'
-import {Badge} from 'antd'
+import {SettingOutlined} from '@ant-design/icons'
+import {
+  useEffectStore,
+  useCodeStore,
+  useClickUploadStore,
+  useBackgroundColorStore,
+  useBackgroundGrid,
+  useVideoStore,
+} from 'src/preview/store/usePlayerStore'
+import {
+  DashboardOutlined,
+  GithubOutlined,
+  SmileOutlined,
+  SmileFilled,
+  PlusCircleOutlined,
+  CodepenOutlined,
+  UploadOutlined,
+  QuestionCircleOutlined,
+} from '@ant-design/icons'
+import {Badge, Card, Typography, Row, Col, Avatar, Modal, Button, Tooltip, Select, Switch} from 'antd'
+import SelectVideo from './player/SelectVideo'
+import Platform from './view/Platform'
+import Author from './view/Author'
+import WhoUse from './view/WhoUse'
+import GitHubButton from 'react-github-btn'
+import CodePreview from './player/CodePreview'
+// import Jcx from './view/Jcx'
+
+const {Option} = Select
+
+const GitHub: any = GitHubButton
 /* const Content = () => (
   <div>
     YYEVA（YY Effect
@@ -28,42 +56,136 @@ import {Badge} from 'antd'
  */
 const Page = () => {
   const effect = useEffectStore(state => state)
+  const {video} = useVideoStore(state => state)
+  const {opencode, setOpenCode} = useCodeStore(state => state)
+  const {setClickUpload} = useClickUploadStore()
+  const {backgroundColor, setBackGoundColor} = useBackgroundColorStore(state => state)
+  const {setBackGoundGrid} = useBackgroundGrid()
+
+  const handleChange = (value: string) => {
+    console.log(`selected ${value}`)
+    setBackGoundColor(value)
+  }
+
   return (
     <PageContainer
       subTitle="YY Effect Video Animate"
       // content={<Content />}
-      title="YYEVA"
+      // extra={[<Jcx key={'jcx'} />]}
+      title={
+        <>
+          <img className="logo" src="/logo.png" />
+          YYEVA
+        </>
+      }
     >
-      <ProCard gutter={8} wrap split={'vertical'}>
+      <ProCard gutter={8} wrap ghost size="default" split={'vertical'}>
         <ProCard
-          style={{marginTop: 8}}
+          style={{marginTop: 8, height: '100%'}}
           colSpan={{xs: 24, sm: 6, md: 6, lg: 6}}
           title="描述信息 Meta"
           headerBordered
           loading={effect.effect && Object.keys(effect.effect).length === 0}
+          extra={
+            <a href="https://github.com/yylive/YYEVA-Web/tree/main/packages/yyeva" target="_blank" rel="noreferrer">
+              <SettingOutlined />
+            </a>
+          }
         >
+          <SelectVideo />
+          <br />
           <VideoMeta />
         </ProCard>
 
         <ProCard
-          style={{marginTop: 8}}
+          style={{marginTop: 8, height: '100%'}}
           colSpan={{xs: 24, sm: 12, md: 12, lg: 12}}
-          title={<>预览 Preview </>}
+          title={
+            <>
+              预览 Preview{' '}
+              <Tooltip title="拖拉到网格 或 点击右边 上传视频">
+                <QuestionCircleOutlined />
+              </Tooltip>{' '}
+              <Button size="small" type="primary" onClick={setClickUpload}>
+                <UploadOutlined />
+              </Button>{' '}
+              <Select defaultValue="black" size="small" style={{width: 120}} onChange={handleChange}>
+                <Option value="black">black</Option>
+                <Option value="white">white</Option>
+                <Option value="gray">gray</Option>
+                <Option value="red">red</Option>
+                <Option value="green">green</Option>
+                <Option value="blue">blue</Option>
+                <Option value="#9b59b6">amethyst</Option>
+                <Option value="#3498db">Peter River</Option>
+              </Select>{' '}
+              <Switch checkedChildren="网格" unCheckedChildren="网格" defaultChecked onChange={setBackGoundGrid} />
+            </>
+          }
           extra={
-            <a href="https://github.com/yylive/YYEVA" target="_blank" rel="noreferrer">
-              <GithubOutlined /> Github
-            </a>
+            <GitHub
+              href="https://github.com/yylive/YYEVA"
+              data-color-scheme="no-preference: light; light: light; dark: dark;"
+              data-size="large"
+              data-show-count="true"
+              aria-label="Star yylive/YYEVA on GitHub"
+            >
+              Star
+            </GitHub>
           }
           layout="center"
           headerBordered
         >
           <Badge.Ribbon text={<>v{version}</>}>
-            <GiftPlayer />
+            <GiftPlayer backgroundColor={backgroundColor} />
           </Badge.Ribbon>
         </ProCard>
-        <ProCard style={{marginTop: 8}} colSpan={{xs: 24, sm: 6, md: 6, lg: 6}} title="配置 Config" headerBordered>
+        <ProCard
+          style={{marginTop: 8, height: '100%'}}
+          colSpan={{xs: 24, sm: 6, md: 6, lg: 6}}
+          title="配置 Config"
+          extra={
+            <div className="video_options_extra">
+              <Tooltip title="查看代码">
+                <CodepenOutlined onClick={() => setOpenCode(!opencode)} />
+              </Tooltip>
+              <CodePreview />
+              <Typography.Paragraph
+                style={{margin: 0}}
+                copyable={{
+                  text: `${JSON.stringify(video, null, 2)}`,
+                  // icon: [<SmileOutlined key="copy-icon" />, <SmileFilled key="copied-icon" />],
+                  tooltips: ['复制配置', '配置复制成功'],
+                }}
+              />
+            </div>
+          }
+          headerBordered
+        >
           <VideoOptions />
         </ProCard>
+      </ProCard>
+      <ProCard title="Platform" style={{marginTop: '24px'}} gutter={8} wrap ghost size="default" split={'vertical'}>
+        <Platform />
+      </ProCard>
+      <ProCard title="Power By" style={{marginTop: '24px'}} gutter={8} wrap ghost size="default" split={'vertical'}>
+        <Author />
+      </ProCard>
+      <ProCard
+        title="Who Use"
+        extra={
+          <a href="https://github.com/yylive/YYEVA/issues/7" target="_blank" rel="noreferrer">
+            更多
+          </a>
+        }
+        style={{marginTop: '24px'}}
+        gutter={8}
+        wrap
+        ghost
+        size="default"
+        split={'vertical'}
+      >
+        <WhoUse />
       </ProCard>
     </PageContainer>
   )

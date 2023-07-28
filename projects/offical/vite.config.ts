@@ -14,6 +14,7 @@ export default defineConfig(({mode}) => {
     plugins: [react()],
     build: {
       sourcemap: !isDev,
+      external: [],
     },
     server: {
       port: 3001,
@@ -28,7 +29,6 @@ export default defineConfig(({mode}) => {
       preprocessorOptions: {
         less: {
           javascriptEnabled: true,
-          // additionalData: '@root-entry-name: default;',
         },
       },
     },

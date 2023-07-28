@@ -46,7 +46,17 @@ export type MixEvideoOptions = VideoEvent & {
    * 循环播放
    * @default true
    */
-  loop?: boolean
+  loop?: boolean | number
+  /**
+   * 停止到某一帧，默认停止到最后一帧
+   * @default undefined
+   */
+  endFrame?: number
+  /**
+   * 播放完毕后是否暂停, 传true的话，清理时，需要外部调用destroy释放资源
+   * @default false
+   */
+  endPause?: boolean
   /**
    * 动画容器
    */
@@ -54,7 +64,16 @@ export type MixEvideoOptions = VideoEvent & {
   /**
    * video http 连接 或 file 对象
    */
-  videoUrl: string | HTMLInputElement
+  videoUrl: string | File
+  /**
+   * 提供给 op传输
+   */
+  videoSource?: string
+  /**
+   * hevc、h265 格式 http 连接 或 file 对象
+   */
+  hevcUrl?: string | File
+  isHevc?: boolean
   /**
    * video id
    * 用来做唯一播放对象处理 不重复注销video标签 适配微信 (目前是支持多video标签)
@@ -120,6 +139,9 @@ export type MixEvideoOptions = VideoEvent & {
   color?: string
   style?: string
   fontStyle?: string | any
+  font?: {
+    overflow: 'zoom' | 'cut' //  适配文本框宽度方式,超出文本框时:  'zoom'缩放  'cut'截取后段文本...
+  }
   /**
    * effects
    * 业务内容 k 为 effectTag
@@ -179,6 +201,11 @@ export type MixEvideoOptions = VideoEvent & {
    * @default false
    */
   forceBlob?: boolean
+  /**
+   * 播放超时开关
+   * @default false
+   */
+  checkTimeout?: boolean
 }
 
 export type VideoDataInfoType = {
@@ -251,6 +278,7 @@ export type VideoEvent = {
   onProcess?: EventCallback
   onEnd?: EventCallback
   onError?: EventCallback
+  onLoopCount?: EventCallback
 }
 
 export type VideoAnimateType = {

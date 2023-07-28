@@ -1,54 +1,64 @@
 import create from 'zustand'
 import {combine} from 'zustand/middleware'
-const host = ''
-export const useOptionsStore = create(
+import video from 'src/preview/config/video'
+const defaultOptions = {
+  alphaDirection: 'right',
+  mode: 'Fill',
+  useMetaData: true,
+  loop: true,
+  useFrameCache: true,
+  useVideoDBCache: true,
+  mute: true,
+  forceBlob: false,
+  showVideo: false,
+  showPlayerInfo: true,
+  useAccurate: false,
+  logLevel: 'info',
+  renderType: 'webgl',
+  hevcUrl: undefined,
+}
+export const useVideoStore = create(
   combine(
     {
-      options: {
-        alphaDirection: 'right',
-        mode: 'Fill',
-        useMetaData: true,
-        loop: true,
-        useFrameCache: true,
-        mute: false,
-        useVideoDBCache: true,
-        forceBlob: false,
-        showVideo: false,
-        showPlayerInfo: true,
-        useAccurate: true,
-        logLevel: 'info',
-        renderType: 'webgl',
+      video: {
+        ...defaultOptions,
+        ...video.default,
       },
     },
     (set, get) => ({
-      setOptions(d: any) {
-        const {options} = get()
-        set(state => ({options: {...options, ...d}}))
+      setVideo(v: any) {
+        set(state => ({video: {...state.video, ...defaultOptions, ...v}}))
       },
     }),
   ),
 )
 
-export const useVideoStore = create(
+export const useBackgroundColorStore = create(
   combine(
     {
-      video: {
-        videoUrl: `${host}/yy/yy.mp4`,
-        effects: {
-          user_nick: 'girl',
-          user_avatar: '/yy/1.jpeg',
-          anchor_nick: 'boy',
-          anchor_avatar: '/yy/2.jpeg',
-        },
-      },
+      backgroundColor: 'black',
     },
     (set, get) => ({
-      setVideo(video: any) {
-        set(state => ({video}))
+      setBackGoundColor(value: string) {
+        set(state => ({backgroundColor: value}))
       },
     }),
   ),
 )
+
+export const useBackgroundGrid = create(
+  combine(
+    {
+      showGrid: true,
+    },
+    (set, get) => ({
+      setBackGoundGrid(value: boolean) {
+        set(state => ({showGrid: value}))
+      },
+    }),
+  ),
+)
+
 export const useVideoFormStore = create(
   combine(
     {
@@ -66,6 +76,22 @@ export const useEffectStore = create(
   combine({effect: []}, set => ({
     setEffect(d: any) {
       set(state => ({effect: d}))
+    },
+  })),
+)
+
+export const useCodeStore = create(
+  combine({opencode: false}, set => ({
+    setOpenCode(opencode: boolean) {
+      set(state => ({opencode}))
+    },
+  })),
+)
+
+export const useClickUploadStore = create(
+  combine({upload: 0}, (set, get) => ({
+    setClickUpload() {
+      set(state => ({upload: get().upload + 1}))
     },
   })),
 )

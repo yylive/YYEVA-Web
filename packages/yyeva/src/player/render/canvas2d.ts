@@ -5,7 +5,7 @@ import {logger} from 'src/helper/logger'
 //
 export default class Render2D {
   public isPlay = false
-  static webgl = {version: 'canvas2d'}
+  public webgl: any = {version: 'canvas2d'}
   public videoEntity: VideoEntity
   public renderCache: RenderCache
   //
@@ -62,7 +62,7 @@ export default class Render2D {
   async setup(video?: HTMLVideoElement) {
     if (!video) throw new Error('video must support!')
     //
-    await this.renderCache.setup(video.duration)
+    await this.renderCache.setup()
     //
     this.video = video
     await this.videoEntity.setup()

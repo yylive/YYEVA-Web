@@ -11,8 +11,7 @@ class Parser {
   //   const regex = '(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)'
   //   return exact ? new RegExp(`(?:^${regex}?$)`) : new RegExp(regex, 'g')
   // }
-  getdata(resultStr: string): VideoAnimateType | undefined {
-    const raw = atob(resultStr.slice(resultStr.indexOf(',') + 1))
+  getdata(raw: string): VideoAnimateType | undefined {
     try {
       const mc = raw.match(yyExp)
       if (!mc) return undefined

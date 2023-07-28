@@ -24,6 +24,7 @@ let player:YYEvaType = await yyEva({
 	onStart(){},
 	onStop(){},
 	onEnd(){},
+	onLoopCount(args){},
 	onPause(){},
 	onResume(){},
 	onProcess(){},
@@ -37,13 +38,15 @@ player.destory() // dstory player
 | options            | effect     | defaults    |required|
 |---------------|--------|--------|--------|
 |videoUrl|mp4 address||*|
-|videoID|to adapt to hosting environments such as WeChat, you need to declare the container ID in advance|e-video-wx-${now}||
+|hevcUrl|mp4 address [hevc、h265]|||
+|loop|loop or loop count |true||
+|videoID|Adapt to containers that require prior declaration such as WeChat, otherwise you need to repeatedly click on authorization|||
 |mode|'AspectFill' / 'AspectFit' / 'contain' / 'cover'|scale proportionally according to the parent container||
 |container|dom container||*|
 |fps|animation frame|get from video source||
 |usePrefetch|whether to download while playing, the material with "key" is enabled by default|true||
 |useBitmap|use bitmaps instead of img elements|true||
-|useAccurate|in the case of supporting requestVideoFrameCallback, use requestVideoFrameCallback first|true||
+|useAccurate|in the case of supporting requestVideoFrameCallback, use requestVideoFrameCallback first|false||
 |useVideoDBCache|enable indexDB video caching|true||
 |useFrameCache|number of video frame buffers|5||
 |useOfsRender|enable multithreaded rendering|true||
@@ -54,6 +57,9 @@ player.destory() // dstory player
 |logLevel|log level|`info`||
 |showPlayerInfo|whether the console shows the playback status|||
 |effects|additional material content|||
+|effects.fontColor|define the font color of the effects material|||
+|effects.fontSize|define the font size of the effects material|||
+|checkTimeout|check play timeout|`fasle`||
 |onRequestClickPlay|triggered when the video cannot be played automatically, such as WeChat or "mute=false"|[type](https://github.com/yylive/YYEVA-Web/blob/main/packages/yyeva/src/type/mix.ts#L173) </br> [refer to clickPlayBtn](https://github.com/yylive/YYEVA-Web/blob/main/packages/yyeva/src/helper/polyfill.ts#L39)||
 
 ## attention
@@ -61,8 +67,11 @@ player.destory() // dstory player
 
 ## compatibility
 compatibility list obtained after comprehensive testing [detail](https://github.com/yylive/YYEVA-Web/blob/main/docs/device.en.md)
-### WeChat
+### WeChat H5
 #### IOS
 WeChat ios has been verified and can be played automatically
 #### android
 WeChat Android needs to be manually clicked or customized according to the `onRequestClickPlay` event
+
+### Wechat Miniprogram 
+[NPM Package](https://www.npmjs.com/package/yyeva-wechat)

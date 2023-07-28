@@ -1,29 +1,31 @@
 import Render from 'src/player/render'
 import Render2D from 'src/player/render/canvas2d'
 import videoEvents from 'src/player/video/videoEvents'
-import {MixEvideoOptions, EventCallback, WebglVersion, EPlayError, EPlayStep} from 'src/type/mix'
+import {MixEvideoOptions, EventCallback, WebglVersion, EPlayError, EPlayStep, VideoAnimateType} from 'src/type/mix'
 // import {prefetchVideoStream} from 'src/player/video/mse'
 // import {versionTips} from 'src/helper/logger'
-import Animator from 'src/player/video/animator'
+import Animator, {AnimatorType} from 'src/player/video/animator'
 import {logger} from 'src/helper/logger'
 import parser from 'src/parser'
 import db from 'src/parser/db'
-import Webgl from './render/webglEntity'
+// import Webgl from './render/webglEntity'
 
-import {getVIdeoId} from 'src/helper/utils'
-import {polyfill, clickPlayBtn} from 'src/helper/polyfill'
-import VideoEntity from './render/videoEntity'
+// import {getVIdeoId} from 'src/helper/utils'
+import {polyfill, clickPlayBtn, isHevc} from 'src/helper/polyfill'
+// import VideoEntity from './render/videoEntity'
+import {LoopChecker} from './loopCheck'
+
 //
 export default class EVideo {
-  public op: MixEvideoOptions
   private video: HTMLVideoElement
-  public renderer: Render | Render2D
-  public renderType: 'canvas2d' | 'webgl'
-  public version: WebglVersion
   private eventsFn: {[key: string]: (...args: any[]) => void} = {}
   private animator: Animator
   private blobUrl: string
   private polyfillCreateObjectURL: boolean
+  private timeoutId = null
+  private loopChecker!: LoopChecker
+  private videoFile?: File
+  private isSupportHevc = false
   //
   public onStart: EventCallback
   public onResume: EventCallback
@@ -34,8 +36,13 @@ export default class EVideo {
   public onError: EventCallback
   //
   public isPlay = false
-  private videoFile?: HTMLInputElement
-  static url?: string
+  public renderer: Render | Render2D
+  public renderType: 'canvas2d' | 'webgl'
+  public animationType: AnimatorType
+  public op: MixEvideoOptions
+  public fps = 0
+  public version: WebglVersion
+  public webglVersion: WebglVersion
   /**
    * 记录当前播放资源的 base64,当blob url播放失败时播放
    */
@@ -43,16 +50,9 @@ export default class EVideo {
     if (!op.container) throw new Error('container is need!')
     if (!op.videoUrl) throw new Error('videoUrl is need!')
     //TODO 考虑到 除了 htmlinputelement http 应该还有 dataUrl 后续拓展
-    if (typeof op.videoUrl !== 'string') {
-      op.useVideoDBCache = false
-      //TODO filename 作为 url 可能会很多重复问题 考虑是否默认屏蔽帧缓存
-      // op.useFrameCache = false
-      this.videoFile = op.videoUrl
-      EVideo.url = this.videoFile.name
-    } else {
-      EVideo.url = op.videoUrl
-    }
     this.op = op
+    this.loopChecker = new LoopChecker(this.op.loop, this.op.endFrame)
+    this.loopChecker.onLoopCount = this.op.onLoopCount
     this.video = this.videoCreate()
     this.animator = new Animator(this.video, this.op)
     // 是否创建 object url
@@ -65,32 +65,89 @@ export default class EVideo {
       this.renderer = new Render(this.op)
       this.renderType = 'webgl'
     }
+    this.webglVersion = this.renderer.webgl.version
+    //
     //实例化后但是不支持 webgl后降级
-    if (Webgl.version === 'canvas2d') {
+    if (this.webglVersion === 'canvas2d') {
       this.renderer = new Render2D(this.op)
       this.renderType = 'canvas2d'
     }
     // check IndexDB cache
     db.IndexDB = this.op.useVideoDBCache
+
+    this.loopChecker.onEnd = () => {
+      logger.debug('[player] onEnd...url:', this.op.videoUrl)
+      this._onEnd()
+    }
   }
+
+  private _onEnd() {
+    this.stop()
+    if (!this.op.endPause) {
+      this.destroy()
+    }
+
+    this.onEnd && this.onEnd()
+  }
+
+  private _error(err: any) {
+    logger.error(`[EVdeo] error err:`, err)
+    this.stop()
+    this.destroy()
+    this.onEnd?.(err)
+    this.onError?.(err)
+  }
+
   public async setup() {
     try {
       logger.debug('[=== e-video setup ===]')
       await this.videoLoad()
       await this.renderer.setup(this.video)
-      // this.animator.setVideoFps(VideoEntity.fps)
+      //判断是否存在 audio 默认为 false
+      if (!this.renderer.videoEntity.hasAudio) {
+        this.video.muted = true
+      } else {
+        this.video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : false
+      }
+
+      // video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : !VideoEntity.hasAudio
+      //
+      this.fps = this.renderer.videoEntity.fps
+      logger.debug(`[EVdeo] this.renderer.videoEntity.fps`, this.renderer.videoEntity.fps)
+      this.animator.setVideoFps({
+        fps: this.renderer.videoEntity.fps,
+        videoFps: this.renderer.videoEntity.videoFps,
+      })
+
+      this._updateEndFrame()
+
+      //
       await this.animator.setup()
       this.animator.onUpdate = frame => {
-        this.renderer.render(frame)
+        if (this.loopChecker.updateFrame(frame)) {
+          try {
+            this.renderer.render(frame)
+          } catch (err) {
+            logger.error(`[EVdeo] render frame error`)
+            this._error(err)
+          }
+        }
       }
+      this.animationType = this.animator.animationType
       //
-      logger.debug('[setup]', Animator.animationType, Webgl.version)
+      this.renderer.renderCache.mCache.setOptions({
+        fps: this.fps,
+        animationType: this.animationType,
+        videoDurationTime: this.video.duration,
+      })
+      //
+      logger.debug('[setup]', this.animationType, this.webglVersion)
       // 纯在缓存后不再显示 video标签 节省性能
-      if (Webgl.version !== 'canvas2d' && this.op.renderType !== 'canvas2d') {
+      if (this.webglVersion !== 'canvas2d' && this.op.renderType !== 'canvas2d') {
         const render = this.renderer as Render
         const isCache = this.op.useFrameCache ? render.renderCache.isCache() : false
         if (
-          Animator.animationType !== 'requestVideoFrameCallback' &&
+          this.animationType !== 'requestVideoFrameCallback' &&
           !this.op.showVideo &&
           // Webgl.version === 1 &&
           !isCache
@@ -116,6 +173,20 @@ export default class EVideo {
     //
     // versionTips(this.op, this.renderType)
   }
+
+  private _updateEndFrame() {
+    let endFrame = this.op.endFrame
+
+    const duration = this.video.duration
+    const maxFrame = Math.max(0, Math.floor(this.fps * duration) - 5)
+    if (this.op.endPause && (endFrame === undefined || endFrame < 0)) {
+      endFrame = maxFrame
+    }
+    endFrame = Math.min(maxFrame, endFrame || 0)
+    logger.debug('[player]_updateEndFrame, endFrame=', endFrame, ', op.endFrame=', this.op.endFrame)
+    this.loopChecker.setEndFrame(endFrame)
+  }
+
   private setPlay = (isPlay: boolean) => {
     if (this.renderer) {
       this.renderer.isPlay = isPlay
@@ -131,6 +202,35 @@ export default class EVideo {
     if (!this.renderer) return this.isDestoryed()
     this.startEvent()
   }
+
+  private cleanTimer() {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId)
+      this.timeoutId = null
+    }
+  }
+
+  private beginTimer() {
+    logger.debug(
+      '[player]beginTimer..., duration=',
+      this.video.duration,
+      'loop=',
+      this.loop(),
+      'checkTimeout=',
+      this.op.checkTimeout,
+    )
+    if (this.loopChecker.loopCount === 1 && this.op.checkTimeout && this.video.duration > 0) {
+      this.cleanTimer()
+      this.timeoutId = setTimeout(() => {
+        logger.debug('[player] timeout...url:', this.op.videoUrl)
+        this._onEnd()
+        // this.stop()
+        // this.destroy()
+        // this.onEnd && this.onEnd()
+      }, this.video.duration * 1000 + 100)
+    }
+  }
+
   private clickToPlay() {
     if (this.op.onRequestClickPlay) {
       this.op.onRequestClickPlay(this.op.container, this.video)
@@ -142,7 +242,10 @@ export default class EVideo {
     if (this.renderer.isPlay === true) return
     this.setPlay(true)
     this.animator.start()
+    this.beginTimer()
+    this.loopChecker.reset()
     const videoPromise = this.video.play()
+    this.video.currentTime = 0
     // 避免 uc 夸克报错
     if (videoPromise) {
       videoPromise
@@ -162,7 +265,7 @@ export default class EVideo {
            * 暂时自动切换静音
            */
           if (polyfill.safari && polyfill.mac) {
-            logger.debug('切换到静音播放', EVideo.url)
+            logger.debug('切换到静音播放', this.op.videoSource)
             this.video.muted = true
             this.video.play().catch(e => {
               logger.debug(e)
@@ -171,7 +274,7 @@ export default class EVideo {
             return
           }
           //
-          logger.debug(`切换到静音播放`, EVideo.url, e)
+          logger.debug(`切换到静音播放`, this.op.videoSource, e)
           this.clickToPlay()
           // 增加弹窗 手动触发 video.play
           if (e?.code === 0 && e?.name === EPlayError.NotAllowedError) {
@@ -187,20 +290,48 @@ export default class EVideo {
     }
   }
   public stop() {
+    logger.debug('[player]stop.')
     if (!this.renderer) return this.isDestoryed()
     if (this.renderer.isPlay === false) return
     this.setPlay(false)
     this.animator.stop()
     this.video.pause()
+    this.cleanTimer()
   }
   private videoEvent = (e: any) => {
     logger.debug(`[${e.type}]:`, e)
     this.eventsFn[e.type] && this.eventsFn[e.type]()
   }
+
+  private loop() {
+    if (!this.op.endPause) {
+      return this.loopChecker.loopCount > 1
+    }
+    return true // this.loopChecker.loopCount > 1
+  }
+
   private videoCreate() {
-    const videoID = this.op.videoID || getVIdeoId(EVideo.url, polyfill.weixin)
+    //
+    const op = this.op
+    if (op.videoUrl instanceof File) {
+      op.useVideoDBCache = false
+      this.videoFile = op.videoUrl
+      this.op.videoSource = this.videoFile.name
+    } else {
+      this.op.videoSource = op.videoUrl
+    }
+    // quark & android 必须改变URL 否则 video currentTime 不重置
+    if (polyfill.quark && polyfill.android) {
+      const urlSp = this.op.videoSource.indexOf('?') > -1 ? '&' : '?'
+      this.op.videoSource = `${this.op.videoSource}${urlSp}_quark_${Math.round(Math.random() * 100000)}`
+      this.op.useFrameCache = false
+      this.op.useVideoDBCache = false
+    }
+    //
+    // const videoID = this.op.videoID || getVIdeoId(this.op.videoSource)
+    const videoID = this.op.videoID || this.op.videoSource
     logger.debug('[videoID]', videoID)
-    const videoElm = document.getElementById(videoID)
+    const videoElm = videoID ? document.getElementById(videoID) : undefined
     let video: HTMLVideoElement
     if (videoElm instanceof HTMLVideoElement) {
       video = videoElm
@@ -210,6 +341,18 @@ export default class EVideo {
       // 插入video 解决IOS不播放问题
       document.body.appendChild(video)
     }
+    // ========== check hevc ==============
+    this.isSupportHevc = isHevc(video)
+    if (this.isSupportHevc && op.hevcUrl) {
+      op.videoUrl = op.hevcUrl
+      this.op.isHevc = true
+    }
+    //重置 videoID
+    // if (!videoID) {
+    //   videoID = getVIdeoId(this.op.videoSource)
+    // }
+    // video.setAttribute('id', videoID)
+    // ========== ============================
     if (!this.op.showVideo) {
       video.style.position = 'fixed' //防止撑开页面
       video.style.opacity = '0'
@@ -227,7 +370,7 @@ export default class EVideo {
 
     //
     // video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : true
-    video.loop = typeof this.op.loop !== 'undefined' ? this.op.loop : true
+    video.loop = this.loop()
     video.crossOrigin = 'anonymous'
     video.autoplay = true
     // video.preload = 'metadata'
@@ -249,20 +392,25 @@ export default class EVideo {
     const video = this.video
     // register events
     this.eventsFn.canplaythrough = () => {
-      logger.debug('canplaythrough paused', video.paused)
+      logger.log('[canplaythrough paused] ', video.paused)
       if (video.paused) {
-        const videoPromise = video.play()
-        if (videoPromise)
-          videoPromise.catch(e => {
-            logger.warn(`play() error canplaythrough to play`, e.code, e.message, e.name)
-            if (e?.code === 0 && e?.name === EPlayError.NotAllowedError) {
-              this.op?.onError?.({
-                playError: EPlayError.NotAllowedError,
-                video: this.video,
-                playStep: EPlayStep.canplaythrough,
-              })
-            }
-          })
+        logger.log('[canplaythrough] isPlay=', this.isPlay)
+        if (this.isPlay) {
+          const videoPromise = video.play()
+          if (videoPromise)
+            videoPromise.catch(e => {
+              logger.warn(`play() error canplaythrough to play`, e.code, e.message, e.name)
+              if (e?.code === 0 && e?.name === EPlayError.NotAllowedError) {
+                this.op?.onError?.({
+                  playError: EPlayError.NotAllowedError,
+                  video: this.video,
+                  playStep: EPlayStep.canplaythrough,
+                })
+              }
+            })
+        } else {
+          logger.log('[canplaythrough] isPlay is false!')
+        }
       }
     }
     this.eventsFn.stalled = () => {
@@ -276,7 +424,8 @@ export default class EVideo {
       this.onStart && this.onStart()
     }
     this.eventsFn.pause = () => {
-      this.stop()
+      logger.log('[player]on pause.')
+      // this.stop()
       this.onPause && this.onPause()
     }
     this.eventsFn.resume = () => {
@@ -284,6 +433,7 @@ export default class EVideo {
       this.onResume && this.onResume()
     }
     this.eventsFn.ended = () => {
+      this.op.onLoopCount && this.op.onLoopCount({count: 1})
       this.destroy()
       this.onEnd && this.onEnd()
     }
@@ -326,34 +476,34 @@ export default class EVideo {
       video.src = url
       logger.debug('[prefetch url]', url)
     } else {
-      video.src = EVideo.url
-      logger.debug('[prefetch url]', EVideo.url)
+      video.src = this.op.videoSource
+      if (this.op.useMetaData) {
+        const file = await this.getVideoFile()
+        await this.readFileToBlobUrl(file)
+      }
+      logger.debug('[videoSource url]', this.op.videoSource)
     }
-    //判断是否存在 audio 默认为 false
-    if (!VideoEntity.hasAudio) {
-      video.muted = true
-    } else {
-      video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : false
-    }
-    // video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : !VideoEntity.hasAudio
-    //
     video.load()
     logger.debug('[video load]')
     await this.videoAddEvents()
   }
+
   /**
    * 页面隐藏时执行
    */
   private videoVisbility = () => {
-    logger.debug('[visibilitychange]', document.hidden)
+    logger.debug('[visibilitychange]', document.hidden, 'this.isPlay=', this.isPlay)
     if (document.hidden) {
       logger.debug('[visibilitychange] pause')
       this.video.pause()
     } else {
       logger.debug('[visibilitychange] play')
-      this.video.play()
+      if (this.isPlay) {
+        this.video.play()
+      }
     }
   }
+
   private removeVideoEvent() {
     //清除监听事件
     videoEvents.map(name => {
@@ -364,10 +514,13 @@ export default class EVideo {
     //
     if (this.video) {
       this.video.pause()
-      if (!polyfill.weixin && !this.op.videoID) {
-        this.video.src = ''
+      // console.log('[removeVideoEvent]', !(polyfill.weixin && polyfill.ios) && !this.op.videoID)
+      if (!this.op.videoID) {
+        // this.video.src = ''
+        this.video.removeAttribute('src')
         this.video.load()
         this.video.remove()
+        // console.log('this.video', this.video, this.video.currentTime, this.video.currentSrc)
       }
     }
   }
@@ -397,10 +550,11 @@ export default class EVideo {
     this.version = undefined as any
     // 释放 file 文件
     this.videoFile = undefined
+    this.cleanTimer()
   }
   private async checkVideoCache(): Promise<string | undefined> {
     try {
-      const d = await db.model().find(EVideo.url)
+      const d = await db.model().find(this.op.videoSource)
       if (d) {
         const {blob, data} = d
         if (data) this.renderer.videoEntity.setConfig(data)
@@ -413,6 +567,15 @@ export default class EVideo {
     }
     return undefined
   }
+  async getVideoFile() {
+    let file
+    if (!this.videoFile) {
+      file = await this.getVideoByHttp()
+    } else {
+      file = this.videoFile
+    }
+    return file
+  }
   async prefetch(): Promise<string> {
     // const URL = (window as any).webkitURL || window.URL
     // const polyfillCreateObjectURL = polyfill.baidu || ((polyfill.quark || polyfill.uc) && polyfill.android)
@@ -424,14 +587,9 @@ export default class EVideo {
       if (url) return url
     }
     //
-    let file
-    if (!this.videoFile) {
-      file = await this.getVideoByHttp()
-    } else {
-      file = this.videoFile
-    }
+    const file = await this.getVideoFile()
     const url = await this.readFileToBlobUrl(file)
-    logger.debug('[prefetch result]', url)
+    logger.debug('[prefetch result]', url, `this.op.useVideoDBCache`, this.op.useVideoDBCache)
     return url
   }
   private readFileToBlobUrl(file): Promise<string> {
@@ -439,20 +597,28 @@ export default class EVideo {
       const fileReader = new FileReader()
       fileReader.readAsDataURL(file)
       fileReader.onloadend = () => {
-        const rs = fileReader.result as string
+        let rs = fileReader.result as string
+        let raw = atob(rs.slice(rs.indexOf(',') + 1)) //获取视频信息
+        /**
+         * 判断 videoUrl 资源 是否为 H.265
+         */
+        const codecRegex = new RegExp('H.265/HEVC')
+        const isHevc = codecRegex.test(raw)
+        if (isHevc) {
+          this.op.isHevc = true
+        }
         /**
          * 根据 useMetaData 获取 yy视频 metadata 信息
          */
-        let data
+        let data: VideoAnimateType
         if (this.op.useMetaData) {
-          data = parser.getdata(rs)
+          data = parser.getdata(raw)
           if (data) {
             this.renderer.videoEntity.setConfig(data)
           }
         }
         //
         if (!this.polyfillCreateObjectURL) {
-          const raw = atob(rs.slice(rs.indexOf(',') + 1))
           const buf = Array(raw.length)
           for (let d = 0; d < raw.length; d++) {
             buf[d] = raw.charCodeAt(d)
@@ -461,21 +627,24 @@ export default class EVideo {
           const blob = new Blob([arr], {type: 'video/mp4'})
           // 返回 metadata 数据
           if (this.op.useVideoDBCache) {
-            db.model().insert(EVideo.url, {blob, data})
+            db.model().insert(this.op.videoSource, {blob, data})
           }
           this.blobUrl = this.createObjectURL(blob)
           resolve(this.blobUrl)
         } else {
           //获取 data 后 原路返回
-          resolve(EVideo.url)
+          resolve(this.op.videoSource)
         }
+        // gc
+        rs = undefined
+        raw = undefined
       }
     })
   }
   private getVideoByHttp() {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
-      xhr.open('GET', EVideo.url, true)
+      xhr.open('GET', this.op.videoSource, true)
       xhr.responseType = 'blob'
       xhr.onload = () => {
         if (xhr.status === 200 || xhr.status === 304) {

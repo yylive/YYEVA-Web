@@ -6,7 +6,7 @@ export default class Webgl {
   public canvas?: HTMLCanvasElement //显示画布
   public ctx?: CanvasRenderingContext2D
   public ofs: HTMLCanvasElement | OffscreenCanvas
-  static version: WebglVersion
+  public version: WebglVersion
   public gl: WebGLRenderingContext | null
 
   private op: MixEvideoOptions
@@ -65,12 +65,12 @@ export default class Webgl {
       preserveDrawingBuffer: false, //是否保留缓冲区数据，如果你需要读取像素，或者复用绘制到主屏幕上的图像
     }
     this.gl = canvas.getContext('webgl2', op)
-    Webgl.version = 2
+    this.version = 2
     if (!this.gl) {
       this.gl = canvas.getContext('webgl', op)
-      Webgl.version = 1
+      this.version = 1
       if (!this.gl) {
-        Webgl.version = 'canvas2d'
+        this.version = 'canvas2d'
       }
     }
     // gl.enable(this.gl.STENCIL_TEST)
@@ -88,12 +88,12 @@ export default class Webgl {
     } else this.ofs = undefined
   }
   getVsSource(): string {
-    const cb = Webgl.version === 2 ? this.getVs2() : this.getVs1()
+    const cb = this.version === 2 ? this.getVs2() : this.getVs1()
     // console.log('vs', cb)
     return cb
   }
   getFsSource(): string {
-    const cb = Webgl.version === 2 ? this.getFs2() : this.getFs1()
+    const cb = this.version === 2 ? this.getFs2() : this.getFs1()
     // console.log('fs', cb)
     return cb
   }

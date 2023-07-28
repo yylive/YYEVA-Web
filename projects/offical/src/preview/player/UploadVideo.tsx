@@ -1,7 +1,10 @@
 import {useState, useEffect, useRef} from 'react'
-import {useVideoFormStore, useVideoStore} from 'src/preview/store/usePlayerStore'
-
-const UploadVideo = ({children}: any) => {
+import {useVideoFormStore, useVideoStore, useClickUploadStore} from 'src/preview/store/usePlayerStore'
+export type UploadVideoType = {
+  // fileInputRef: React.RefObject<HTMLInputElement>
+  children: React.ReactNode
+}
+const UploadVideo = ({children}: UploadVideoType) => {
   const uploadRef = useRef<HTMLDivElement>(null)
   const uploadLabelRef = useRef<HTMLLabelElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -9,6 +12,7 @@ const UploadVideo = ({children}: any) => {
   const [dragActive, setDragActive] = useState(false)
   const {setVideo} = useVideoStore(state => state)
   const {setVideoFormItem} = useVideoFormStore(state => state)
+  const {upload} = useClickUploadStore(state => state)
 
   const handleDrag = (e: any) => {
     e.preventDefault()
@@ -45,6 +49,10 @@ const UploadVideo = ({children}: any) => {
   useEffect(() => {
     if (!formRef.current || !uploadLabelRef.current || !fileInputRef.current) return
   }, [])
+  useEffect(() => {
+    console.log('upload', upload)
+    fileInputRef.current?.click()
+  }, [upload])
   return (
     <>
       {/* <form ref={formRef} onDragEnter={handleDrag} htmlFor="input-file-upload" onSubmit={e => e.preventDefault()}> */}
