@@ -21,10 +21,10 @@ let player:YYEvaType = await yyEva({
 	container,// Html Element
 	videoUrl,// Video Url
 	effects: {
-	// 自定义字体信息 fontStyle参考https://www.w3schools.com/jsref/canvas_font.asp
-      text1: {text: '自定义text1', fontStyle: '18px Microsoft YaHei', fontColor: '#ff0000'},
-      text2: {text: '自定义text2', fontStyle: '20px Microsoft YaHei', fontColor: 'green'},
-    },
+	  // 自定义字体信息 fontStyle参考https://www.w3schools.com/jsref/canvas_font.asp
+	  text1: {text: '自定义text1', fontStyle: '18px Microsoft YaHei', fontColor: '#ff0000'},
+          text2: {text: '自定义text2', fontStyle: '20px Microsoft YaHei', fontColor: 'green'},
+        },
 	// Events
 	onStart(){},
 	onStop(){},
