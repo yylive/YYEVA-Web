@@ -377,7 +377,7 @@ export default class VideoEntity {
   }
 
   private defaultFontInfo(fontSize: number, ctx: ContextType) {
-    console.log('font=', ctx.font)
+    // console.log('font=', ctx.font)
     if (isAndroid) {
       let familyName = 'sans-serif'
       const originFont = ctx.font.split(' ')
