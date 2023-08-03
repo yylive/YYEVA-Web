@@ -1,4 +1,5 @@
 import {logger} from 'src/helper/logger'
+import {isAndroid, isIOS} from 'src/helper/polyfill'
 import {isDataUrl, isOffscreenCanvasSupported} from 'src/helper/utils'
 import Animator from 'src/player/video/animator'
 import {MixEvideoOptions, VideoAnimateType, VideoAnimateEffectType, VideoDataType, EScaleMode} from 'src/type/mix'
@@ -375,6 +376,23 @@ export default class VideoEntity {
     return text
   }
 
+  private defaultFontInfo(fontSize: number, ctx: ContextType) {
+    console.log('font=', ctx.font)
+    if (isAndroid) {
+      let familyName = 'sans-serif'
+      const originFont = ctx.font.split(' ')
+      if (originFont && originFont.length) {
+        familyName = originFont[originFont.length - 1]
+      }
+
+      return ['normal', `${Math.round(fontSize)}px`, familyName]
+    } else if (isIOS) {
+      return ['normal', `${Math.round(fontSize)}px`, 'SFUI-Heavy']
+    } else {
+      return ['600', `${Math.round(fontSize)}px`, 'Microsoft YaHei']
+    }
+  }
+
   /**
    * 文字转换图片
    * @param item
@@ -382,7 +400,7 @@ export default class VideoEntity {
   private async makeTextImg(item: VideoAnimateEffectType, eOptions: any = {}, width = 0) {
     if (!this.ctx) return
     const ctx = this.ctx
-    // console.log(`[makeTextImg] eOptions:`, eOptions)
+    console.log(`[makeTextImg] eOptions:`, eOptions)
     if (eOptions.fontStyle) item.fontStyle = eOptions.fontStyle
     if (eOptions.fontColor) item.fontColor = eOptions.fontColor
     if (eOptions.fontSize) item.fontSize = eOptions.fontSize
@@ -413,7 +431,9 @@ export default class VideoEntity {
         fontSize = Math.min((w / txtlength) * 1, defaultFontSize)
       }
 
-      const font = ['600', `${Math.round(fontSize)}px`, 'Microsoft YaHei']
+      const font = this.defaultFontInfo(fontSize, ctx)
+      // console.log('@@@@font=', font)
+      // const font = ['600', `${Math.round(fontSize)}px`, 'Microsoft YaHei']
       if (fontStyle === 'b') {
         font.unshift('bold')
       }
