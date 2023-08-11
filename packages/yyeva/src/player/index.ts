@@ -194,12 +194,12 @@ export default class EVideo {
       this.isPlay = isPlay
     }
   }
-  private isDestoryed() {
-    logger.debug('player is destoryed!')
+  private isDestroyed() {
+    logger.debug('player is destroyed!')
   }
   public start() {
     //::TODO 做播放兼容性处理
-    if (!this.renderer) return this.isDestoryed()
+    if (!this.renderer) return this.isDestroyed()
     this.startEvent()
   }
 
@@ -291,7 +291,7 @@ export default class EVideo {
   }
   public stop() {
     logger.debug('[player]stop.')
-    if (!this.renderer) return this.isDestoryed()
+    if (!this.renderer) return this.isDestroyed()
     if (this.renderer.isPlay === false) return
     this.setPlay(false)
     this.animator.stop()
@@ -536,7 +536,7 @@ export default class EVideo {
     return URL.createObjectURL(blob)
   }
   public destroy() {
-    if (!this.renderer) return this.isDestoryed()
+    if (!this.renderer) return this.isDestroyed()
     this.revokeObjectURL('destroy')
     logger.debug('[destroy]')
     // this.stop()
