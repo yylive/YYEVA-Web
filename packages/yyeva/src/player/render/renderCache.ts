@@ -25,8 +25,8 @@ class RenderCache {
   /**
    * 注销缓存
    */
-  public destory() {
-    this.mCache.destory()
+  public destroy() {
+    this.mCache.destroy()
   }
   /**
    * 申请缓存

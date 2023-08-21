@@ -37,7 +37,7 @@ let player:YYEvaType = await yyEva({
 })
 player.start() // start player
 player.stop() // pause player
-player.destory() // dstory player
+player.destroy() // destroy player
 ```
 ## 配置
 | 选项            | 作用     | 默认值    |必填|

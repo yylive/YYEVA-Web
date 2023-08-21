@@ -75,7 +75,7 @@ export default class WglRender {
   public destroy() {
     this.webgl.destroy()
     this.videoEntity.destroy()
-    this.renderCache.destory()
+    this.renderCache.destroy()
   }
 
   // public render(nextFPS: number) {
