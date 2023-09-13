@@ -174,8 +174,8 @@ export default class MCache {
     this.checkCache()
     this.setAnimationStatus()
   }
-  public destory() {
-    logger.debug('[mCache]', '[destory]')
+  public destroy() {
+    logger.debug('[mCache]', '[destroy]')
     this.removeCache()
     this.checkCache()
   }
