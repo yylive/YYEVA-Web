@@ -31,12 +31,13 @@
   "main": "./dist/esm/yyeva.js",
   "types": "./types/index.d.ts",
   "scripts": {
-    "build": "npm-run-all --parallel build:**",
+    "build": "pnpm run /^build:.*/",
     "build:esm": "cross-env FORMAT=esm vite build --mode prod",
-    "build:tsc": "ttsc",
-    "dev": "npm-run-all --parallel dev:**",
+    "build:tsc": "rimraf types && tsc && tsc-alias",
+    "dev": "pnpm run /^dev:.*/",
     "dev:esm": "cross-env FORMAT=esm vite build -w --mode dev",
-    "dev:tsc": "ttsc -w",
+    "dev:tsc": "tsc -w",
+    "dev:tsc-alias": "tsc-alias -w",
     "lint": "eslint ./src --ext js,ts,tsx --fix"
   },
   "author": "Ken",
@@ -53,11 +54,9 @@
     "@rollup/plugin-typescript": "^8.3.0",
     "@types/offscreencanvas": "^2019.6.4",
     "cross-env": "^7.0.3",
-    "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
-    "ttypescript": "^1.5.12",
     "typescript": "^4.3.5",
-    "typescript-transform-paths": "^3.3.1",
+    "tsc-alias": "^1.8.5",
     "vite": "^2.9.9",
     "@types/node": "^18.0.0"
   }
