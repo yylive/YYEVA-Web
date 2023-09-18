@@ -26,11 +26,13 @@ const VideoForm = () => {
   const formRef = useRef<ProFormInstance>()
   const inputRefs: any = {}
   useEffect(() => {
-    if( Object.prototype.toString.call((videoFormItem as any).key).slice(8,-1) === 'Object'){
-      formRef.current?.setFieldsValue({...videoFormItem,key:(videoFormItem as any).key.text})
-      return;
+    const data: any = {...videoFormItem}
+    for (const [key, value] of Object.entries(videoFormItem)) {
+      if (typeof value === 'object' && (value as any)?.text !== undefined) {
+        data[key] = (value as any)?.text
+      }
     }
-    formRef.current?.setFieldsValue(videoFormItem)
+    formRef.current?.setFieldsValue(data)
   }, [videoFormItem])
   return (
     <ProForm
