@@ -27,9 +27,13 @@ const VideoForm = () => {
   const inputRefs: any = {}
   useEffect(() => {
     const data: any = {...videoFormItem}
+    console.log('videoFormItem=', videoFormItem)
     for (const [key, value] of Object.entries(videoFormItem)) {
-      if (typeof value === 'object' && (value as any)?.text !== undefined) {
-        data[key] = (value as any)?.text
+      if (typeof value === 'object') {
+        const text = (value as any)?.text
+        if (typeof text === 'string') {
+          data[key] = text
+        }
       }
     }
     formRef.current?.setFieldsValue(data)
