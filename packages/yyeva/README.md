@@ -58,7 +58,7 @@ player.destroy() // destroy player
 |mute|静音播放、根据环境自动调整|true||
 |alphaDirection|非带Key视频，适配alpha 位置|`alphaDirection`||
 |renderType|渲染模式、canvas2d 带Key模式开发中|`canvas2d`||
-|resizeCanvas|canvas 显示方式|`width 100%` `height 100%`||
+|resizeCanvas|canvas 显示方式, 'percent' -- 铺满, 'percentW'- 横向铺满, 'percentH' - 垂直铺满, 'size'- 不缩放|`width 100%` `height 100%`||
 |logLevel|日志级别|`info`||
 |showPlayerInfo|是否控制台显示播放状态|||
 |effects|根据素材传入相应的素材内容|||

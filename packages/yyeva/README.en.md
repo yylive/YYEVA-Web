@@ -58,7 +58,7 @@ player.destroy() // destroy player
 |mute|silent playback, automatic adjustment according to the environment|true||
 |alphaDirection|adjust alpha position for video without keys|`alphaDirection`||
 |renderType|render mode 'webgl' / 'canvas2d'|`canvas2d`||
-|resizeCanvas|canvas size|`width 100%` `height 100%`||
+|resizeCanvas|canvas size, 'percent', 'percentW', 'percentH'|`width 100%` `height 100%`||
 |logLevel|log level|`info`||
 |showPlayerInfo|whether the console shows the playback status|||
 |effects|additional material content|||
