@@ -2,6 +2,7 @@ import path from 'path'
 import {getBabelOutputPlugin} from '@rollup/plugin-babel'
 import pkg from './package.json'
 import {defineConfig} from 'vite'
+import terser from '@rollup/plugin-terser'
 //
 const root = process.cwd()
 const src = path.join(root, 'src')
@@ -53,6 +54,9 @@ if (libFormat !== 'esm') {
 
 export default defineConfig(({mode}) => {
   const isDev = mode === 'dev'
+  if(!isDev){
+    plugins.push(terser())
+  }
   return {
     define: {
       'import.meta.env.PKGVERSION': `"${pkg.version}"`,
