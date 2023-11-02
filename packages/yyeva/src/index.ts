@@ -12,6 +12,7 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
       showVideo: false,
       useWorker: false,
       loop: true,
+      autoplay: true,
       videoUrl: '',
       videoID: null,
       dataUrl: '',

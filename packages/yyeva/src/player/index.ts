@@ -26,6 +26,7 @@ export default class EVideo {
   private loopChecker!: LoopChecker
   private videoFile?: File
   private isSupportHevc = false
+  // private startFlag = false
   //
   public onStart: EventCallback
   public onResume: EventCallback
@@ -310,6 +311,21 @@ export default class EVideo {
     return true // this.loopChecker.loopCount > 1
   }
 
+  private _playVideo() {
+    const videoPromise = this.video.play()
+    if (videoPromise)
+      videoPromise.catch(e => {
+        logger.warn(`_playVideo() error canplaythrough to play`, e.code, e.message, e.name)
+        if (e?.code === 0 && e?.name === EPlayError.NotAllowedError) {
+          this.op?.onError?.({
+            playError: EPlayError.NotAllowedError,
+            video: this.video,
+            playStep: EPlayStep.canplaythrough,
+          })
+        }
+      })
+  }
+
   private videoCreate() {
     //
     const op = this.op
@@ -372,7 +388,7 @@ export default class EVideo {
     // video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : true
     video.loop = this.loop()
     video.crossOrigin = 'anonymous'
-    video.autoplay = true
+    video.autoplay = this.op.autoplay
     // video.preload = 'metadata'
     video.setAttribute('preload', 'auto') // 这个视频优先加载
     // 标志视频将被“inline”播放，即在元素的播放区域内。
@@ -394,20 +410,9 @@ export default class EVideo {
     this.eventsFn.canplaythrough = () => {
       logger.log('[canplaythrough paused] ', video.paused)
       if (video.paused) {
-        logger.log('[canplaythrough] isPlay=', this.isPlay)
+        logger.log('[canplaythrough] isPlay=', this.isPlay)        
         if (this.isPlay) {
-          const videoPromise = video.play()
-          if (videoPromise)
-            videoPromise.catch(e => {
-              logger.warn(`play() error canplaythrough to play`, e.code, e.message, e.name)
-              if (e?.code === 0 && e?.name === EPlayError.NotAllowedError) {
-                this.op?.onError?.({
-                  playError: EPlayError.NotAllowedError,
-                  video: this.video,
-                  playStep: EPlayStep.canplaythrough,
-                })
-              }
-            })
+          this._playVideo()          
         } else {
           logger.log('[canplaythrough] isPlay is false!')
         }
@@ -499,7 +504,7 @@ export default class EVideo {
     } else {
       logger.debug('[visibilitychange] play')
       if (this.isPlay) {
-        this.video.play()
+        this._playVideo()
       }
     }
   }
