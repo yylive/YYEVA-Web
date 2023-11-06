@@ -240,7 +240,7 @@ export default class EVideo {
     }
   }
   private startEvent() {
-    if (this.renderer.isPlay === true) return
+    if (!this.renderer || this.renderer.isPlay === true) return
     this.setPlay(true)
     this.animator.start()
     this.beginTimer()
@@ -389,6 +389,7 @@ export default class EVideo {
     video.loop = this.loop()
     video.crossOrigin = 'anonymous'
     video.autoplay = this.op.autoplay
+    video.preload = 'auto'
     // video.preload = 'metadata'
     video.setAttribute('preload', 'auto') // 这个视频优先加载
     // 标志视频将被“inline”播放，即在元素的播放区域内。
@@ -425,7 +426,8 @@ export default class EVideo {
     this.eventsFn.playing = () => {
       // this.setPlay(true)
       //
-      this.start()
+      logger.log('[player]on playing.')
+      this.startEvent()
       this.onStart && this.onStart()
     }
     this.eventsFn.pause = () => {
@@ -434,7 +436,7 @@ export default class EVideo {
       this.onPause && this.onPause()
     }
     this.eventsFn.resume = () => {
-      this.start()
+      this.startEvent()
       this.onResume && this.onResume()
     }
     this.eventsFn.ended = () => {
