@@ -1,4 +1,6 @@
 import {getChromeVersion, isAndroid, polyfill} from './polyfill'
+import {logger} from 'src/helper/logger'
+
 /**
  * 判断链接是否 dataUrl (base64)
  * @param url
@@ -31,4 +33,47 @@ export function isOffscreenCanvasSupported() {
     return false
   }
   return typeof OffscreenCanvas !== 'undefined' && self.OffscreenCanvas
+}
+ 
+// Use a fake element
+//https://phuoc.ng/collection/html-dom/measure-the-width-of-given-text-of-given-font/
+export function getTextByMaxWidth(text: string, font: string, maxWidth: number) {
+  // Create an element
+  const ele = document.createElement('div');
+
+  // Set styles
+  ele.style.position = 'absolute';
+  ele.style.visibility = 'hidden';
+  ele.style.whiteSpace = 'nowrap';
+  ele.style.left = '-9999px';
+
+  // Set font and text
+  ele.style.font = font;
+  ele.innerText = text;
+
+  // Append to the body
+  document.body.appendChild(ele);
+
+  let str = text
+  // Get the width
+  let width = window.getComputedStyle(ele).width
+  logger.info('getTextByMaxWidth width=', width)
+  if (parseInt(width, 10) > maxWidth) {
+    let len = text.length
+    while (true) {
+      str = text.substring(0, len - 1) + '...'
+      ele.innerText = str
+      width = window.getComputedStyle(ele).width
+      console.log('getTextByMaxWidth.. width=', width, str)
+      if (parseInt(width, 10) <= maxWidth) {
+        break
+      }
+      len = len - 1
+    }
+  }  
+
+  // Remove the element
+  document.body.removeChild(ele);
+
+  return str;
 }

@@ -1,6 +1,6 @@
 import {logger} from 'src/helper/logger'
 import {isAndroid, isIOS} from 'src/helper/polyfill'
-import {isDataUrl, isOffscreenCanvasSupported} from 'src/helper/utils'
+import {getTextByMaxWidth, isDataUrl, isOffscreenCanvasSupported} from 'src/helper/utils'
 import Animator from 'src/player/video/animator'
 import {MixEvideoOptions, VideoAnimateType, VideoAnimateEffectType, VideoDataType, EScaleMode} from 'src/type/mix'
 
@@ -459,7 +459,7 @@ export default class VideoEntity {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     const posx = Math.floor(w / 2)
     const posy = Math.floor(h / 2)
-    ctx.fillText(this._getText(ctx, txt, w), posx, posy)
+    ctx.fillText(getTextByMaxWidth(txt, ctx.font, w), posx, posy)
     if (isOffscreenCanvasSupported() && this.ofs instanceof OffscreenCanvas) {
       const blob = await this.ofs.convertToBlob()
       const bitmap = await self.createImageBitmap(blob, {imageOrientation: 'flipY'})
