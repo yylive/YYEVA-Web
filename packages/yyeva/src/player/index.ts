@@ -26,7 +26,7 @@ export default class EVideo {
   private loopChecker!: LoopChecker
   private videoFile?: File
   private isSupportHevc = false
-  // private startFlag = false
+  private startFlag = false
   //
   public onStart: EventCallback
   public onResume: EventCallback
@@ -201,6 +201,7 @@ export default class EVideo {
   public start() {
     //::TODO 做播放兼容性处理
     if (!this.renderer) return this.isDestroyed()
+    this.startFlag = true
     this.startEvent()
   }
 
@@ -240,6 +241,11 @@ export default class EVideo {
     }
   }
   private startEvent() {
+    if (!this.startFlag && !this.op.autoplay) {
+      logger.info(`startEvent() this.startFlag is false` )
+      return
+    }
+
     if (!this.renderer || this.renderer.isPlay === true) return
     this.setPlay(true)
     this.animator.start()
@@ -312,6 +318,12 @@ export default class EVideo {
   }
 
   private _playVideo() {
+    if (!this.startFlag && !this.op.autoplay) {
+      this.video.pause()
+      logger.info(`_playVideo() this.startFlag is false` )
+      return
+    }
+
     const videoPromise = this.video.play()
     if (videoPromise)
       videoPromise.catch(e => {
