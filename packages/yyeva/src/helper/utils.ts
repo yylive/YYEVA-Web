@@ -1,4 +1,4 @@
-import {polyfill} from './polyfill'
+import {getChromeVersion, isAndroid, polyfill} from './polyfill'
 /**
  * 判断链接是否 dataUrl (base64)
  * @param url
@@ -17,3 +17,18 @@ export const isDataUrl = (url: string | HTMLInputElement) => {
 //   // else return url
 //   return url
 // }
+
+export function isOffscreenCanvasSupported() {
+  /**
++ Chrome browser version 4 to Chrome browser version 57 doesn't supports HTML5 OffscreenCanvas. Chrome browser version 58 to 70 does not support but can be enabled.
++ Mozilla Firefox browser version 2 to Mozilla Firefox browser version 43 doesn't supports HTML5 OffscreenCanvas property. Mozilla Firefox browser version 57 to 63 partially supports HTML5 OffscreenCanvas property and partial support for Firefox refers to supporting an older version for the web browser.
++ Internet Explorer browser version 6 to Internet Explorer browser version 11 doesn't supports HTML5 OffscreenCanvas property.
++ Safari browser version 3.1 to Safari browser version 12 doesn't supports supports HTML5 OffscreenCanvas.
++ Microsoft Edge browser version 12 to Microsoft Edge browser version 18 doesn't supports HTML5 OffscreenCanvas property.
++ Opera browser version 10.1 to Opera browser version 44 doesn't supports HTML5 OffscreenCanvas. Opera browser version 45 to Opera browser version 53 does not support but can be enabled.
+   */
+  if (isAndroid && getChromeVersion() <= 70) {
+    return false
+  }
+  return typeof OffscreenCanvas !== 'undefined' && self.OffscreenCanvas
+}

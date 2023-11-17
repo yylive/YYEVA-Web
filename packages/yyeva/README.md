@@ -20,6 +20,11 @@ import {yyEva,YYEvaType} from 'yyeva'
 let player:YYEvaType = await yyEva({
 	container,// Html Element
 	videoUrl,// Video Url
+	effects: {
+	  // 自定义字体信息 fontStyle参考https://www.w3schools.com/jsref/canvas_font.asp
+	  text1: {text: '自定义text1', fontStyle: '18px Microsoft YaHei', fontColor: '#ff0000'},
+          text2: {text: '自定义text2', fontStyle: '20px Microsoft YaHei', fontColor: 'green'},
+        },
 	// Events
 	onStart(){},
 	onStop(){},
@@ -32,7 +37,7 @@ let player:YYEvaType = await yyEva({
 })
 player.start() // start player
 player.stop() // pause player
-player.destory() // dstory player
+player.destroy() // destroy player
 ```
 ## 配置
 | 选项            | 作用     | 默认值    |必填|

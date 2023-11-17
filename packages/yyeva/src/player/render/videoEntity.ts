@@ -1,5 +1,6 @@
 import {logger} from 'src/helper/logger'
-import {isDataUrl} from 'src/helper/utils'
+import {isAndroid, isIOS} from 'src/helper/polyfill'
+import {isDataUrl, isOffscreenCanvasSupported} from 'src/helper/utils'
 import Animator from 'src/player/video/animator'
 import {MixEvideoOptions, VideoAnimateType, VideoAnimateEffectType, VideoDataType, EScaleMode} from 'src/type/mix'
 
@@ -33,7 +34,7 @@ export default class VideoEntity {
   //
   constructor(op: MixEvideoOptions) {
     this.op = op
-    const canvas = !!self.OffscreenCanvas ? new OffscreenCanvas(300, 300) : document.createElement('canvas')
+    const canvas = isOffscreenCanvasSupported() ? new OffscreenCanvas(300, 300) : document.createElement('canvas')
     const ctx = canvas.getContext('2d', {willReadFrequently: true}) // willReadFrequently 表示是否计划有大量的回读操作，频繁调用getImageData()方法时能节省内存
     // canvas.style.display = 'none'
     // document.body.appendChild(canvas)
@@ -222,6 +223,7 @@ export default class VideoEntity {
   private parseFromSrcAndOptions() {
     if (!this.config?.effect) return
     const effects = this.op.effects || {}
+    // logger.debug('parseFromSrcAndOptions, this.config.effect=', this.config.effect, effects)
     return Promise.all(
       this.config.effect.map(async item => {
         //
@@ -269,8 +271,8 @@ export default class VideoEntity {
     // console.log(`[effect] makeImage:`, item, url)
     if (!this.ctx) return
     const ctx = this.ctx
-    const w = item[this.effectWidth]
-    const h = item[this.effectHeight]
+    const w = Math.ceil(item[this.effectWidth])
+    const h = Math.ceil(item[this.effectHeight])
     let img = null
     if (url) {
       img = await this.loadImg(url)
@@ -374,6 +376,23 @@ export default class VideoEntity {
     return text
   }
 
+  private defaultFontInfo(fontSize: number, ctx: ContextType) {
+    // console.log('font=', ctx.font)
+    if (isAndroid) {
+      let familyName = 'sans-serif'
+      const originFont = ctx.font.split(' ')
+      if (originFont && originFont.length) {
+        familyName = originFont[originFont.length - 1]
+      }
+
+      return ['normal', `${Math.round(fontSize)}px`, familyName]
+    } else if (isIOS) {
+      return ['normal', `${Math.round(fontSize)}px`, 'SFUI-Heavy']
+    } else {
+      return ['600', `${Math.round(fontSize)}px`, 'Microsoft YaHei']
+    }
+  }
+
   /**
    * 文字转换图片
    * @param item
@@ -387,8 +406,8 @@ export default class VideoEntity {
     if (eOptions.fontSize) item.fontSize = eOptions.fontSize
     const {fontStyle, fontColor, fontSize} = item
     //
-    const w = item[this.effectWidth]
-    const h = item[this.effectHeight]
+    const w = Math.ceil(item[this.effectWidth])
+    const h = Math.ceil(item[this.effectHeight])
     ctx.canvas.width = w
     ctx.canvas.height = h
     ctx.textBaseline = 'middle'
@@ -412,7 +431,9 @@ export default class VideoEntity {
         fontSize = Math.min((w / txtlength) * 1, defaultFontSize)
       }
 
-      const font = ['600', `${Math.round(fontSize)}px`, 'Microsoft YaHei']
+      const font = this.defaultFontInfo(fontSize, ctx)
+      // console.log('@@@@font=', font)
+      // const font = ['600', `${Math.round(fontSize)}px`, 'Microsoft YaHei']
       if (fontStyle === 'b') {
         font.unshift('bold')
       }
@@ -434,9 +455,12 @@ export default class VideoEntity {
       if (fontColor) ctx.fillStyle = fontColor
       fontStyle(null, ctx, item)
     }
+    logger.info('getFontStyle, style: ', ctx.font, ', text:', txt)
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-    ctx.fillText(this._getText(ctx, txt, w), w / 2, h / 2)
-    if (!!self.OffscreenCanvas && this.ofs instanceof OffscreenCanvas) {
+    const posx = Math.floor(w / 2)
+    const posy = Math.floor(h / 2)
+    ctx.fillText(this._getText(ctx, txt, w), posx, posy)
+    if (isOffscreenCanvasSupported() && this.ofs instanceof OffscreenCanvas) {
       const blob = await this.ofs.convertToBlob()
       const bitmap = await self.createImageBitmap(blob, {imageOrientation: 'flipY'})
       return bitmap

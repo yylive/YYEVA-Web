@@ -93,11 +93,13 @@ export default class EVideo {
 
   private _onEnd() {
     this.stop()
+    
+    this.onEnd && this.onEnd()
+    
     if (!this.op.endPause) {
       this.destroy()
     }
 
-    this.onEnd && this.onEnd()
   }
 
   private _error(err: any) {
@@ -258,10 +260,14 @@ export default class EVideo {
     this.setPlay(true)
     this.animator.start()
     this.beginTimer()
+    this.loopChecker.reset()
+    this.video.currentTime = 0
     this.doStart()
   }
   private doStart() {
+    
     const videoPromise = this.video.play()
+    
     // 避免 uc 夸克报错
     if (videoPromise) {
       videoPromise
@@ -440,7 +446,8 @@ export default class EVideo {
       this.onStart && this.onStart()
     }
     this.eventsFn.pause = () => {
-      this.stop()
+      logger.log('[player]on pause.')
+      // this.stop()
       this.onPause && this.onPause()
     }
     this.eventsFn.resume = () => {
@@ -449,8 +456,8 @@ export default class EVideo {
     }
     this.eventsFn.ended = () => {
       this.op.onLoopCount && this.op.onLoopCount({count: 1})
-      this.destroy()
       this.onEnd && this.onEnd()
+      this.destroy()
     }
     this.eventsFn.progress = () => {
       this.onProcess && this.onProcess()
@@ -507,17 +514,15 @@ export default class EVideo {
    * 页面隐藏时执行
    */
   private videoVisbility = () => {
-    logger.debug('[visibilitychange]', document.hidden)
-    if (this.isPlay) {
-      if (document.hidden) {
-        logger.debug('[visibilitychange] pause')
-        this.video.pause()
-      } else {
-        logger.debug('[visibilitychange] play')
+    logger.debug('[visibilitychange]', document.hidden, 'this.isPlay=', this.isPlay)
+    if (document.hidden) {
+      logger.debug('[visibilitychange] pause')
+      this.video.pause()
+    } else {
+      logger.debug('[visibilitychange] play')
+      if (this.isPlay) {
         this.video.play()
       }
-    } else {
-      logger.debug('[visibilitychange] isPlay is false!!')
     }
   }
 

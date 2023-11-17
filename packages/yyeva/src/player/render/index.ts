@@ -79,8 +79,10 @@ export default class WglRender {
   }
 
   public clear() {
-    const {width, height} = this.webgl?.canvas
-    this.webgl?.ctx?.clearRect(0, 0, width, height)
+    if (this.webgl.canvas) {
+      const {width, height} = this.webgl.canvas
+      this.webgl?.ctx?.clearRect(0, 0, width, height)
+    }
   }
   // public render(nextFPS: number) {
   public render(frame = 0) {
