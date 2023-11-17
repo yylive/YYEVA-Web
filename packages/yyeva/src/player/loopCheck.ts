@@ -19,32 +19,51 @@ export class LoopChecker {
       this.loopCount = Number(loop)
     }
 
-    if (endFrame && endFrame > 0) {
+    if (endFrame !== undefined) {
       this._endFrame = endFrame
     }
 
     // logger.info('[LoopChecker] this._loopCount=', this.loopCount, ', loop=', loop)
   }
 
+  reset(): void {
+    this.playedLoopCount = 0
+    this.lastFrameIndex = 0
+  }
+
   public setEndFrame(value: number) {
     logger.info('[LoopChecker]setEndFrame value=', value)
-    if (value && value > 0) {
+    if (value !== undefined) {
       this._endFrame = value
     }
   }
 
+  private checkFrame(frame: number) {
+    if (this._endFrame > 10) {
+      return (
+        this.lastFrameIndex < this._endFrame &&
+        this.lastFrameIndex > this._endFrame / 2 &&
+        (frame >= this._endFrame || frame <= this._endFrame / 2)
+      )
+    } else {
+      return (this.lastFrameIndex < this._endFrame || this.lastFrameIndex > 10) && frame >= this._endFrame && frame < 10
+    }
+  }
+
   public updateFrame(frame: number) {
-    if (this.lastFrameIndex > frame || (this._endFrame > 0 && frame >= this._endFrame)) {
-      /* logger.info(
+    if (this.checkFrame(frame)) {
+      logger.info(
         '[LoopChecker] this.playedLoopCount=',
         this.playedLoopCount,
         ', this.lastFrameIndex=',
         this.lastFrameIndex,
         ', frame',
         frame,
+        ', endFrame=',
+        this._endFrame,
         ', this.loopCount=',
         this.loopCount,
-      ) */
+      )
 
       this.playedLoopCount = this.playedLoopCount + 1
       this.onLoopCount && this.onLoopCount({count: this.playedLoopCount})

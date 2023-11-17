@@ -22,22 +22,6 @@
           "src/*"
         ]
       },
-      // Note: In order to transform *both* js and d.ts files, you need to add both of the below lines to plugins
-      "plugins": [
-        // Transform paths in output .js files
-        {
-          "transform": "typescript-transform-paths",
-          // "useRootDirs": true,
-          "exclude": [ "**/node_modules/**" ]
-        },
-        // Transform paths in output .d.ts files (Include this line if you output declarations files)
-        {
-          "transform": "typescript-transform-paths",
-          // "useRootDirs": true,
-          "afterDeclarations": true,
-          "exclude": [ "**/node_modules/**" ]
-        }
-      ],
       "allowJs": true,
       "skipLibCheck": true,
       "esModuleInterop": true,

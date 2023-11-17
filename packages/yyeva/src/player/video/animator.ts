@@ -104,7 +104,6 @@ export default class Animator {
     return Math.round(mediaTime * this.videoFps) + (this.op.offset || 0)
   }
   returnRequestAnim() {
-    console.info('animationType', this.animationType)
     switch (this.animationType) {
       case 'requestVideoFrameCallback':
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment

@@ -1,3 +1,11 @@
+
+const queryString = window.location.search;
+console.log('[video]queryString=', queryString)
+const urlParams = new URLSearchParams(queryString)
+export const videoUrl = urlParams.get('videoUrl')
+
+console.log('[video]videoUrl=', videoUrl);
+
 const host = ''
 const selected: any = {
   default: {
@@ -8,11 +16,11 @@ const selected: any = {
       anchor_nick: 'boy',
       anchor_avatar: '/yy/2.jpeg',
     }, */
-    videoUrl: `${host}/yy/pld_264_new.mp4`,
+    videoUrl: videoUrl || `${host}/yy/pld_264_new.mp4`,
     effects: {
       1: '/yy/b6.png',
       2: '/yy/b6c.png',
-      key: 'YYEVA',
+      key: {text: 'YYEVA', fontStyle: '600 28px Microsoft YaHei', fontColor: '#ffffff'},
     },
     mode: 'Fill',
   },

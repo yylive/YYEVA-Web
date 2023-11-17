@@ -20,6 +20,11 @@ import {yyEva,YYEvaType} from 'yyeva'
 let player:YYEvaType = await yyEva({
 	container,// Html Element
 	videoUrl,// Video Url
+	effects: {
+	  //  fontStyle doc: https://www.w3schools.com/jsref/canvas_font.asp
+          text1: {text: 'text example 1st', fontStyle: '18px arial', fontColor: '#ff0000'},
+          text2: {text: 'text example 2nd', fontStyle: '20px arial', fontColor: 'green'},
+	},
 	// Events
 	onStart(){},
 	onStop(){},
@@ -32,7 +37,7 @@ let player:YYEvaType = await yyEva({
 })
 player.start() // start player
 player.stop() // pause player
-player.destory() // dstory player
+player.destroy() // destroy player
 ```
 ## configuration
 | options            | effect     | defaults    |required|

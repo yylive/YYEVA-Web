@@ -1,6 +1,7 @@
 import {logger} from 'src/helper/logger'
 import {MixEvideoOptions, ResizeCanvasType, WebglVersion} from 'src/type/mix'
 import MCache from './mCache'
+import {isOffscreenCanvasSupported} from 'src/helper/utils'
 export default class Webgl {
   public PER_SIZE = 9
   public canvas?: HTMLCanvasElement //显示画布
@@ -22,7 +23,7 @@ export default class Webgl {
       }
       // this.ofs = MCache.getOfs(op)
       this.ofs =
-        !!self.OffscreenCanvas && !!self.createImageBitmap && op.useBitmap
+        isOffscreenCanvasSupported() && !!self.createImageBitmap && op.useBitmap
           ? new OffscreenCanvas(300, 300)
           : document.createElement('canvas')
     } else {

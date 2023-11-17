@@ -20,7 +20,7 @@
     "react-dom": "^18.2.0",
     "react-github-btn": "^1.3.0",
     "react-router-dom": "^5.2.0",
-    "yyeva": "workspace:*",
+    "@gfe/yyeva": "workspace:*",
     "zustand": "^4.1.5"
   },
   "devDependencies": {
