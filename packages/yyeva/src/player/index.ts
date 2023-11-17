@@ -590,6 +590,7 @@ export default class EVideo {
     this.onError = undefined
     this.cleanTimer()
     this.videoEvent = undefined
+    this.op.onRequestClickPlay = undefined as any
     this.eventsFn = {}
   }
   private async checkVideoCache(): Promise<string | undefined> {
