@@ -5,7 +5,7 @@ import {MetaDataType, MixEvideoOptions} from 'src/type/mix'
 export type AnimatorType = 'requestVideoFrameCallback' | 'requestAnimationFrame' | 'setTimeout'
 
 export default class Animator {
-  private animateId: any
+  private animateId: number
   public animationType: AnimatorType
   private video: HTMLVideoElement
   private fps = 20
@@ -15,7 +15,7 @@ export default class Animator {
   private op: MixEvideoOptions
   //
   public isPlay: boolean
-  public requestAnim: (...args: any[]) => void
+  public requestAnim: (...args: any[]) => number
   public cancelAnim: (...args: any[]) => void
   //
   public onUpdate?: (frame: number) => void
@@ -61,7 +61,7 @@ export default class Animator {
     logger.debug('animator start', this.animateId, this.frameDelay, this.fps)
     this.frameStartTime = this.currentTimeMillsecond()
     this.cancelAnim()
-    this.requestAnim(this.drawFrame)
+    this.animateId = this.requestAnim(this.drawFrame)
   }
   stop() {
     logger.debug('animator stop', this.animateId)
@@ -76,11 +76,12 @@ export default class Animator {
     this.cancelAnim = undefined as any
     this.requestAnim = undefined as any
     this.onUpdate = undefined
+    this.drawFrame = undefined
   }
   drawFrame = (now = this.currentTimeMillsecond(), metadata?: MetaDataType) => {
     if (!this.isPlay) return
     this.cancelAnim()
-    this.requestAnim(this.drawFrame)
+    this.animateId = this.requestAnim(this.drawFrame)
     // if (!this.op.fps) {
     const mediaTime = metadata?.mediaTime || this.video.currentTime
     const frame = this.getCurrentFrame(mediaTime)
@@ -118,11 +119,14 @@ export default class Animator {
               this.frameStartTime = now - (delta % this.frameDelay)
               return fn()
             }
-            if (this.requestAnim) this.animateId = this.requestAnim(fn)
+            if (this.requestAnim) {
+              if(this.animateId) this.cancelAnim()
+              this.animateId = this.requestAnim(fn)
+            } 
           })
         }
       default:
-        return (fn: () => void) => (this.animateId = setTimeout(fn, 1000 / this.fps))
+        return (fn: () => void) => (this.animateId = window.setTimeout(fn, 1000 / this.fps))
     }
   }
   returnCancelAnim() {

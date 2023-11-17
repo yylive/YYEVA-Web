@@ -343,7 +343,7 @@ export default class WglRender {
   private createTexture(gl: WebGLRenderingContext, index: number, imgData?: TexImageSource) {
     const texture = gl.createTexture()
     const textrueIndex = gl.TEXTURE0 + index
-    logger.debug('[createTexture]', textrueIndex, index, imgData)
+    logger.debug('[createTexture]', textrueIndex, index, `[ImageBitmap]Object`)
     gl.activeTexture(textrueIndex)
     gl.bindTexture(gl.TEXTURE_2D, texture)
     // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);

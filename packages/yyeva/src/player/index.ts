@@ -35,6 +35,8 @@ export default class EVideo {
   public onProcess: EventCallback
   public onEnd: EventCallback
   public onError: EventCallback
+
+  private onLoadedmetadata:EventCallback
   //
   public isPlay = false
   public renderer: Render | Render2D
@@ -306,7 +308,7 @@ export default class EVideo {
     this.cleanTimer()
   }
   private videoEvent = (e: any) => {
-    logger.debug(`[${e.type}]:`, e)
+    logger.debug(`[${e.type}]:`)
     this.eventsFn[e.type] && this.eventsFn[e.type]()
   }
 
@@ -481,11 +483,15 @@ export default class EVideo {
     // onready
     return new Promise(resolve => {
       // IOS 微信会卡住在这里 不能注销 video
-      video.addEventListener('loadedmetadata', e => {
+      if(this.onLoadedmetadata) {
+        video.removeEventListener('loadedmetadata', this.onLoadedmetadata)
+      }
+      this.onLoadedmetadata = e => {
         this.videoEvent(e)
         resolve(e)
         logger.debug('[video loadedmetadata]', video.videoWidth, video.videoHeight, video.src.length)
-      })
+      }
+      video.addEventListener('loadedmetadata', this.onLoadedmetadata)
     })
   }
   private async videoLoad() {
@@ -569,7 +575,18 @@ export default class EVideo {
     this.version = undefined as any
     // 释放 file 文件
     this.videoFile = undefined
+    this.videoVisbility = undefined
+    this.onLoadedmetadata = undefined
+    this.onStart = undefined
+    this.onResume = undefined
+    this.onPause = undefined
+    this.onStop = undefined
+    this.onProcess = undefined
+    this.onEnd = undefined
+    this.onError = undefined
     this.cleanTimer()
+    this.videoEvent = undefined
+    this.eventsFn = {}
   }
   private async checkVideoCache(): Promise<string | undefined> {
     try {
