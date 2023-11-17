@@ -473,6 +473,7 @@ export default class EVideo {
       this.renderer.videoSeekedEvent()
     }
     this.eventsFn.error = e => {
+      logger.debug(`Error ${this.video.error?.code}; details: ${this.video.error?.message}`)
       this.onError && this.onError(e)
     }
     videoEvents.map(name => {
