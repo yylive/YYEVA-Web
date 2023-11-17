@@ -8,6 +8,7 @@ export default [
   'loadstart',
   'stop',
   'loadeddata',
+  'loadedmetadata',
   'ratechange',
   //
   'abort',

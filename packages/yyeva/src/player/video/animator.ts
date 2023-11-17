@@ -120,7 +120,9 @@ export default class Animator {
               return fn()
             }
             if (this.requestAnim) {
-              if(this.animateId) this.cancelAnim()
+              if(this.animateId) {
+                this.cancelAnim()
+              }
               this.animateId = this.requestAnim(fn)
             } 
           })

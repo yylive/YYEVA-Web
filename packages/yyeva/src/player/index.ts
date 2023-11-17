@@ -538,6 +538,7 @@ export default class EVideo {
     document.removeEventListener('visibilitychange', this.videoVisbility, false)
     //
     if (this.video) {
+      this.video.removeEventListener('loadedmetadata', this.onLoadedmetadata, false)
       this.video.pause()
       // console.log('[removeVideoEvent]', !(polyfill.weixin && polyfill.ios) && !this.op.videoID)
       if (!this.op.videoID) {
