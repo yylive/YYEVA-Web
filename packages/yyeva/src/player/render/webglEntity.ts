@@ -79,6 +79,12 @@ export default class Webgl {
   public destroy() {
     if (this.gl) {
       this.gl.clear(this.gl.COLOR_BUFFER_BIT)
+      const lose_context = this.gl.getExtension('WEBGL_lose_context')
+      if (lose_context) {
+        lose_context.loseContext()
+        logger.debug('lose_context')
+      }
+      
       this.gl = null
     }
     if (this.canvas) this.canvas.remove()
