@@ -266,8 +266,14 @@ export default class EVideo {
     this.video.currentTime = 0
     this.doStart()
   }
+  
   private doStart() {
-    
+    // this.video.load()
+    if (document.hidden) {
+      logger.info(`startEvent() document.hidden..` )
+      return
+    }
+
     const videoPromise = this.video.play()
     
     // 避免 uc 夸克报错
@@ -298,7 +304,11 @@ export default class EVideo {
             return
           }
           //
-          logger.debug(`切换到静音播放`, this.op.videoSource, e)
+          logger.error(`play error: `, this.op.videoSource, e, 'e?.code=', e?.code, ', e?.name=', e?.name, ', url=', this.op.videoUrl)
+          if (e?.code === 20) {
+            return
+          }
+
           this.clickToPlay()
           // 增加弹窗 手动触发 video.play
           if (e?.code === 0 && e?.name === EPlayError.NotAllowedError) {
