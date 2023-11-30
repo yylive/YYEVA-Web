@@ -24,7 +24,7 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
       useMetaData: false,
       alphaDirection: 'left',
       useVideoDBCache: true,
-      useFrameCache: true, // 默认为5个
+      useFrameCache: false, // 默认为5个
       useOfsRender: false,
       resizeCanvas: 'percent',
       showPlayerInfo: true,
