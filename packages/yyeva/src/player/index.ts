@@ -80,7 +80,9 @@ export default class EVideo {
     this.webglVersion = this.renderer.webgl.version
     //
     //实例化后但是不支持 webgl后降级
-    if (this.webglVersion === 'canvas2d') {
+    if (this.webglVersion === 'canvas2d' && this.renderType == 'webgl') {
+      logger.debug('[player] webgl to canvas2d')
+      this.renderer.destroy()
       this.renderer = new Render2D(this.op)
       this.renderType = 'canvas2d'
     }
