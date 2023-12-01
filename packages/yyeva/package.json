@@ -1,6 +1,6 @@
 {
   "name": "yyeva",
-  "version": "1.0.0-rc.34",
+  "version": "1.0.0",
   "description": "mp4 gift player",
   "files": [
     "dist",
