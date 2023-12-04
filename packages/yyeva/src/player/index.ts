@@ -88,19 +88,23 @@ export default class EVideo {
 
   private _onEnd() {
     this.stop()
+    const onEnd = this.onEnd
     if (!this.op.endPause) {
       this.destroy()
     }
 
-    this.onEnd && this.onEnd()
+    onEnd && onEnd()
   }
 
   private _error(err: any) {
     logger.error(`[EVdeo] error err:`, err)
+    const onEnd = this.onEnd
+    const onError = this.onError
+    
     this.stop()
     this.destroy()
-    this.onEnd?.(err)
-    this.onError?.(err)
+    onEnd && onEnd?.(err)
+    onError && onError?.(err)
   }
 
   public async setup() {
@@ -466,9 +470,10 @@ export default class EVideo {
       this.onResume && this.onResume()
     }
     this.eventsFn.ended = () => {
+      const onEnd = this.onEnd
       this.op.onLoopCount && this.op.onLoopCount({count: 1})
       this.destroy()
-      this.onEnd && this.onEnd()
+      onEnd && onEnd()
     }
     this.eventsFn.progress = () => {
       this.onProcess && this.onProcess()
