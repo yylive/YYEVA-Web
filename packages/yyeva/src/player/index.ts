@@ -5,7 +5,7 @@ import {MixEvideoOptions, EventCallback, WebglVersion, EPlayError, EPlayStep, Vi
 // import {prefetchVideoStream} from 'src/player/video/mse'
 // import {versionTips} from 'src/helper/logger'
 import Animator, {AnimatorType} from 'src/player/video/animator'
-import {logger} from 'src/helper/logger'
+import {logger, versionTips} from 'src/helper/logger'
 import parser from 'src/parser'
 import db from 'src/parser/db'
 // import Webgl from './render/webglEntity'
@@ -179,8 +179,8 @@ export default class EVideo {
       this.destroy()
       logger.error(e)
     }
-    //
-    // versionTips(this.op, this.renderType)
+
+    //this.op.showPlayerInfo && versionTips(this.op, this)
   }
 
   private _updateEndFrame() {
@@ -207,6 +207,7 @@ export default class EVideo {
     logger.debug('player is destroyed!')
   }
   public start() {
+    logger.debug('player start!, url=', this.op.videoUrl)
     //::TODO 做播放兼容性处理
     if (!this.renderer) return this.isDestroyed()
     this.startFlag = true
