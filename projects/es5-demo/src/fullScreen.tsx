@@ -1,6 +1,7 @@
 import {Player, host} from './player'
 import {useEffect, useRef} from 'react'
-const urls = ['https://yyeva.yy.com/yy/music.mp4', 'https://yyeva.yy.com/yy/mface.mp4']
+// const urls = ['https://yyeva.yy.com/yy/music.mp4', 'https://yyeva.yy.com/yy/mface.mp4']
+const urls = ['https://yyeva.yy.com/yy/music.mp4']
 let i = 0
 const getUrl = () => {
   if (i > urls.length - 1) i = 0
@@ -18,7 +19,7 @@ const FullScreen = () => {
         options={{
           videoID: 'yyeva_full_screen_position',
           mode: 'AspectFill',
-          mute: true,
+          mute: false,
           useMetaData: true,
           loop: false,
           // usePrefetch: false,

@@ -27,6 +27,8 @@ export default class EVideo {
   private videoFile?: File
   private isSupportHevc = false
   private startFlag = false
+  // 绑定 浏览器无法自动播放显示的元素
+  private pollyfillTipsElement
   //
   public onStart: EventCallback
   public onResume: EventCallback
@@ -36,7 +38,7 @@ export default class EVideo {
   public onEnd: EventCallback
   public onError: EventCallback
 
-  private onLoadedmetadata:EventCallback
+  private onLoadedmetadata: EventCallback
   //
   public isPlay = false
   public renderer: Render | Render2D
@@ -100,7 +102,7 @@ export default class EVideo {
     logger.error(`[EVdeo] error err:`, err)
     const onEnd = this.onEnd
     const onError = this.onError
-    
+
     this.stop()
     this.destroy()
     onEnd && onEnd?.(err)
@@ -232,26 +234,34 @@ export default class EVideo {
     )
     if (this.loopChecker.loopCount === 1 && this.op.checkTimeout && this.video.duration > 0) {
       this.cleanTimer()
-      this.timeoutId = setTimeout(() => {
-        logger.debug('[player] timeout...url:', this.op.videoUrl)
-        this._onEnd()
-        // this.stop()
-        // this.destroy()
-        // this.onEnd && this.onEnd()
-      }, this.video.duration * 1000 + 100)
+      this.timeoutId = setTimeout(
+        () => {
+          logger.debug('[player] timeout...url:', this.op.videoUrl)
+          this._onEnd()
+          // this.stop()
+          // this.destroy()
+          // this.onEnd && this.onEnd()
+        },
+        this.video.duration * 1000 + 100,
+      )
     }
   }
 
   private clickToPlay() {
     if (this.op.onRequestClickPlay) {
-      this.op.onRequestClickPlay(this.op.container, this.video)
+      this.pollyfillTipsElement = this.op.onRequestClickPlay(this.op.container, this.video)
     } else {
-      clickPlayBtn(this.op.container, this.video)
+      this.pollyfillTipsElement = clickPlayBtn(this.op.container, this.video)
+    }
+  }
+  private hidePollyfileTips() {
+    if (this.pollyfillTipsElement && this.pollyfillTipsElement) {
+      this.pollyfillTipsElement.style.display = 'none'
     }
   }
   private startEvent() {
     if (!this.startFlag && !this.op.autoplay) {
-      logger.info(`startEvent() this.startFlag is false` )
+      logger.info(`startEvent() this.startFlag is false`)
       return
     }
 
@@ -263,7 +273,7 @@ export default class EVideo {
     this.video.currentTime = 0
     // this.video.load()
     if (document.hidden) {
-      logger.info(`startEvent() document.hidden..` )
+      logger.info(`startEvent() document.hidden..`)
       return
     }
 
@@ -296,7 +306,17 @@ export default class EVideo {
             return
           }
           //
-          logger.error(`play error: `, this.op.videoSource, e, 'e?.code=', e?.code, ', e?.name=', e?.name, ', url=', this.op.videoUrl)
+          logger.error(
+            `play error: `,
+            this.op.videoSource,
+            e,
+            'e?.code=',
+            e?.code,
+            ', e?.name=',
+            e?.name,
+            ', url=',
+            this.op.videoUrl,
+          )
           if (e?.code === 20) {
             return
           }
@@ -339,7 +359,7 @@ export default class EVideo {
   private _playVideo() {
     if (!this.startFlag && !this.op.autoplay) {
       this.video.pause()
-      logger.info(`_playVideo() this.startFlag is false` )
+      logger.info(`_playVideo() this.startFlag is false`)
       return
     }
 
@@ -442,9 +462,9 @@ export default class EVideo {
     this.eventsFn.canplaythrough = () => {
       logger.log('[canplaythrough paused] ', video.paused)
       if (video.paused) {
-        logger.log('[canplaythrough] isPlay=', this.isPlay)        
+        logger.log('[canplaythrough] isPlay=', this.isPlay)
         if (this.isPlay) {
-          this._playVideo()          
+          this._playVideo()
         } else {
           logger.log('[canplaythrough] isPlay is false!')
         }
@@ -460,6 +480,9 @@ export default class EVideo {
       logger.log('[player]on playing.')
       this.startEvent()
       this.onStart && this.onStart()
+      //
+      //隐藏 非自动播放按钮提示
+      this.hidePollyfileTips()
     }
     this.eventsFn.pause = () => {
       logger.log('[player]on pause.')
@@ -501,7 +524,7 @@ export default class EVideo {
     // onready
     return new Promise(resolve => {
       // IOS 微信会卡住在这里 不能注销 video
-      if(this.onLoadedmetadata) {
+      if (this.onLoadedmetadata) {
         video.removeEventListener('loadedmetadata', this.onLoadedmetadata)
       }
       this.onLoadedmetadata = e => {
@@ -699,33 +722,32 @@ export default class EVideo {
   private getVideoByHttp() {
     return new Promise(async (resolve, reject) => {
       const blob = await fetch(this.op.videoSource)
-            .then(r => {
-              if (r.ok) {
-                return r.blob()
-              } else {
-                logger.error('fetch request failed, url: ' + this.op.videoSource)
-                return undefined
-              }
-            })
-            .catch(err => {
-              logger.error('getVideoByHttp fetch, err=', err)
-              return undefined
-            })
+        .then(r => {
+          if (r.ok) {
+            return r.blob()
+          } else {
+            logger.error('fetch request failed, url: ' + this.op.videoSource)
+            return undefined
+          }
+        })
+        .catch(err => {
+          logger.error('getVideoByHttp fetch, err=', err)
+          return undefined
+        })
 
-            resolve(blob)
-            
-    //   const xhr = new XMLHttpRequest()
-    //   xhr.open('GET', this.op.videoSource, true)
-    //   xhr.responseType = 'blob'
-    //   xhr.onload = () => {
-    //     if (xhr.status === 200 || xhr.status === 304) {
-    //       resolve(xhr.response)
-    //     } else {
-    //       reject(new Error('http response invalid' + xhr.status))
-    //     }
-    //   }
-    // xhr.send() 
-   
+      resolve(blob)
+
+      //   const xhr = new XMLHttpRequest()
+      //   xhr.open('GET', this.op.videoSource, true)
+      //   xhr.responseType = 'blob'
+      //   xhr.onload = () => {
+      //     if (xhr.status === 200 || xhr.status === 304) {
+      //       resolve(xhr.response)
+      //     } else {
+      //       reject(new Error('http response invalid' + xhr.status))
+      //     }
+      //   }
+      // xhr.send()
     })
   }
 }

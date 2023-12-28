@@ -84,7 +84,7 @@ export default class Webgl {
         lose_context.loseContext()
         logger.debug('lose_context')
       }
-      
+
       this.gl = null
     }
     if (this.canvas) this.canvas.remove()

@@ -3,9 +3,9 @@
   "scripts": {
     "dev": "pnpm --filter=yyeva --filter=offical dev",
     "build": "pnpm --filter=yyeva --filter=offical build",
-		"start": "pnpm --filter=offical start"
+    "start": "pnpm --filter=offical start"
   },
   "devDependencies": {
-    "@efox/eslint-config-react": "^2.3.0"
+    "@empjs/eslint-config-react": "^1.0.0"
   }
 }

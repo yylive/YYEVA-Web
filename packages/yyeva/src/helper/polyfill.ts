@@ -55,6 +55,7 @@ export const clickPlayBtn = (container: HTMLElement, video: HTMLVideoElement) =>
     video.play()
     tips.style.display = 'none'
   }
+  return tips
 }
 
 export const isHevc = (video: HTMLVideoElement) => {
