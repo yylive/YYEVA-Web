@@ -45,6 +45,7 @@
     "sourceMap": true,
     "jsx": "react-jsx",
     "importsNotUsedAsValues": "preserve",
+    "ignoreDeprecations": "5.0"
   },
   "include": [
     "src"
