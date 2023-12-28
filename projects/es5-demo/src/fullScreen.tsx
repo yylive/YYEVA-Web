@@ -26,7 +26,7 @@ const FullScreen = () => {
         options={{
           videoID: 'yyeva_full_screen_position',
           mode: 'AspectFill',
-          mute: false,
+          mute: true,
           useMetaData: true,
           loop: false,
           // usePrefetch: false,
@@ -39,6 +39,7 @@ const FullScreen = () => {
           //   fontColor: 'white',
           //   fontSize: 40,
           // },
+          renderType: 'canvas2d',
           ...getOpt(),
         }}
       />

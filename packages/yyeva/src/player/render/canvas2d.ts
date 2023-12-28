@@ -1,4 +1,4 @@
-import {MixEvideoOptions, ResizeCanvasType} from 'src/type/mix'
+import {MixEvideoOptions, ResizeCanvasType, VideoAnimateDataItemType} from 'src/type/mix'
 import VideoEntity from 'src/player/render/videoEntity'
 import RenderCache from './renderCache'
 import {logger} from 'src/helper/logger'
@@ -30,7 +30,7 @@ export default class Render2D {
         ? new OffscreenCanvas(300, 300)
         : document.createElement('canvas')
     //
-    this.ctx = this.ofs.getContext('2d')
+    this.ctx = this.ofs.getContext('2d') as CanvasRenderingContext2D
     //
     this.renderCache = new RenderCache(this.ofs, this.op)
     this.videoEntity = new VideoEntity(op)
@@ -52,6 +52,81 @@ export default class Render2D {
       default:
         break
     }
+  }
+  /**
+      sx	裁剪框右上角的x坐标
+      sy	裁剪框右上角的y坐标
+      sw	裁剪框的宽度
+      sh	裁剪框的高度
+   */
+  private getScale() {
+    const scaleX = 1
+    const scaleY = 1
+    //
+    let [sx, sy, sw, sh, dx, dy, dw, dh]: number[] = []
+
+    const ofs = this.canvas
+    const vw = ofs.width
+    const vh = ofs.height
+    const cw = ofs.clientWidth
+    const ch = ofs.clientHeight
+    const cRate = ofs.clientWidth / ofs.clientHeight
+    const vRate = ofs.width / ofs.height
+    //
+    dx = 0
+    dy = 0
+    dw = vw
+    dh = vh
+    sx = 0
+    sy = 0
+    sw = vw
+    sh = vh
+    // const scale = Math.min(cw / vw, ch / vh)
+    // console.log('scale', scale)
+    //
+    switch (this.op.mode) {
+      case 'AspectFill':
+      case 'vertical': //fit vertical | AspectFill 竖屏
+        if (vRate >= cRate) {
+          sw = vh * cRate
+          sh = vh
+          sx = (vw - sw) / 2
+          sy = 0
+        } else {
+          sh = vw / cRate
+          sw = vw
+          sx = 0
+          sy = (vw - sh) / 2
+        }
+        break
+      case 'AspectFit':
+      case 'horizontal': //fit horizontal | AspectFit 横屏
+        // scaleX = 1
+        // scaleY = canvasAspect / videoAspect
+
+        break
+      case 'contain':
+        // scaleY = 1
+        // scaleX = videoAspect / canvasAspect
+        // if (scaleX > 1) {
+        //   scaleY = 1 / scaleX
+        //   scaleX = 1
+        // }
+        break
+      case 'Fill':
+      case 'cover':
+        // scaleY = 1
+        // scaleX = videoAspect / canvasAspect
+        // if (scaleX < 1) {
+        //   scaleY = 1 / scaleX
+        //   scaleX = 1
+        // }
+        break
+      default:
+        break
+    }
+
+    return [sx, sy, sw, sh, dx, dy, dw, dh]
   }
   // setPlay(isPlayer: boolean) {
   //   this.isPlay = isPlayer
@@ -113,6 +188,9 @@ export default class Render2D {
   render(frame = 0) {
     const {width: w, height: h} = this.canvas
     //
+    const [sx, sy, sw, sh, dx, dy, dw, dh] = this.getScale()
+    console.log('scale', sx, sy, sw, sh, dx, dy, dw, dh, w, h)
+    // cache获取帧动画直接渲染 不用处理坐标
     if (this.op.useFrameCache) {
       const frameItem = this.renderCache.getCache(frame)
       // console.log('[canvas2d frameItem]', frame, frameItem)
@@ -129,8 +207,8 @@ export default class Render2D {
     } else {
       this.renderLR(frame)
     }
-    this.context.clearRect(0, 0, w, h)
-    this.context.drawImage(this.ofs, 0, 0, w, h, 0, 0, w, h)
+    this.context.clearRect(dx, dy, dw, dh)
+    this.context.drawImage(this.ofs, sx, sy, sw, sh, dx, dy, dw, dh)
     // this.createFramesCache(frame)
     if (this.op.useFrameCache) {
       this.renderCache.setCache(frame)
@@ -157,6 +235,21 @@ export default class Render2D {
 
     return scaled
   }
+  renderKey(frame = 0) {
+    const {descript} = this.videoEntity.config
+    const frameData = this.videoEntity.getFrame(frame)
+    const frameItem = frameData ? frameData[this.videoEntity.data] : undefined
+    // let posArr: any = []
+    // const {width: vW, height: vH} = descript
+    if (frameItem) {
+      frameItem.forEach((o: VideoAnimateDataItemType) => {
+        const [rgbX, rgbY] = descript.rgbFrame
+        const [x, y, w, h] = o[this.videoEntity.renderFrame]
+        const [mX, mY, mW, mH] = o[this.videoEntity.outputFrame]
+        // console.log(rgbX, rgbY, x, y, w, h, mX, mY, mW, mH)
+      })
+    }
+  }
   renderMix(frame = 0) {
     const descript = this.videoEntity.config?.descript
     if (!this.ctx || !this.isPlay || typeof this.video === 'undefined' || !descript) return
@@ -168,6 +261,9 @@ export default class Render2D {
     const vw = this.video.videoWidth
     const vh = this.video.videoHeight
     this.ctx.drawImage(this.video, 0, 0, vw, vh, 0, 0, vw, vh)
+    // 渲染 key list
+    this.renderKey(frame)
+    //合并alpha图层
     const colorImageData = this.ctx.getImageData(x, y, w, h)
     let alpathImageData = this.ctx.getImageData(ax, ay, aw, ah)
     alpathImageData = this.scaleImageData(alpathImageData, w / aw)
@@ -188,6 +284,9 @@ export default class Render2D {
     const stageWidth = vw / 2
     const stageHeight = vh
     this.ctx.drawImage(this.video, 0, 0, vw, vh, 0, 0, vw, vh)
+    // 渲染 key list
+    // this.renderKey(frame)// descript为空时 没有 key
+    //
     if (this.op.alphaDirection === 'left') {
       const colorImageData = this.ctx.getImageData(stageWidth, 0, stageWidth, stageHeight)
       const alpathImageData = this.ctx.getImageData(0, 0, stageWidth, stageHeight)
