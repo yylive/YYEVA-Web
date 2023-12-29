@@ -30,7 +30,7 @@ export default class Render2D {
         ? new OffscreenCanvas(300, 300)
         : document.createElement('canvas')
     //
-    this.ctx = this.ofs.getContext('2d') as CanvasRenderingContext2D
+    this.ctx = this.ofs.getContext('2d', {willReadFrequently: true}) as CanvasRenderingContext2D
     //
     this.renderCache = new RenderCache(this.ofs, this.op)
     this.videoEntity = new VideoEntity(op)
@@ -191,16 +191,18 @@ export default class Render2D {
     const [sx, sy, sw, sh, dx, dy, dw, dh] = this.getScale()
     // console.log('scale', sx, sy, sw, sh, dx, dy, dw, dh, w, h)
     // cache获取帧动画直接渲染 不用处理坐标
-    if (this.op.useFrameCache) {
+    //***取消canvas2d的缓存功能
+    /* if (this.op.useFrameCache) {
       const frameItem = this.renderCache.getCache(frame)
-      // console.log('[canvas2d frameItem]', frame, frameItem)
-      if (frameItem === 'skip') return
-      if (frameItem) {
-        this.context.clearRect(0, 0, w, h)
-        this.context.drawImage(frameItem, 0, 0, w, h, 0, 0, w, h)
+      console.log('[canvas2d frameItem]', frame, frameItem)
+      if (frameItem && frameItem !== 'skip') {
+        // this.context.clearRect(0, 0, w, h)
+        // this.context.drawImage(frameItem, 0, 0, w, h, 0, 0, w, h)
+        this.context.clearRect(dx, dy, dw, dh)
+        this.context.drawImage(frameItem, sx, sy, sw, sh, dx, dy, dw, dh)
         return
       }
-    }
+    } */
     const descript = this.videoEntity.config?.descript
     if (descript) {
       this.renderMix(frame)
@@ -210,9 +212,10 @@ export default class Render2D {
     this.context.clearRect(dx, dy, dw, dh)
     this.context.drawImage(this.ofs, sx, sy, sw, sh, dx, dy, dw, dh)
     // this.createFramesCache(frame)
-    if (this.op.useFrameCache) {
-      this.renderCache.setCache(frame)
-    }
+    //***取消canvas2d的缓存功能
+    // if (this.op.useFrameCache) {
+    //   this.renderCache.setCache(frame)
+    // }
   }
   scaleImageData(imageData, scale) {
     const ctx = this.alphaCtx
