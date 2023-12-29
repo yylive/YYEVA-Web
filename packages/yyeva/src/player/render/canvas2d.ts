@@ -302,6 +302,7 @@ export default class Render2D {
         colorImageData.data[i] = alpathImageData.data[i - 1]
       }
       this.ctx.putImageData(colorImageData, 0, 0, 0, 0, stageWidth, stageHeight)
+      // this.ctx.clearRect(ax, ay, w, h) //清空alpha图层 这个一般用不到
     }
   }
 }
