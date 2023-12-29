@@ -165,7 +165,7 @@ export default class WglRender {
 
       ofs.setAttribute('class', `e-video-${this.op.mode.toLocaleLowerCase()}`)
       switch (this.op.mode) {
-        case 'AspectFit':
+        case 'AspectFill':
         case 'vertical': //fit vertical | AspectFill 竖屏
           scaleY = 1
           scaleX = videoAspect / canvasAspect

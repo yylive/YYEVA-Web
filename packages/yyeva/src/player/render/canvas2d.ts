@@ -87,17 +87,17 @@ export default class Render2D {
     switch (this.op.mode) {
       case 'AspectFill':
       case 'vertical': //fit vertical | AspectFill 竖屏
-        if (vRate >= cRate) {
-          sw = vh * cRate
-          sh = vh
-          sx = (vw - sw) / 2
-          sy = 0
-        } else {
-          sh = vw / cRate
-          sw = vw
-          sx = 0
-          sy = (vw - sh) / 2
-        }
+        // if (vRate >= cRate) {
+        sw = vh * cRate
+        sh = vh
+        sx = (vw - sw) / 2
+        sy = 0
+        // } else {
+        //   sh = vw / cRate
+        //   sw = vw
+        //   sx = 0
+        //   sy = (vw - sh) / 2
+        // }
         break
       case 'AspectFit':
       case 'horizontal': //fit horizontal | AspectFit 横屏
@@ -189,7 +189,7 @@ export default class Render2D {
     const {width: w, height: h} = this.canvas
     //
     const [sx, sy, sw, sh, dx, dy, dw, dh] = this.getScale()
-    console.log('scale', sx, sy, sw, sh, dx, dy, dw, dh, w, h)
+    // console.log('scale', sx, sy, sw, sh, dx, dy, dw, dh, w, h)
     // cache获取帧动画直接渲染 不用处理坐标
     if (this.op.useFrameCache) {
       const frameItem = this.renderCache.getCache(frame)
@@ -275,6 +275,7 @@ export default class Render2D {
     }
     this.ctx.clearRect(0, 0, w, h)
     this.ctx.putImageData(colorImageData, 0, 0, 0, 0, w, h)
+    this.ctx.clearRect(ax, ay, w, h) //清空alpha图层
     // this.ctx.putImageData(alpathImageData, 0, 0, 0, 0, w, h)
   }
   renderLR(frame = 0) {
