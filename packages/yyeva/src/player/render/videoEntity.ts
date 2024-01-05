@@ -198,7 +198,11 @@ export default class VideoEntity {
         // }
         // 适配 gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1) 解决自动翻转的问题
         if (blob) {
-          return self.createImageBitmap(blob, {imageOrientation: 'flipY'})
+          //反转 flipY
+          // console.log('this.op.renderType', this.op.renderType)
+          return this.op.renderType === 'canvas2d'
+            ? self.createImageBitmap(blob)
+            : self.createImageBitmap(blob, {imageOrientation: 'flipY'})
         } else {
           return undefined
         }
@@ -400,7 +404,7 @@ export default class VideoEntity {
   private async makeTextImg(item: VideoAnimateEffectType, eOptions: any = {}, width = 0) {
     if (!this.ctx) return
     const ctx = this.ctx
-    console.log(`[makeTextImg] eOptions:`, eOptions)
+    // console.log(`[makeTextImg] eOptions:`, eOptions)
     if (eOptions.fontStyle) item.fontStyle = eOptions.fontStyle
     if (eOptions.fontColor) item.fontColor = eOptions.fontColor
     if (eOptions.fontSize) item.fontSize = eOptions.fontSize
@@ -462,7 +466,10 @@ export default class VideoEntity {
     ctx.fillText(getTextByMaxWidth(txt, ctx.font, w), posx, posy)
     if (isOffscreenCanvasSupported() && this.ofs instanceof OffscreenCanvas) {
       const blob = await this.ofs.convertToBlob()
-      const bitmap = await self.createImageBitmap(blob, {imageOrientation: 'flipY'})
+      const bitmap =
+        this.op.renderType === 'canvas2d'
+          ? self.createImageBitmap(blob)
+          : self.createImageBitmap(blob, {imageOrientation: 'flipY'})
       return bitmap
     }
     return ctx.getImageData(0, 0, w, h)

@@ -39,7 +39,7 @@ const FullScreen = () => {
           //   fontColor: 'white',
           //   fontSize: 40,
           // },
-          // useFrameCache: true,
+          useFrameCache: true,
           renderType: 'canvas2d',
           ...getOpt(),
         }}

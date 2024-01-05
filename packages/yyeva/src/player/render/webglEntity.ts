@@ -8,7 +8,7 @@ export default class Webgl {
   public ctx?: CanvasRenderingContext2D
   public ofs: HTMLCanvasElement | OffscreenCanvas
   public version: WebglVersion
-  public gl: WebGLRenderingContext | WebGL2RenderingContext  | null
+  public gl!: WebGLRenderingContext | WebGL2RenderingContext | null
 
   private op: MixEvideoOptions
   constructor(op: MixEvideoOptions) {

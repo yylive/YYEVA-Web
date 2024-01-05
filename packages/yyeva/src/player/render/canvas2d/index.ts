@@ -1,10 +1,10 @@
 import {MixEvideoOptions, ResizeCanvasType, VideoAnimateDataItemType} from 'src/type/mix'
 import VideoEntity from 'src/player/render/videoEntity'
-import RenderCache from './renderCache'
+import RenderCache from 'src/player/render/renderCache'
 import {logger} from 'src/helper/logger'
-import {isOffscreenCanvasSupported} from 'src/helper/utils'
+import {Canvas2dControl} from 'src/player/render/canvas2d/control'
 //
-export default class Render2D {
+export default class Render2D extends Canvas2dControl {
   public isPlay = false
   public webgl: any = {version: 'canvas2d'}
   public videoEntity: VideoEntity
@@ -19,23 +19,26 @@ export default class Render2D {
   private op: MixEvideoOptions
   // private frameCache: any = {}
   //
-  private alphaCanvas = document.createElement('canvas')
+  private alphaCanvas: HTMLCanvasElement | OffscreenCanvas
   private alphaCtx: CanvasRenderingContext2D
+  //
+  drawEffect: {[key: string]: any}
   constructor(op: MixEvideoOptions) {
+    super()
     logger.debug('[Render In Canvas]')
     this.op = op
     //
-    this.ofs =
-      isOffscreenCanvasSupported() && !!self.createImageBitmap
-        ? new OffscreenCanvas(300, 300)
-        : document.createElement('canvas')
-    //
-    this.ctx = this.ofs.getContext('2d', {willReadFrequently: true}) as CanvasRenderingContext2D
+    this.ofs = this.createCanvas()
+    this.ctx = this.get2dContext(this.ofs)
     //
     this.renderCache = new RenderCache(this.ofs, this.op)
     this.videoEntity = new VideoEntity(op)
     //
-    this.alphaCtx = this.alphaCanvas.getContext('2d')
+    this.alphaCanvas = this.createCanvas()
+    this.alphaCtx = this.get2dContext(this.alphaCanvas)
+    //
+    //
+    this.drawEffect = {}
   }
   private setSizeCanvas(canvas: HTMLCanvasElement, resizeCanvas: ResizeCanvasType) {
     switch (resizeCanvas) {
@@ -84,46 +87,52 @@ export default class Render2D {
     // const scale = Math.min(cw / vw, ch / vh)
     // console.log('scale', scale)
     //
-    switch (this.op.mode) {
-      case 'AspectFill':
-      case 'vertical': //fit vertical | AspectFill 竖屏
-        // if (vRate >= cRate) {
-        sw = vh * cRate
-        sh = vh
-        sx = (vw - sw) / 2
-        sy = 0
-        // } else {
-        //   sh = vw / cRate
-        //   sw = vw
-        //   sx = 0
-        //   sy = (vw - sh) / 2
-        // }
-        break
-      case 'AspectFit':
-      case 'horizontal': //fit horizontal | AspectFit 横屏
-        // scaleX = 1
-        // scaleY = canvasAspect / videoAspect
+    // switch (this.op.mode) {
+    //   case 'AspectFill':
+    //   case 'vertical': //fit vertical | AspectFill 竖屏
+    //     // if (vRate >= cRate) {
+    //     sw = vh * cRate
+    //     sh = vh
+    //     sx = (vw - sw) / 2
+    //     sy = 0
+    //     // } else {
+    //     //   sh = vw / cRate
+    //     //   sw = vw
+    //     //   sx = 0
+    //     //   sy = (vw - sh) / 2
+    //     // }
+    //     break
+    //   case 'AspectFit':
+    //   case 'horizontal': //fit horizontal | AspectFit 横屏
+    //     // scaleX = 1
+    //     // scaleY = canvasAspect / videoAspect
 
-        break
-      case 'contain':
-        // scaleY = 1
-        // scaleX = videoAspect / canvasAspect
-        // if (scaleX > 1) {
-        //   scaleY = 1 / scaleX
-        //   scaleX = 1
-        // }
-        break
-      case 'Fill':
-      case 'cover':
-        // scaleY = 1
-        // scaleX = videoAspect / canvasAspect
-        // if (scaleX < 1) {
-        //   scaleY = 1 / scaleX
-        //   scaleX = 1
-        // }
-        break
-      default:
-        break
+    //     break
+    //   case 'contain':
+    //     // scaleY = 1
+    //     // scaleX = videoAspect / canvasAspect
+    //     // if (scaleX > 1) {
+    //     //   scaleY = 1 / scaleX
+    //     //   scaleX = 1
+    //     // }
+    //     break
+    //   case 'Fill':
+    //   case 'cover':
+    //     // scaleY = 1
+    //     // scaleX = videoAspect / canvasAspect
+    //     // if (scaleX < 1) {
+    //     //   scaleY = 1 / scaleX
+    //     //   scaleX = 1
+    //     // }
+    //     break
+    //   default:
+    //     break
+    // }
+    if (this.op.mode) {
+      sw = vh * cRate
+      sh = vh
+      sx = (vw - sw) / 2
+      sy = 0
     }
 
     return [sx, sy, sw, sh, dx, dy, dw, dh]
@@ -141,7 +150,13 @@ export default class Render2D {
     await this.renderCache.setup()
     //
     this.video = video
+    //
+    if (!this.op.fps) {
+      this.op.fps = 15
+    }
     await this.videoEntity.setup()
+    // console.log('fps', this.op.fps)
+    //
     const canvas = document.createElement('canvas')
     this.op.container.appendChild(canvas)
     canvas.width = video.videoWidth / 2
@@ -152,13 +167,21 @@ export default class Render2D {
     this.ofs.width = video.videoWidth
     this.ofs.height = video.videoHeight
     //
-    const descript = this.videoEntity.config?.descript
+    const {descript, effect} = this.videoEntity.config
     if (descript) {
       const [x, y, w, h] = descript.rgbFrame
       canvas.width = w
       canvas.height = h
       this.ofs.width = descript.width
       this.ofs.height = descript.height
+    }
+    if (effect) {
+      for (const k in effect) {
+        const r = effect[k]
+        if (r.img) {
+          this.drawEffect[r.effectId] = r
+        }
+      }
     }
     this.setSizeCanvas(canvas, this.op.resizeCanvas)
   }
@@ -170,16 +193,9 @@ export default class Render2D {
       delete this.canvas
       this.canvas = null
     }
-    if (this.ofs) {
-      if (this.ofs instanceof HTMLCanvasElement) {
-        this.ofs.remove()
-      } else {
-        this.ofs = undefined as any
-      }
-    }
-    if (this.alphaCanvas) {
-      this.alphaCanvas.remove()
-    }
+    this.removeCanvas(this.ofs)
+    this.removeCanvas(this.alphaCanvas)
+    this.drawEffect = undefined
   }
   clear() {
     if (typeof this.video !== 'undefined' && this.context)
@@ -192,18 +208,8 @@ export default class Render2D {
     // console.log('scale', sx, sy, sw, sh, dx, dy, dw, dh, w, h)
     // cache获取帧动画直接渲染 不用处理坐标
     //***取消canvas2d的缓存功能
-    /* if (this.op.useFrameCache) {
-      const frameItem = this.renderCache.getCache(frame)
-      console.log('[canvas2d frameItem]', frame, frameItem)
-      if (frameItem && frameItem !== 'skip') {
-        // this.context.clearRect(0, 0, w, h)
-        // this.context.drawImage(frameItem, 0, 0, w, h, 0, 0, w, h)
-        this.context.clearRect(dx, dy, dw, dh)
-        this.context.drawImage(frameItem, sx, sy, sw, sh, dx, dy, dw, dh)
-        return
-      }
-    } */
-    const descript = this.videoEntity.config?.descript
+    // this.drawWithCache(frame)
+    const {descript} = this.videoEntity.config
     if (descript) {
       this.renderMix(frame)
     } else {
@@ -211,11 +217,96 @@ export default class Render2D {
     }
     this.context.clearRect(dx, dy, dw, dh)
     this.context.drawImage(this.ofs, sx, sy, sw, sh, dx, dy, dw, dh)
-    // this.createFramesCache(frame)
     //***取消canvas2d的缓存功能
-    // if (this.op.useFrameCache) {
-    //   this.renderCache.setCache(frame)
-    // }
+    // this.saveFrameCache(frame)
+  }
+  private getimgDataByBitmap(bitmap, w, h) {
+    const canvas = document.createElement('canvas')
+    canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h)
+    return canvas.getContext('2d').getImageData(0, 0, w, h)
+  }
+  drawWithCache(frame) {
+    if (this.op.useFrameCache) {
+      const [sx, sy, sw, sh, dx, dy, dw, dh] = this.getScale()
+      const frameItem = this.renderCache.getCache(frame)
+      console.log('[canvas2d frameItem]', frame, frameItem)
+      if (frameItem && frameItem !== 'skip') {
+        // this.context.clearRect(0, 0, w, h)
+        // this.context.drawImage(frameItem, 0, 0, w, h, 0, 0, w, h)
+        this.context.clearRect(dx, dy, dw, dh)
+        this.context.drawImage(frameItem, sx, sy, sw, sh, dx, dy, dw, dh)
+        return true
+      }
+    }
+  }
+  saveFrameCache(frame) {
+    if (this.op.useFrameCache) {
+      this.renderCache.setCache(frame)
+    }
+  }
+  renderKey(frame = 0) {
+    // const {descript} = this.videoEntity.config
+    const frameData = this.videoEntity.getFrame(frame)
+    const frameItem = frameData ? frameData[this.videoEntity.data] : undefined
+    // let posArr: any = []
+    // const {width: vW, height: vH} = descript
+    // console.log('effect', frameItem)
+    if (frameItem) {
+      frameItem.forEach((o: VideoAnimateDataItemType) => {
+        // const [rgbX, rgbY] = descript.rgbFrame
+        const [x, y, w, h] = o[this.videoEntity.renderFrame]
+        const [mX, mY, mW, mH] = o[this.videoEntity.outputFrame]
+        const effectId = o[this.videoEntity.effectId]
+
+        // console.log(mX, mY, mW, mH, x, y, w, h, effectId)
+        const r = this.drawEffect[effectId] || {}
+
+        if (r.img) {
+          // const alphaData = this.ctx.getImageData(mX, mY, mW, mH)
+          // const imageData = this.getimgDataByBitmap(r.img, w, h)
+
+          this.ctx.drawImage(r.img, x, y, w, h)
+          //
+
+          // imageData = this.mixImageData(imageData, alphaData, 1)
+          // this.ctx.putImageData(imageData, x, y, 0, 0, w, h)//透明层会触发alpha通道把底层渲染透明化了
+          // this.ctx.putImageData(alphaData, x, y, w, h, mW, mH)
+          // console.log('alphaData', alphaData, x, y, w, h)
+          // console.log('img', r.img)
+        }
+      })
+    }
+  }
+  renderMix(frame = 0) {
+    const descript = this.videoEntity.config?.descript
+    if (!this.ctx || !this.isPlay || typeof this.video === 'undefined' || !descript) return
+    // console.log(info)
+    const [x, y, w, h] = descript.rgbFrame
+    const [ax, ay, aw, ah] = descript.alphaFrame
+    //
+    // console.log(' descript.alphaFrame', descript.alphaFrame)
+    const vw = this.video.videoWidth
+    const vh = this.video.videoHeight
+    this.ctx.drawImage(this.video, 0, 0, vw, vh, 0, 0, vw, vh)
+    //合并alpha图层
+    let colorImageData = this.ctx.getImageData(x, y, w, h)
+    const alpathImageData = this.ctx.getImageData(ax, ay, aw, ah)
+    colorImageData = this.mixImageData(colorImageData, alpathImageData, w / aw)
+    this.ctx.clearRect(0, 0, w, h)
+    this.ctx.putImageData(colorImageData, 0, 0, 0, 0, w, h)
+    // this.ctx.clearRect(ax, ay, w, h) //清空alpha图层
+    // this.ctx.putImageData(alpathImageData, 0, 0, 0, 0, w, h)
+    // 渲染 key list
+    this.renderKey(frame)
+    //
+    this.ctx.clearRect(ax, ay, w, h) //清空alpha图层
+  }
+  mixImageData(colorImageData, alpathImageData, scale = 1) {
+    if (scale !== 1) alpathImageData = this.scaleImageData(alpathImageData, scale)
+    for (let i = 3, len = colorImageData?.data.length; i < len; i += 4) {
+      colorImageData.data[i] = alpathImageData.data[i - 1]
+    }
+    return colorImageData
   }
   scaleImageData(imageData, scale) {
     const ctx = this.alphaCtx
@@ -237,49 +328,6 @@ export default class Render2D {
     }
 
     return scaled
-  }
-  renderKey(frame = 0) {
-    const {descript} = this.videoEntity.config
-    const frameData = this.videoEntity.getFrame(frame)
-    const frameItem = frameData ? frameData[this.videoEntity.data] : undefined
-    // let posArr: any = []
-    // const {width: vW, height: vH} = descript
-    if (frameItem) {
-      frameItem.forEach((o: VideoAnimateDataItemType) => {
-        const [rgbX, rgbY] = descript.rgbFrame
-        const [x, y, w, h] = o[this.videoEntity.renderFrame]
-        const [mX, mY, mW, mH] = o[this.videoEntity.outputFrame]
-        // console.log(rgbX, rgbY, x, y, w, h, mX, mY, mW, mH)
-      })
-    }
-  }
-  renderMix(frame = 0) {
-    const descript = this.videoEntity.config?.descript
-    if (!this.ctx || !this.isPlay || typeof this.video === 'undefined' || !descript) return
-    // console.log(info)
-    const [x, y, w, h] = descript.rgbFrame
-    const [ax, ay, aw, ah] = descript.alphaFrame
-    //
-    // console.log(' descript.alphaFrame', descript.alphaFrame)
-    const vw = this.video.videoWidth
-    const vh = this.video.videoHeight
-    this.ctx.drawImage(this.video, 0, 0, vw, vh, 0, 0, vw, vh)
-    // 渲染 key list
-    this.renderKey(frame)
-    //合并alpha图层
-    const colorImageData = this.ctx.getImageData(x, y, w, h)
-    let alpathImageData = this.ctx.getImageData(ax, ay, aw, ah)
-    alpathImageData = this.scaleImageData(alpathImageData, w / aw)
-    // alpathImageData.width = w
-    // alpathImageData.height = h
-    // console.log(colorImageData, alpathImageData)
-    for (let i = 3, len = colorImageData?.data.length; i < len; i += 4) {
-      colorImageData.data[i] = alpathImageData.data[i - 1]
-    }
-    this.ctx.clearRect(0, 0, w, h)
-    this.ctx.putImageData(colorImageData, 0, 0, 0, 0, w, h)
-    this.ctx.clearRect(ax, ay, w, h) //清空alpha图层
-    // this.ctx.putImageData(alpathImageData, 0, 0, 0, 0, w, h)
   }
   renderLR(frame = 0) {
     if (!this.ctx || !this.isPlay || typeof this.video === 'undefined') return
