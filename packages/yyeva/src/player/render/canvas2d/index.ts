@@ -265,10 +265,10 @@ export default class Render2D extends Canvas2dControl {
           // let imageData = this.getimgDataByBitmap(r.img, w, h)
 
           this.ctx.drawImage(r.img, x, y, w, h)
-          // const alphaData = this.ctx.getImageData(mX, mY, mW, mH)
-          // let imageData = this.ctx.getImageData(x, y, w, h)
-          // imageData = this.mixImageData(imageData, alphaData, w / mW)
-          // this.ctx.putImageData(imageData, x, y, 0, 0, w, h) //透明层会触发alpha通道把底层渲染透明化了
+          const alphaData = this.ctx.getImageData(mX, mY, mW, mH)
+          let imageData = this.ctx.getImageData(x, y, w, h)
+          imageData = this.mixImageData(imageData, alphaData, w / mW)
+          this.ctx.putImageData(imageData, x, y, 0, 0, w, h) //透明层会触发alpha通道把底层渲染透明化了
         }
       })
     }
