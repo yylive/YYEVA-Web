@@ -220,11 +220,11 @@ export default class Render2D extends Canvas2dControl {
     //***取消canvas2d的缓存功能
     // this.saveFrameCache(frame)
   }
-  private getimgDataByBitmap(bitmap, w, h) {
+  /* private getimgDataByBitmap(bitmap, w, h) {
     const canvas = document.createElement('canvas')
     canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h)
     return canvas.getContext('2d').getImageData(0, 0, w, h)
-  }
+  } */
   drawWithCache(frame) {
     if (this.op.useFrameCache) {
       const [sx, sy, sw, sh, dx, dy, dw, dh] = this.getScale()
@@ -262,17 +262,13 @@ export default class Render2D extends Canvas2dControl {
         const r = this.drawEffect[effectId] || {}
 
         if (r.img) {
-          // const alphaData = this.ctx.getImageData(mX, mY, mW, mH)
-          // const imageData = this.getimgDataByBitmap(r.img, w, h)
+          // let imageData = this.getimgDataByBitmap(r.img, w, h)
 
           this.ctx.drawImage(r.img, x, y, w, h)
-          //
-
-          // imageData = this.mixImageData(imageData, alphaData, 1)
-          // this.ctx.putImageData(imageData, x, y, 0, 0, w, h)//透明层会触发alpha通道把底层渲染透明化了
-          // this.ctx.putImageData(alphaData, x, y, w, h, mW, mH)
-          // console.log('alphaData', alphaData, x, y, w, h)
-          // console.log('img', r.img)
+          const alphaData = this.ctx.getImageData(mX, mY, mW, mH)
+          let imageData = this.ctx.getImageData(x, y, w, h)
+          imageData = this.mixImageData(imageData, alphaData, w / mW)
+          this.ctx.putImageData(imageData, x, y, 0, 0, w, h) //透明层会触发alpha通道把底层渲染透明化了
         }
       })
     }
@@ -308,21 +304,47 @@ export default class Render2D extends Canvas2dControl {
     }
     return colorImageData
   }
+  // scaleImageData(imageData, scale) {
+  //   const ctx = this.alphaCtx
+  //   const scaled = ctx.createImageData(imageData.width * scale, imageData.height * scale)
+  //   const subLine = ctx.createImageData(scale, 1).data
+  //   for (let row = 0; row < imageData.height; row++) {
+  //     for (let col = 0; col < imageData.width; col++) {
+  //       const sourcePixel = imageData.data.subarray(
+  //         (row * imageData.width + col) * 4,
+  //         (row * imageData.width + col) * 4 + 4,
+  //       )
+  //       for (let x = 0; x < scale; x++) subLine.set(sourcePixel, x * 4)
+  //       for (let y = 0; y < scale; y++) {
+  //         const destRow = row * scale + y
+  //         const destCol = col * scale
+  //         scaled.data.set(subLine, (destRow * scaled.width + destCol) * 4)
+  //       }
+  //     }
+  //   }
+
+  //   return scaled
+  // }
   scaleImageData(imageData, scale) {
     const ctx = this.alphaCtx
     const scaled = ctx.createImageData(imageData.width * scale, imageData.height * scale)
-    const subLine = ctx.createImageData(scale, 1).data
+
     for (let row = 0; row < imageData.height; row++) {
       for (let col = 0; col < imageData.width; col++) {
-        const sourcePixel = imageData.data.subarray(
-          (row * imageData.width + col) * 4,
-          (row * imageData.width + col) * 4 + 4,
-        )
-        for (let x = 0; x < scale; x++) subLine.set(sourcePixel, x * 4)
+        const sourcePixel = [
+          imageData.data[(row * imageData.width + col) * 4 + 0],
+          imageData.data[(row * imageData.width + col) * 4 + 1],
+          imageData.data[(row * imageData.width + col) * 4 + 2],
+          imageData.data[(row * imageData.width + col) * 4 + 3],
+        ]
         for (let y = 0; y < scale; y++) {
           const destRow = row * scale + y
-          const destCol = col * scale
-          scaled.data.set(subLine, (destRow * scaled.width + destCol) * 4)
+          for (let x = 0; x < scale; x++) {
+            const destCol = col * scale + x
+            for (let i = 0; i < 4; i++) {
+              scaled.data[(destRow * scaled.width + destCol) * 4 + i] = sourcePixel[i]
+            }
+          }
         }
       }
     }
