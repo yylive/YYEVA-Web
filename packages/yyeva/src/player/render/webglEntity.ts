@@ -65,10 +65,10 @@ export default class Webgl {
       stencil: false, //是否开启模板缓冲功能
       preserveDrawingBuffer: false, //是否保留缓冲区数据，如果你需要读取像素，或者复用绘制到主屏幕上的图像
     }
-    this.gl = canvas.getContext('webgl2', op)
+    this.gl = canvas.getContext('webgl2', op) as WebGL2RenderingContext
     this.version = 2
     if (!this.gl) {
-      this.gl = canvas.getContext('webgl', op)
+      this.gl = canvas.getContext('webgl', op) as WebGLRenderingContext
       this.version = 1
       if (!this.gl) {
         this.version = 'canvas2d'
