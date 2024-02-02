@@ -14,6 +14,7 @@ import db from 'src/parser/db'
 import {polyfill, clickPlayBtn, isHevc} from 'src/helper/polyfill'
 // import VideoEntity from './render/videoEntity'
 import {LoopChecker} from './loopCheck'
+import {getVideoByHttp} from './player_utils'
 
 //
 export default class EVideo {
@@ -649,7 +650,7 @@ export default class EVideo {
   async getVideoFile() {
     let file
     if (!this.videoFile) {
-      file = await this.getVideoByHttp()
+      file = await getVideoByHttp(this.op.videoSource)
     } else {
       file = this.videoFile
     }
@@ -718,37 +719,6 @@ export default class EVideo {
         rs = undefined
         raw = undefined
       }
-    })
-  }
-  private getVideoByHttp() {
-    return new Promise(async (resolve, reject) => {
-      const blob = await fetch(this.op.videoSource)
-        .then(r => {
-          if (r.ok) {
-            return r.blob()
-          } else {
-            logger.error('fetch request failed, url: ' + this.op.videoSource)
-            return undefined
-          }
-        })
-        .catch(err => {
-          logger.error('getVideoByHttp fetch, err=', err)
-          return undefined
-        })
-
-      resolve(blob)
-
-      //   const xhr = new XMLHttpRequest()
-      //   xhr.open('GET', this.op.videoSource, true)
-      //   xhr.responseType = 'blob'
-      //   xhr.onload = () => {
-      //     if (xhr.status === 200 || xhr.status === 304) {
-      //       resolve(xhr.response)
-      //     } else {
-      //       reject(new Error('http response invalid' + xhr.status))
-      //     }
-      //   }
-      // xhr.send()
     })
   }
 }

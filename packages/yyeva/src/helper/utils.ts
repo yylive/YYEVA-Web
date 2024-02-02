@@ -34,25 +34,25 @@ export function isOffscreenCanvasSupported() {
   }
   return typeof OffscreenCanvas !== 'undefined' && self.OffscreenCanvas
 }
- 
+
 // Use a fake element
 //https://phuoc.ng/collection/html-dom/measure-the-width-of-given-text-of-given-font/
 export function getTextByMaxWidth(text: string, font: string, maxWidth: number) {
   // Create an element
-  const ele = document.createElement('div');
+  const ele = document.createElement('div')
 
   // Set styles
-  ele.style.position = 'absolute';
-  ele.style.visibility = 'hidden';
-  ele.style.whiteSpace = 'nowrap';
-  ele.style.left = '-9999px';
+  ele.style.position = 'absolute'
+  ele.style.visibility = 'hidden'
+  ele.style.whiteSpace = 'nowrap'
+  ele.style.left = '-9999px'
 
   // Set font and text
-  ele.style.font = font;
-  ele.innerText = text;
+  ele.style.font = font
+  ele.innerText = text
 
   // Append to the body
-  document.body.appendChild(ele);
+  document.body.appendChild(ele)
 
   let str = text
   // Get the width
@@ -70,10 +70,10 @@ export function getTextByMaxWidth(text: string, font: string, maxWidth: number) 
       }
       len = len - 1
     }
-  }  
+  }
 
   // Remove the element
-  document.body.removeChild(ele);
+  document.body.removeChild(ele)
 
-  return str;
+  return str
 }
