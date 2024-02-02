@@ -3,7 +3,7 @@ import {ProCard, ProForm, ProFormText, ProFormRadio, ProFormSwitch, ProFormSelec
 // import {Row, Col, Space} from 'antd'
 import {GiftPlayer} from './player'
 import VideoOptions from 'src/preview/player/VideoOptions'
-import {version} from 'yyeva'
+import {version} from '@gfe/yyeva'
 import VideoMeta from './player/VideoMeta'
 import {SettingOutlined} from '@ant-design/icons'
 import {

@@ -1,5 +1,5 @@
 import {useEffect, useRef} from 'react'
-import {yyEva, YYEvaType} from 'yyeva'
+import {yyEva, YYEvaType} from '@gfe/yyeva'
 let player: YYEvaType
 const Jcx = () => {
   const div: any = useRef<HTMLDivElement>(null)

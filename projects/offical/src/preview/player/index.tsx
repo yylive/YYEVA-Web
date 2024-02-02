@@ -1,5 +1,5 @@
 import {useEffect, useRef} from 'react'
-import {yyEva, YYEvaType} from 'yyeva'
+import {yyEva, YYEvaType} from '@gfe/yyeva'
 import {useVideoStore, useEffectStore, useVideoFormStore, useBackgroundGrid} from '../store/usePlayerStore'
 import UploadVideo from 'src/preview/player/UploadVideo'
 let evideo: YYEvaType
