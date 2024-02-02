@@ -5,7 +5,7 @@ export const createMSE = (source: string, mimeCodec: string): Promise<string> =>
   return new Promise((resolve, reject) => {
     if ('MediaSource' in window && MediaSource.isTypeSupported(mimeCodec)) {
       const mediaSource = new MediaSource()
-      //console.log(mediaSource.readyState); // closed
+      //window.console.log(mediaSource.readyState); // closed
       const src = URL.createObjectURL(mediaSource)
       mediaSource.addEventListener('sourceopen', () => {
         const sourceBuffer = mediaSource.addSourceBuffer(mimeCodec)

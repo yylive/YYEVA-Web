@@ -86,7 +86,7 @@ export default class WglRender {
   }
   // public render(nextFPS: number) {
   public render(frame = 0) {
-    // console.log('[render]', frame, this.op.useFrameCache)
+    // window.console.log('[render]', frame, this.op.useFrameCache)
     if (!this.isPlay || !this.webgl.gl || !this.video || !this.program || this.currentFrame === frame) return
     this.currentFrame = frame
     const gl = this.webgl.gl
@@ -94,10 +94,10 @@ export default class WglRender {
     if (this.op.useFrameCache) {
       const {width, height} = this.webgl.canvas
       const frameItem = this.renderCache.getCache(frame)
-      // console.log('[frameItem]', frameItem)
+      // window.console.log('[frameItem]', frameItem)
       if (frameItem === 'skip') return
       if (frameItem) {
-        // console.log('[in frame cache]', frame, frameItem)
+        // window.console.log('[in frame cache]', frame, frameItem)
         this.webgl.ctx.clearRect(0, 0, width, height)
         this.webgl.ctx.drawImage(frameItem, 0, 0, width, height, 0, 0, width, height)
         return
@@ -198,9 +198,9 @@ export default class WglRender {
           }
           break
       }
-      // console.log('canvasAspect', canvasAspect)
-      // console.log('videoAspect', videoAspect)
-      // console.log('scaleX', scaleX, scaleY)
+      // window.console.log('canvasAspect', canvasAspect)
+      // window.console.log('videoAspect', videoAspect)
+      // window.console.log('scaleX', scaleX, scaleY)
     }
     return [scaleX, scaleY]
   }
@@ -228,7 +228,7 @@ export default class WglRender {
     const scale = this.getScale()
     gl.uniform2fv(scaleLocation, new Float32Array(scale))
     // gl.uniform2fv(scaleLocation, [this.dpr, this.dpr])
-    // console.log('this.webgl.gl', this.webgl.gl)
+    // window.console.log('this.webgl.gl', this.webgl.gl)
   }
   private initTexture(gl: WebGLRenderingContext, program: WebGLProgram) {
     let i = 1
@@ -236,7 +236,7 @@ export default class WglRender {
     if (effect) {
       for (const k in effect) {
         const r = effect[k]
-        // console.log('### effect videoEntity', r)
+        // window.console.log('### effect videoEntity', r)
         r.img && this.createTexture(gl, i, r.img)
         const sampler = gl.getUniformLocation(program, `u_image${i}`)
         gl.uniform1i(sampler, i)

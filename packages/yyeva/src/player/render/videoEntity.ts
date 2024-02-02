@@ -89,7 +89,7 @@ export default class VideoEntity {
       if (info.fps) {
         this.videoFps = info.fps
       }
-      // console.log('info.fps', info.fps, 'this.fps', this.fps)
+      // window.console.log('info.fps', info.fps, 'this.fps', this.fps)
       this.config = {
         descript: {
           width: info.videoW,
@@ -106,7 +106,7 @@ export default class VideoEntity {
     }
     if (this.op.fps) this.fps = this.op.fps
     // *** requestAnimationFrame 需要降帧防止抖动
-    // console.log('this.fps', this.fps)
+    // window.console.log('this.fps', this.fps)
     await this.parseFromSrcAndOptions()
   }
   private get isUseBitmap() {
@@ -194,7 +194,7 @@ export default class VideoEntity {
         // const img = document.createElement('img')
         // img.src = URL.createObjectURL(blob)
         // document.body.appendChild(img)
-        // console.log(blob)
+        // window.console.log(blob)
         // }
         // 适配 gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1) 解决自动翻转的问题
         if (blob) {
@@ -255,7 +255,7 @@ export default class VideoEntity {
           }
         } // image
         else if (this.effectTypes.img.indexOf(effectType) > -1) {
-          // console.log(`[effect] effectTag:`, effectTag, ':', effects[effectTag])
+          // window.console.log(`[effect] effectTag:`, effectTag, ':', effects[effectTag])
           item.img = await this.makeImage(item, effects[effectTag])
         }
       }),
@@ -268,7 +268,7 @@ export default class VideoEntity {
    * @returns
    */
   private async makeImage(item: VideoAnimateEffectType, url: string) {
-    // console.log(`[effect] makeImage:`, item, url)
+    // window.console.log(`[effect] makeImage:`, item, url)
     if (!this.ctx) return
     const ctx = this.ctx
     const w = Math.ceil(item[this.effectWidth])
@@ -280,7 +280,7 @@ export default class VideoEntity {
     // const isBase64 = isDataUrl(url)
     ctx.canvas.width = w
     ctx.canvas.height = h
-    // console.log(`makeImage`, item.scaleMode, w, h, img)
+    // window.console.log(`makeImage`, item.scaleMode, w, h, img)
     if (item.scaleMode && img) {
       switch (item.scaleMode) {
         case EScaleMode.aspectFill: // 最大适配
@@ -295,7 +295,7 @@ export default class VideoEntity {
             const drawHeight = Math.round(img.height * adapt)
             const sx = Math.round((w - drawWidth) / 2)
             const sy = Math.round((drawHeight - h) / 2)
-            // console.log(
+            // window.console.log(
             //   `[effect] before draw: w ,h ,drawWidth, drawHeight, sx, sy, adapt`,
             //   w,
             //   h,
@@ -325,7 +325,7 @@ export default class VideoEntity {
             const drawHeight = Math.round(img.height * adapt)
             const sx = Math.round((w - drawWidth) / 2)
             const sy = Math.round((drawHeight - h) / 2)
-            // console.log(
+            // window.console.log(
             //   `[effect] before draw: w ,h ,drawWidth, drawHeight, sx, sy, adapt`,
             //   w,
             //   h,
@@ -377,7 +377,7 @@ export default class VideoEntity {
   }
 
   private defaultFontInfo(fontSize: number, ctx: ContextType) {
-    // console.log('font=', ctx.font)
+    // window.console.log('font=', ctx.font)
     if (isAndroid) {
       let familyName = 'sans-serif'
       const originFont = ctx.font.split(' ')
@@ -400,7 +400,7 @@ export default class VideoEntity {
   private async makeTextImg(item: VideoAnimateEffectType, eOptions: any = {}, width = 0) {
     if (!this.ctx) return
     const ctx = this.ctx
-    // console.log(`[makeTextImg] eOptions:`, eOptions)
+    // window.console.log(`[makeTextImg] eOptions:`, eOptions)
     if (eOptions.fontStyle) item.fontStyle = eOptions.fontStyle
     if (eOptions.fontColor) item.fontColor = eOptions.fontColor
     if (eOptions.fontSize) item.fontSize = eOptions.fontSize
@@ -415,7 +415,7 @@ export default class VideoEntity {
     const txt = item.text || ''
     const txtlength = txt.length
     const defaultFontSize = h - 2
-    // console.log(
+    // window.console.log(
     //   `[makeTextImg]: fontStyle${fontStyle}, fontColor${fontColor}, fontSize${fontSize}, w${w}, h${h}, txt${txt}, txtlength:${txtlength}`,
     //   this.op,
     // )
@@ -432,12 +432,12 @@ export default class VideoEntity {
       }
 
       const font = this.defaultFontInfo(fontSize, ctx)
-      // console.log('@@@@font=', font)
+      // window.console.log('@@@@font=', font)
       // const font = ['600', `${Math.round(fontSize)}px`, 'Microsoft YaHei']
       if (fontStyle === 'b') {
         font.unshift('bold')
       }
-      // console.log(`getFontStyle`, font)
+      // window.console.log(`getFontStyle`, font)
       return font.join(' ')
     }
     if (!fontStyle) {

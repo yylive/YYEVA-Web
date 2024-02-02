@@ -23,7 +23,7 @@ function setStoreName(op: MixEvideoOptions) {
     }`
   }
   storeName = storeName.replace(/\s+/g, '')
-  // console.log(`storeName`, storeName)
+  // window.console.log(`storeName`, storeName)
   return storeName
 }
 //
@@ -90,27 +90,27 @@ export default class MCache {
     // 不补全遗留帧 避免抖动，考虑是否 requestVideoFrameCallback 也需要这样操作
     if (this.hasRequestAnimationFrame) {
       // if (frame === this.currentFrame) {
-      //   // console.log('=== skip ========================')
+      //   // window.console.log('=== skip ========================')
       //   return 'skip'
       // }
-      // console.log('hasRequestAnimationFrame skip', frame)
+      // window.console.log('hasRequestAnimationFrame skip', frame)
       // this.currentFrame = frame
       return MCache.caches[this.storeName] && MCache.caches[this.storeName][frame]
         ? MCache.caches[this.storeName][frame]
         : 'skip'
     }
     // if (frame === this.currentFrame) {
-    //   // console.log('=== skip ========================')
+    //   // window.console.log('=== skip ========================')
     //   return 'skip'
     // }
-    // console.log('<<< get frame', frame, this.currentFrame)
+    // window.console.log('<<< get frame', frame, this.currentFrame)
     // this.currentFrame = frame
     return MCache.caches[this.storeName] ? MCache.caches[this.storeName][frame] : undefined
   }
   setFrame(frame: number, d: ImageBitmap | HTMLImageElement) {
-    // console.log('MCache.caches[this.storeName]', MCache.caches[this.storeName], this.storeName)
+    // window.console.log('MCache.caches[this.storeName]', MCache.caches[this.storeName], this.storeName)
     if (d && !MCache.caches[this.storeName][frame] && !this.hasRequestAnimationFrame) {
-      // console.log('>>> set frame', frame)
+      // window.console.log('>>> set frame', frame)
       MCache.caches[this.storeName][frame] = d
     }
   }

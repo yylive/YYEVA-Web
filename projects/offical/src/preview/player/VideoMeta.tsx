@@ -27,7 +27,7 @@ const VideoForm = () => {
   const inputRefs: any = {}
   useEffect(() => {
     const data: any = {...videoFormItem}
-    console.log('videoFormItem=', videoFormItem)
+    window.console.log('videoFormItem=', videoFormItem)
     for (const [key, value] of Object.entries(videoFormItem)) {
       if (typeof value === 'object') {
         const text = (value as any)?.text
@@ -49,7 +49,7 @@ const VideoForm = () => {
       // initialValues={videoFormItem}
       // request={async () => videoFormItem}
       onFinish={async (v: any = {}) => {
-        console.log('onFinish', v)
+        window.console.log('onFinish', v)
         const videoData = {...video, videoUrl: v.videoUrl}
         delete v.videoUrl
         videoData.effects = v
@@ -87,15 +87,15 @@ const VideoForm = () => {
               <input
                 type="file"
                 ref={ref => {
-                  // console.log('ProFormText', ref)
+                  // window.console.log('ProFormText', ref)
                   if (ref) inputRefs[v.effectTag] = ref
                 }}
                 onChange={async e => {
-                  // console.log('file input', v.effectTag, e.target.files)
+                  // window.console.log('file input', v.effectTag, e.target.files)
                   const dataUrl = await fileToDataUrl(e.target)
-                  // console.log('dataUrl', dataUrl)
+                  // window.console.log('dataUrl', dataUrl)
                   formRef.current?.setFieldValue(v.effectTag, dataUrl)
-                  // console.log(formRef)
+                  // window.console.log(formRef)
                 }}
                 style={{display: 'none'}}
               />

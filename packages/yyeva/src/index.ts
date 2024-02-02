@@ -6,7 +6,7 @@ import {polyfill, wechatPolyfill} from './helper/polyfill'
 import {isOffscreenCanvasSupported} from './helper/utils'
 
 async function yyEva(options: MixEvideoOptions): Promise<Player> {
-  // console.log('[yyEva]options=', options)
+  // window.console.log('[yyEva]options=', options)
   const op: MixEvideoOptions = {
     ...{
       showVideo: false,
@@ -36,7 +36,7 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
     },
     ...options,
   }
-  // console.log('[yyEva]op=', op, 'onEnd=', op.onEnd, ', onLoop=', op.onLoop)
+  // window.console.log('[yyEva]op=', op, 'onEnd=', op.onEnd, ', onLoop=', op.onLoop)
   // useMetaData 必须启动usePrefetch
   if (op.useMetaData && op.usePrefetch) {
     op.usePrefetch = true
@@ -60,7 +60,7 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
   }
   //
   // setLoggerLevel(op.logLevel)
-  // console.log('op.logLevel',op.logLevel)
+  // window.console.log('op.logLevel',op.logLevel)
   logger.setup({level: op.logLevel, showtips: !!op.showPlayerInfo})
   //
   if (polyfill.weixin && polyfill.ios) await wechatPolyfill.wxReady()
@@ -77,7 +77,7 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
   //
   await player.setup()
   op.showPlayerInfo && versionTips(op, player)
-  // console.log(op)
+  // window.console.log(op)
   return player
 }
 export const version = config.version

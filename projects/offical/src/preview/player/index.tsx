@@ -5,19 +5,19 @@ import UploadVideo from 'src/preview/player/UploadVideo'
 let evideo: YYEvaType
 
 const runOnce = async (container: any, video: any) => {
-  // console.log('video',video)
+  // window.console.log('video',video)
   evideo = await yyEva({
     ...video,
     container,
     // loop: true,
     onEnd: e => {
-      console.log('[runOnce]onEnd, e=', e)
+      window.console.log('[runOnce]onEnd, e=', e)
       if (!e) runOnce(container, video)
     },
     onLoopCount: (args: any) => {
       // test case: loop: 1, loop: 2, loop: 3, loop: false, loop: true
       // [runOnce]onLoopCount args= {count: 1}
-      console.log('[runOnce]onLoopCount args=', args)
+      window.console.log('[runOnce]onLoopCount args=', args)
     },
   })
   evideo.start()
@@ -29,7 +29,7 @@ export const GiftPlayer = ({backgroundColor}: any) => {
   const div = useRef<HTMLDivElement>(null)
   const {setEffect} = useEffectStore(state => state)
   const {showGrid} = useBackgroundGrid()
-  // console.log('backgroundColor=', backgroundColor)
+  // window.console.log('backgroundColor=', backgroundColor)
 
   useEffect(() => {
     runOnce(div.current, video).then(() => {

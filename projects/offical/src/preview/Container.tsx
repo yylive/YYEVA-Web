@@ -63,7 +63,7 @@ const Page = () => {
   const {setBackGoundGrid} = useBackgroundGrid()
 
   const handleChange = (value: string) => {
-    console.log(`selected ${value}`)
+    window.console.log(`selected ${value}`)
     setBackGoundColor(value)
   }
 

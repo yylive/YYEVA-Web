@@ -35,14 +35,14 @@ class RenderCache {
     if (this.op.useFrameCache) await this.mCache.setup()
   }
   private async createFramesCache(frame: number) {
-    // console.log('[mcache][this.canvas]', this.canvas)
+    // window.console.log('[mcache][this.canvas]', this.canvas)
     if (!this.canvas) return
     // if (!!self.OffscreenCanvas && this.canvas instanceof OffscreenCanvas) {
     //   const bitmap = this.canvas.transferToImageBitmap()
     //   // const blob = await this.canvas.convertToBlob()
     //   // const bitmap = await self.createImageBitmap(blob)
     //   this.mCache.setFrame(frame, bitmap)
-    //   // console.log('[transferToImageBitmap]', bitmap)
+    //   // window.console.log('[transferToImageBitmap]', bitmap)
     // } else if (this.canvas instanceof HTMLCanvasElement) {
     if (this.op.useBitmap && self.createImageBitmap) {
       self.createImageBitmap(this.canvas).then(bitmap => {

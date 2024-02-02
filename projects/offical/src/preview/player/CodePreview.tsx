@@ -5,7 +5,7 @@ import {javascript} from '@codemirror/lang-javascript'
 import {dracula} from '@uiw/codemirror-theme-dracula'
 import {useCallback} from 'react'
 const genCode = (o?: any) => {
-  // console.log(o)
+  // window.console.log(o)
   const oString = JSON.stringify(o, null, 10)
   return `
 import {yyEva, YYEvaType} from 'yyeva'
@@ -32,7 +32,7 @@ const CodePreview = () => {
   const {opencode, setOpenCode} = useCodeStore(state => state)
   const {video} = useVideoStore(state => state)
   const onChange = useCallback((value: any, viewUpdate: any) => {
-    // console.log('value:', value)
+    // window.console.log('value:', value)
   }, [])
   return (
     <Modal onCancel={() => setOpenCode(false)} onOk={() => setOpenCode(false)} open={opencode}>

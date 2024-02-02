@@ -115,7 +115,7 @@ export default class Render2D {
     //
     if (this.op.useFrameCache) {
       const frameItem = this.renderCache.getCache(frame)
-      // console.log('[canvas2d frameItem]', frame, frameItem)
+      // window.console.log('[canvas2d frameItem]', frame, frameItem)
       if (frameItem === 'skip') return
       if (frameItem) {
         this.context.clearRect(0, 0, w, h)
@@ -160,11 +160,11 @@ export default class Render2D {
   renderMix(frame = 0) {
     const descript = this.videoEntity.config?.descript
     if (!this.ctx || !this.isPlay || typeof this.video === 'undefined' || !descript) return
-    // console.log(info)
+    // window.console.log(info)
     const [x, y, w, h] = descript.rgbFrame
     const [ax, ay, aw, ah] = descript.alphaFrame
     //
-    // console.log(' descript.alphaFrame', descript.alphaFrame)
+    // window.console.log(' descript.alphaFrame', descript.alphaFrame)
     const vw = this.video.videoWidth
     const vh = this.video.videoHeight
     this.ctx.drawImage(this.video, 0, 0, vw, vh, 0, 0, vw, vh)
@@ -173,7 +173,7 @@ export default class Render2D {
     alpathImageData = this.scaleImageData(alpathImageData, w / aw)
     // alpathImageData.width = w
     // alpathImageData.height = h
-    // console.log(colorImageData, alpathImageData)
+    // window.console.log(colorImageData, alpathImageData)
     for (let i = 3, len = colorImageData?.data.length; i < len; i += 4) {
       colorImageData.data[i] = alpathImageData.data[i - 1]
     }

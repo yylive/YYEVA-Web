@@ -43,7 +43,7 @@ export default class EVideo {
   public onEnd: EventCallback
   public onError: EventCallback
 
-  private onLoadedmetadata:EventCallback
+  private onLoadedmetadata: EventCallback
   //
   public isPlay = false
   public renderer: Render | Render2D
@@ -97,13 +97,12 @@ export default class EVideo {
 
   private _onEnd() {
     this.stop()
-    
+
     this.onEnd && this.onEnd()
-    
+
     if (!this.op.endPause) {
       this.destroy()
     }
-
   }
 
   private _error(err: any) {
@@ -268,16 +267,16 @@ export default class EVideo {
     this.video.currentTime = 0
     this.doStart()
   }
-  
+
   private doStart() {
     // this.video.load()
     if (document.hidden) {
-      logger.info(`startEvent() document.hidden..` )
+      logger.info(`startEvent() document.hidden..`)
       return
     }
 
     const videoPromise = this.video.play()
-    
+
     // 避免 uc 夸克报错
     if (videoPromise) {
       videoPromise
@@ -306,7 +305,17 @@ export default class EVideo {
             return
           }
           //
-          logger.error(`play error: `, this.op.videoSource, e, 'e?.code=', e?.code, ', e?.name=', e?.name, ', url=', this.op.videoUrl)
+          logger.error(
+            `play error: `,
+            this.op.videoSource,
+            e,
+            'e?.code=',
+            e?.code,
+            ', e?.name=',
+            e?.name,
+            ', url=',
+            this.op.videoUrl,
+          )
           if (e?.code === 20) {
             return
           }
@@ -499,7 +508,7 @@ export default class EVideo {
     // onready
     return new Promise(resolve => {
       // IOS 微信会卡住在这里 不能注销 video
-      if(this.onLoadedmetadata) {
+      if (this.onLoadedmetadata) {
         video.removeEventListener('loadedmetadata', this.onLoadedmetadata)
       }
       this.onLoadedmetadata = e => {
@@ -556,13 +565,13 @@ export default class EVideo {
     if (this.video) {
       this.video.removeEventListener('loadedmetadata', this.onLoadedmetadata, false)
       this.video.pause()
-      // console.log('[removeVideoEvent]', !(polyfill.weixin && polyfill.ios) && !this.op.videoID)
+      // window.console.log('[removeVideoEvent]', !(polyfill.weixin && polyfill.ios) && !this.op.videoID)
       if (!this.op.videoID) {
         // this.video.src = ''
         this.video.removeAttribute('src')
         this.video.load()
         this.video.remove()
-        // console.log('this.video', this.video, this.video.currentTime, this.video.currentSrc)
+        // window.console.log('this.video', this.video, this.video.currentTime, this.video.currentSrc)
       }
     }
   }
@@ -698,33 +707,32 @@ export default class EVideo {
   private getVideoByHttp() {
     return new Promise(async (resolve, reject) => {
       const blob = await fetch(this.op.videoSource)
-            .then(r => {
-              if (r.ok) {
-                return r.blob()
-              } else {
-                logger.error('fetch request failed, url: ' + this.op.videoSource)
-                return undefined
-              }
-            })
-            .catch(err => {
-              logger.error('getVideoByHttp fetch, err=', err)
-              return undefined
-            })
+        .then(r => {
+          if (r.ok) {
+            return r.blob()
+          } else {
+            logger.error('fetch request failed, url: ' + this.op.videoSource)
+            return undefined
+          }
+        })
+        .catch(err => {
+          logger.error('getVideoByHttp fetch, err=', err)
+          return undefined
+        })
 
-            resolve(blob)
-            
-    //   const xhr = new XMLHttpRequest()
-    //   xhr.open('GET', this.op.videoSource, true)
-    //   xhr.responseType = 'blob'
-    //   xhr.onload = () => {
-    //     if (xhr.status === 200 || xhr.status === 304) {
-    //       resolve(xhr.response)
-    //     } else {
-    //       reject(new Error('http response invalid' + xhr.status))
-    //     }
-    //   }
-    // xhr.send() 
-   
+      resolve(blob)
+
+      //   const xhr = new XMLHttpRequest()
+      //   xhr.open('GET', this.op.videoSource, true)
+      //   xhr.responseType = 'blob'
+      //   xhr.onload = () => {
+      //     if (xhr.status === 200 || xhr.status === 304) {
+      //       resolve(xhr.response)
+      //     } else {
+      //       reject(new Error('http response invalid' + xhr.status))
+      //     }
+      //   }
+      // xhr.send()
     })
   }
   public setWindowState(state: WINDOW_VISIBLE_STATE) {

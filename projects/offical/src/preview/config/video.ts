@@ -1,10 +1,9 @@
-
-const queryString = window.location.search;
-console.log('[video]queryString=', queryString)
+const queryString = window.location.search
+window.console.log('[video]queryString=', queryString)
 const urlParams = new URLSearchParams(queryString)
 export const videoUrl = urlParams.get('videoUrl')
 
-console.log('[video]videoUrl=', videoUrl);
+window.console.log('[video]videoUrl=', videoUrl)
 
 const host = ''
 const selected: any = {

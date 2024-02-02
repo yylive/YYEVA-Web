@@ -84,7 +84,7 @@ export default class Webgl {
         lose_context.loseContext()
         logger.debug('lose_context')
       }
-      
+
       this.gl = null
     }
     if (this.canvas) this.canvas.remove()
@@ -96,12 +96,12 @@ export default class Webgl {
   }
   getVsSource(): string {
     const cb = this.version === 2 ? this.getVs2() : this.getVs1()
-    // console.log('vs', cb)
+    // window.console.log('vs', cb)
     return cb
   }
   getFsSource(): string {
     const cb = this.version === 2 ? this.getFs2() : this.getFs1()
-    // console.log('fs', cb)
+    // window.console.log('fs', cb)
     return cb
   }
   getVs2() {

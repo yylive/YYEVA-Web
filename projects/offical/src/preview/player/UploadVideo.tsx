@@ -50,7 +50,7 @@ const UploadVideo = ({children}: UploadVideoType) => {
     if (!formRef.current || !uploadLabelRef.current || !fileInputRef.current) return
   }, [])
   useEffect(() => {
-    console.log('upload', upload)
+    window.console.log('upload', upload)
     fileInputRef.current?.click()
   }, [upload])
   return (

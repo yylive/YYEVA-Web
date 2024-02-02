@@ -55,17 +55,17 @@ export class Logger {
     this.op = {...this.op, ...options}
     if (typeof showtips === 'boolean') this.op.showtips = showtips
     const lv = level ? this.levels[level] : this.op.level ? this.levels[this.op.level] : config.mode === 'dev' ? 1 : 2
-    // console.log(lv,config)
+    // window.console.log(lv,config)
     const useChannel = !channel || channel === this.op.channel
     const silenceFn = (...args: any[]) => {
       //:TODO 增加上报逻辑
-      // console.log(...args)
+      // window.console.log(...args)
     }
-    this.error = lv <= 4 && useChannel ? console.error.bind(console, ...this.logType('error')) : silenceFn
-    this.warn = lv <= 3 && useChannel ? console.warn.bind(console, ...this.logType('warn')) : silenceFn
-    this.info = lv <= 2 && useChannel ? console.log.bind(console, ...this.logType('info')) : silenceFn
-    this.log = lv <= 2 && useChannel ? console.log.bind(console, ...this.logType('info')) : silenceFn
-    this.debug = lv <= 1 && useChannel ? console.log.bind(console, ...this.logType('debug')) : silenceFn
+    this.error = lv <= 4 && useChannel ? window.console.error.bind(window.console, ...this.logType('error')) : silenceFn
+    this.warn = lv <= 3 && useChannel ? window.console.warn.bind(window.console, ...this.logType('warn')) : silenceFn
+    this.info = lv <= 2 && useChannel ? window.console.log.bind(window.console, ...this.logType('info')) : silenceFn
+    this.log = lv <= 2 && useChannel ? window.console.log.bind(window.console, ...this.logType('info')) : silenceFn
+    this.debug = lv <= 1 && useChannel ? window.console.log.bind(window.console, ...this.logType('debug')) : silenceFn
   }
 }
 // window.LoggerConfig = {
@@ -80,7 +80,7 @@ export default logger
 // version
 export const versionTips = (op: MixEvideoOptions, player: EVideo) => {
   if (op.showPlayerInfo === 'table') {
-    return console.table({
+    return window.console.table({
       Version: config.version,
       RenderType: op.renderType === 'canvas2d' ? op.renderType : `WebGL.${player.webglVersion}`,
       FPS: player.fps,
@@ -93,7 +93,7 @@ export const versionTips = (op: MixEvideoOptions, player: EVideo) => {
       //
     })
   }
-  console.log(
+  window.console.log(
     `%c ${prefixName} ${config.version} %c ${
       op.renderType === 'canvas2d' ? op.renderType : `WebGL.${player.webglVersion}`
     }${self.devicePixelRatio ? ` DPR.${self.devicePixelRatio}` : ''}${` FPS.${player.fps}`}${
