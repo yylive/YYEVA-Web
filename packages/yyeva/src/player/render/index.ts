@@ -307,6 +307,10 @@ export default class WglRender {
     gl.attachShader(program, vsShader)
     gl.attachShader(program, fsShader)
     gl.linkProgram(program)
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      const info = gl.getProgramInfoLog(program)
+      logger.error(info)
+    }
     gl.useProgram(program)
     return program
   }
