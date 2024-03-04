@@ -21,6 +21,10 @@ export default class Render2D extends Canvas2dControl {
   //
   private alphaCanvas: HTMLCanvasElement | OffscreenCanvas
   private alphaCtx: CanvasRenderingContext2D
+
+  private canvasKey: HTMLCanvasElement | OffscreenCanvas
+  private ctxKey: CanvasRenderingContext2D
+
   //
   drawEffect: {[key: string]: any}
   constructor(op: MixEvideoOptions) {
@@ -39,6 +43,9 @@ export default class Render2D extends Canvas2dControl {
     //
     //
     this.drawEffect = {}
+
+    this.canvasKey = this.createCanvas()
+    this.ctxKey = this.get2dContext(this.canvasKey)
   }
   private setSizeCanvas(canvas: HTMLCanvasElement, resizeCanvas: ResizeCanvasType) {
     switch (resizeCanvas) {
@@ -195,6 +202,7 @@ export default class Render2D extends Canvas2dControl {
     }
     this.removeCanvas(this.ofs)
     this.removeCanvas(this.alphaCanvas)
+    this.removeCanvas(this.canvasKey)
     this.drawEffect = undefined
   }
   clear() {
@@ -268,7 +276,13 @@ export default class Render2D extends Canvas2dControl {
           const alphaData = this.ctx.getImageData(mX, mY, mW, mH)
           let imageData = this.ctx.getImageData(x, y, w, h)
           imageData = this.mixImageData(imageData, alphaData, w / mW)
-          this.ctx.putImageData(imageData, x, y, 0, 0, w, h) //透明层会触发alpha通道把底层渲染透明化了
+          // this.ctx.putImageData(imageData, x, y, 0, 0, w, h) //透明层会触发alpha通道把底层渲染透明化了
+
+          this.canvasKey.width = Math.max(this.canvasKey.width, w)
+          this.canvasKey.height = Math.max(this.canvasKey.height, h)
+          this.ctxKey.putImageData(imageData, 0, 0)
+
+          this.ctx.drawImage(this.canvasKey, 0, 0, w, h, x, y, w, h)
         }
       })
     }
@@ -297,10 +311,12 @@ export default class Render2D extends Canvas2dControl {
     //
     this.ctx.clearRect(ax, ay, w, h) //清空alpha图层
   }
+
   mixImageData(colorImageData, alpathImageData, scale = 1) {
     if (scale !== 1) alpathImageData = this.scaleImageData(alpathImageData, scale)
-    for (let i = 3, len = colorImageData?.data.length; i < len; i += 4) {
-      colorImageData.data[i] = alpathImageData.data[i - 1]
+    const len = Math.min(colorImageData?.data.length, alpathImageData?.data.length)
+    for (let i = 3; i < len; i += 4) {
+      colorImageData.data[i] = alpathImageData.data[i - 3]
     }
     return colorImageData
   }
@@ -327,7 +343,9 @@ export default class Render2D extends Canvas2dControl {
   // }
   scaleImageData(imageData, scale) {
     const ctx = this.alphaCtx
-    const scaled = ctx.createImageData(imageData.width * scale, imageData.height * scale)
+    const scaleWidth = Math.floor(imageData.width * scale)
+    const scaleHeight = Math.floor(imageData.height * scale)
+    const scaled = ctx.createImageData(scaleWidth, scaleHeight)
 
     for (let row = 0; row < imageData.height; row++) {
       for (let col = 0; col < imageData.width; col++) {
@@ -338,11 +356,11 @@ export default class Render2D extends Canvas2dControl {
           imageData.data[(row * imageData.width + col) * 4 + 3],
         ]
         for (let y = 0; y < scale; y++) {
-          const destRow = row * scale + y
+          const destRow = Math.floor(row * scale) + y
           for (let x = 0; x < scale; x++) {
-            const destCol = col * scale + x
+            const destCol = Math.floor(col * scale) + x
             for (let i = 0; i < 4; i++) {
-              scaled.data[(destRow * scaled.width + destCol) * 4 + i] = sourcePixel[i]
+              scaled.data[(destRow * scaleWidth + destCol) * 4 + i] = sourcePixel[i]
             }
           }
         }
