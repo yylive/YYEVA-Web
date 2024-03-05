@@ -173,6 +173,9 @@ export default class Render2D extends Canvas2dControl {
     //
     this.ofs.width = video.videoWidth
     this.ofs.height = video.videoHeight
+
+    this.canvasKey.width = canvas.width
+    this.canvasKey.height = canvas.height
     //
     const {descript, effect} = this.videoEntity.config
     if (descript) {
@@ -266,23 +269,47 @@ export default class Render2D extends Canvas2dControl {
         const [mX, mY, mW, mH] = o[this.videoEntity.outputFrame]
         const effectId = o[this.videoEntity.effectId]
 
-        // console.log(mX, mY, mW, mH, x, y, w, h, effectId)
+        // console.log(
+        //   'renderKey: ',
+        //   mX,
+        //   mY,
+        //   mW,
+        //   mH,
+        //   x,
+        //   y,
+        //   w,
+        //   h,
+        //   ', effectId=' + effectId + ',frame=' + frame + ',scale=' + w / mW,
+        //   ',rgbX=' + rgbX + ',rgbY=' + rgbY,
+        // )
         const r = this.drawEffect[effectId] || {}
 
-        if (r.img) {
+        if (r.img && w > 0 && h > 0 && mH > 0 && mW > 0) {
           // let imageData = this.getimgDataByBitmap(r.img, w, h)
 
-          this.ctx.drawImage(r.img, x, y, w, h)
+          this.ctxKey.clearRect(0, 0, w, h)
+          this.ctxKey.drawImage(r.img, 0, 0, w, h)
           const alphaData = this.ctx.getImageData(mX, mY, mW, mH)
-          let imageData = this.ctx.getImageData(x, y, w, h)
-          imageData = this.mixImageData(imageData, alphaData, w / mW)
-          // this.ctx.putImageData(imageData, x, y, 0, 0, w, h) //透明层会触发alpha通道把底层渲染透明化了
+          let imageData = this.ctxKey.getImageData(0, 0, w, h)
 
-          this.canvasKey.width = Math.max(this.canvasKey.width, w)
-          this.canvasKey.height = Math.max(this.canvasKey.height, h)
+          imageData = this.mixImageData(imageData, alphaData, w / mW)
+
+          this.ctxKey.clearRect(0, 0, w, h)
           this.ctxKey.putImageData(imageData, 0, 0)
 
           this.ctx.drawImage(this.canvasKey, 0, 0, w, h, x, y, w, h)
+
+          // if (effectId == '3') {
+          //   const resize1 = document.getElementById('resize1') as HTMLCanvasElement
+          //   resize1.width = w
+          //   resize1.height = h
+          //   if (resize1) {
+          //     const ctx = resize1.getContext('2d')
+          //     ctx.clearRect(0, 0, w, h)
+          //     // ctx.putImageData(imageData, 0, 0, 0, 0, w, h)
+          //     ctx.drawImage(r.img, 0, 0, w, h, 0, 0, w, h)
+          //   }
+          // }
         }
       })
     }
@@ -293,6 +320,7 @@ export default class Render2D extends Canvas2dControl {
     // console.log(info)
     const [x, y, w, h] = descript.rgbFrame
     const [ax, ay, aw, ah] = descript.alphaFrame
+    this.ctx.clearRect(ax, ay, w, h) //清空alpha图层
     //
     // console.log(' descript.alphaFrame', descript.alphaFrame)
     const vw = this.video.videoWidth
@@ -302,6 +330,7 @@ export default class Render2D extends Canvas2dControl {
     let colorImageData = this.ctx.getImageData(x, y, w, h)
     const alpathImageData = this.ctx.getImageData(ax, ay, aw, ah)
     colorImageData = this.mixImageData(colorImageData, alpathImageData, w / aw)
+    // console.log('renderMix scale=', w / aw, 'frame=' + frame)
     this.ctx.clearRect(0, 0, w, h)
     this.ctx.putImageData(colorImageData, 0, 0, 0, 0, w, h)
     // this.ctx.clearRect(ax, ay, w, h) //清空alpha图层
@@ -309,14 +338,14 @@ export default class Render2D extends Canvas2dControl {
     // 渲染 key list
     this.renderKey(frame)
     //
-    this.ctx.clearRect(ax, ay, w, h) //清空alpha图层
+    // this.ctx.clearRect(ax, ay, w, h) //清空alpha图层
   }
 
   mixImageData(colorImageData, alpathImageData, scale = 1) {
     if (scale !== 1) alpathImageData = this.scaleImageData(alpathImageData, scale)
     const len = Math.min(colorImageData?.data.length, alpathImageData?.data.length)
     for (let i = 3; i < len; i += 4) {
-      colorImageData.data[i] = alpathImageData.data[i - 3]
+      colorImageData.data[i] = alpathImageData.data[i - 1]
     }
     return colorImageData
   }
