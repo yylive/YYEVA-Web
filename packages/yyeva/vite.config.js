@@ -54,7 +54,7 @@ if (libFormat !== 'esm') {
 
 export default defineConfig(({mode}) => {
   const isDev = mode === 'dev'
-  if(!isDev){
+  if (!isDev) {
     plugins.push(terser())
   }
   return {
