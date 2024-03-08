@@ -375,9 +375,11 @@ export default class Render2D extends Canvas2dControl {
     const scaleWidth = Math.floor(imageData.width * scale)
     const scaleHeight = Math.floor(imageData.height * scale)
     const scaled = ctx.createImageData(scaleWidth, scaleHeight)
+    const imageDataWidth = imageData.width
+    const imageDataHeight = imageData.height
 
-    for (let row = 0; row < imageData.height; row++) {
-      for (let col = 0; col < imageData.width; col++) {
+    for (let row = 0; row < imageDataHeight; row++) {
+      for (let col = 0; col < imageDataWidth; col++) {
         const sourcePixel = [
           imageData.data[(row * imageData.width + col) * 4 + 0],
           imageData.data[(row * imageData.width + col) * 4 + 1],
