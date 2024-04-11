@@ -379,16 +379,22 @@ export default class EVideo {
       })
   }
 
+  private _updateVideoSource(source: string | File) {
+    const op = this.op
+    if (source instanceof File) {
+      op.useVideoDBCache = false
+      this.videoFile = source
+      this.op.videoSource = source.name
+    } else {
+      this.op.videoSource = source
+    }
+  }
+
   private videoCreate() {
     //
     const op = this.op
-    if (op.videoUrl instanceof File) {
-      op.useVideoDBCache = false
-      this.videoFile = op.videoUrl
-      this.op.videoSource = this.videoFile.name
-    } else {
-      this.op.videoSource = op.videoUrl
-    }
+    this._updateVideoSource(op.videoUrl)
+
     // quark & android 必须改变URL 否则 video currentTime 不重置
     if (polyfill.quark && polyfill.android) {
       const urlSp = this.op.videoSource.indexOf('?') > -1 ? '&' : '?'
@@ -413,6 +419,7 @@ export default class EVideo {
     // ========== check hevc ==============
     this.isSupportHevc = isHevc(video)
     if (this.isSupportHevc && op.hevcUrl) {
+      this._updateVideoSource(op.hevcUrl)
       op.videoUrl = op.hevcUrl
       this.op.isHevc = true
     }
