@@ -28,6 +28,10 @@ export default class WglRender {
     //TODO 观察是否需要添加
     this.webgl.ofs.addEventListener('webglcontextlost', e => {
       logger.debug('[webglcontextlost]', e)
+      // 阻止浏览器的默认处理行为。（浏览器对上下文丢失事件的默认行为是，不再触发上下文恢复事件，所以我们要阻止浏览器的默认行为）
+      e.preventDefault()
+      // 重置program， 等恢复上下文后再重新初始化
+      this.program = undefined
     })
     this.webgl.ofs.addEventListener('webglcontextrestored', () => {
       logger.debug('[webglcontextrestored]')

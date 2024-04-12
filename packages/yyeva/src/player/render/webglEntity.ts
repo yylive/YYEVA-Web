@@ -74,6 +74,7 @@ export default class Webgl {
         this.version = 'canvas2d'
       }
     }
+    logger.debug('[Webgl]initGlContext, version=', this.version)
     // gl.enable(this.gl.STENCIL_TEST)
   }
   public destroy() {
