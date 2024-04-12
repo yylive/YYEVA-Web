@@ -177,7 +177,8 @@ export default class Render2D extends Canvas2dControl {
     this.canvasKey.width = canvas.width
     this.canvasKey.height = canvas.height
     //
-    const {descript, effect} = this.videoEntity.config
+    const descript = this.videoEntity?.config?.descript
+    const effect = this.videoEntity?.config?.effect
     if (descript) {
       const [x, y, w, h] = descript.rgbFrame
       canvas.width = w
@@ -220,7 +221,7 @@ export default class Render2D extends Canvas2dControl {
     // cache获取帧动画直接渲染 不用处理坐标
     //***取消canvas2d的缓存功能
     // this.drawWithCache(frame)
-    const {descript} = this.videoEntity.config
+    const descript = this.videoEntity?.config?.descript
     if (descript) {
       this.renderMix(frame)
     } else {
