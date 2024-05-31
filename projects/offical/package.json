@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "start": "vite preview"
+    "dev": "emp dev",
+    "build": "emp build",
+    "start": "emp serve",
+    "stat": "emp build --analyze"
   },
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
@@ -27,8 +28,9 @@
     "@types/react": "18.0.26",
     "@types/react-dom": "^18.0.9",
     "@types/react-router-dom": "^5.3.2",
-    "@vitejs/plugin-react": "^1.3.2",
-    "vite": "^4.3.5"
+    "@empjs/cli": "3.0.0-rc.32",
+    "@empjs/plugin-lightningcss": "3.0.0-rc.30",
+    "@empjs/plugin-react": "3.0.0-rc.30"
   },
   "author": "",
   "license": "ISC"

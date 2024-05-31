@@ -1,56 +1,7 @@
 {
+  "extends": "@empjs/cli/emp-tsconfig.json",
   "compilerOptions": {
-    "experimentalDecorators": true,
-    "baseUrl": ".",
-    "outDir": "dist",
-    "declaration": true,
-    "declarationDir": "types",
-    "emitDeclarationOnly": true,
-    "target": "esnext",
-    "module": "esnext",
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext",
-      "webworker"
-    ],
-    "paths": {
-      "src/*": [
-        "src/*"
-      ]
-    },
-    // Note: In order to transform *both* js and d.ts files, you need to add both of the below lines to plugins
-    "plugins": [
-      // Transform paths in output .js files
-      {
-        "transform": "typescript-transform-paths",
-        "exclude": [ "**/node_modules/**" ]
-      },
-      // Transform paths in output .d.ts files (Include this line if you output declarations files)
-      {
-        "transform": "typescript-transform-paths",
-        "afterDeclarations": true,
-        "exclude": [ "**/node_modules/**" ]
-      }
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": false,
-    "sourceMap": true,
-    "jsx": "react-jsx",
-    "importsNotUsedAsValues": "preserve",
-    "ignoreDeprecations": "5.0"
+    "baseUrl": "./"
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src"]
 }

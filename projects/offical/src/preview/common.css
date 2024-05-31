@@ -1,140 +1,166 @@
 .ant-layout {
-    min-height: 100vh;
+  min-height: 100vh;
 }
-.ant-layout, .ant-layout * {
-    box-sizing: border-box;
+
+.ant-layout,
+.ant-layout * {
+  box-sizing: border-box;
 }
+
 /* .ant-page-header{
     display: none;
 } */
-.playbox{
-    background: 0 0/15px 15px, 0 0/15px 15px, 0 0/75px 75px, 0 0/75px 75px #222;
-	background-image: 
-	linear-gradient(hsla(0, 0%, 100%, .2) 1px, transparent 0), 
-	linear-gradient(90deg, hsla(0, 0%, 100%, .2) 1px, transparent 0);
+.playbox {
+  background: 0 0/15px 15px, 0 0/15px 15px, 0 0/75px 75px, 0 0/75px 75px #222;
+  background-image:
+    linear-gradient(hsla(0, 0%, 100%, .2) 1px, transparent 0),
+    linear-gradient(90deg, hsla(0, 0%, 100%, .2) 1px, transparent 0);
 }
-.playbox.withoutgrid{
+
+.playbox.withoutgrid {
   background: 0 0/15px 15px, 0 0/15px 15px, 0 0/75px 75px, 0 0/75px 75px #222;
 }
 
 video {
-    position: fixed;
-    top: 0;
-    right: 0;
-    height: 72px;
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 72px;
 }
-.playbox{
-    width: 100%;
-    height: 100%;
+
+.playbox {
+  width: 100%;
+  height: 100%;
 }
+
 .playbox.AspectFill {
-    aspect-ratio: 9 / 16;
-    /* width: 80%;
+  aspect-ratio: 9 / 16;
+  /* width: 80%;
     margin: 0 auto; */
 }
+
 .playbox.AspectFit {
-    aspect-ratio: 16 / 9;
+  aspect-ratio: 16 / 9;
 }
-.global-footer{
-    text-align: center;
-    margin: 48px 0 24px;
-    padding: 0 16px;
-    color: rgba(0,0,0,.45);
-    font-size: 14px;
+
+.global-footer {
+  text-align: center;
+  margin: 48px 0 24px;
+  padding: 0 16px;
+  color: rgba(0, 0, 0, .45);
+  font-size: 14px;
 }
-.global-footer p{
+
+.global-footer p {
   margin: 0;
   font-weight: bold;
 }
-.global-footer .site-info{
+
+.global-footer .site-info {
   font-size: 12px;
   font-weight: normal;
 }
-.global-footer .site-info a{
+
+/* .global-footer .site-info a{
   color: rgba(0,0,0,.45);
-}
+} */
 
 
 .drag-file-element {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0px;
-    right: 0px;
-    bottom: 0px;
-    left: 0px;
-  }
-  .logo{
-    border-radius: 5px;
-    width: 32px;
-    margin-right: 10px;
-  }
-  .author {
-    text-align: center;
-  }
-  .author .title{
-    margin: 0;
-    line-height: 32px;
-    font-size: 14px;
-  }
-  .author .avatar{
-    width: 100%;
-    border-radius: 5px;
-  }
-  .author .title,
-  .author .description{
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-  }
-  .author .description{
-   font-size: 12px;
-   color: #888;
-   margin: 0; padding: 0;
-  }
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+}
 
-  .brand{
-    text-align: center;
-  }
-  .brand h2{
-    font-size: 14px;
-  }
-  .brand img {
-    /* width: 80px; */
-    width: 100%;
-    margin-bottom: 5px;
-  }
-  .video_options_extra{
-    display: flex;
-    align-items: center;
-    color: #1890ff;
-  }
-  .platform{
-    text-align: center;
-  }
-  .platform .icon .anticon{
-    display: block;
-    font-size: 60px;
-    margin-bottom: 8px;
-  }
-  .platform .icon img{
-    width: 60px;
-    display: block;
-   margin: 0 auto;
-   padding-bottom: 8px;
-  }
-  .meta-jcx{
-    height: 135px;
-    width: 360px;
-    position: absolute;
-    top: 0;
-    right: 0;
-  }
-  /* .metaList{
+.logo {
+  border-radius: 5px;
+  width: 32px;
+  margin-right: 10px;
+}
+
+.author {
+  text-align: center;
+}
+
+.author .title {
+  margin: 0;
+  line-height: 32px;
+  font-size: 14px;
+}
+
+.author .avatar {
+  width: 100%;
+  border-radius: 5px;
+}
+
+.author .title,
+.author .description {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.author .description {
+  font-size: 12px;
+  color: #888;
+  margin: 0;
+  padding: 0;
+}
+
+.brand {
+  text-align: center;
+}
+
+.brand h2 {
+  font-size: 14px;
+}
+
+.brand img {
+  /* width: 80px; */
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+.video_options_extra {
+  display: flex;
+  align-items: center;
+  color: #1890ff;
+}
+
+.platform {
+  text-align: center;
+}
+
+.platform .icon .anticon {
+  display: block;
+  font-size: 60px;
+  margin-bottom: 8px;
+}
+
+.platform .icon img {
+  width: 60px;
+  display: block;
+  margin: 0 auto;
+  padding-bottom: 8px;
+}
+
+.meta-jcx {
+  height: 135px;
+  width: 360px;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+/* .metaList{
 
   } */
-  @media only screen and (max-width: 500px) {
-    .author .title{
-        font-size: 12px;
-       }
+@media only screen and (max-width: 500px) {
+  .author .title {
+    font-size: 12px;
   }
+}

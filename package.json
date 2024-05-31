@@ -6,6 +6,7 @@
     "start": "pnpm --filter=offical start"
   },
   "devDependencies": {
-    "@empjs/eslint-config-react": "^1.0.0"
+    "@empjs/eslint-config-react": "^1.0.0",
+    "typescript": "^5.4.5"
   }
 }
