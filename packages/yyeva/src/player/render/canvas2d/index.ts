@@ -346,7 +346,13 @@ export default class Render2D extends Canvas2dControl {
     if (scale !== 1) alpathImageData = this.scaleImageData(alpathImageData, scale)
     const len = Math.min(colorImageData?.data.length, alpathImageData?.data.length)
     for (let i = 3; i < len; i += 4) {
-      colorImageData.data[i] = alpathImageData.data[i - 1]
+      const opacity = alpathImageData.data[i - 1]
+      colorImageData.data[i] = opacity
+      if (opacity > 0) {
+        colorImageData.data[i - 1] = Math.min(255, Math.ceil((colorImageData.data[i - 1] * 255) / opacity))
+        colorImageData.data[i - 2] = Math.min(255, Math.ceil((colorImageData.data[i - 2] * 255) / opacity))
+        colorImageData.data[i - 3] = Math.min(255, Math.ceil((colorImageData.data[i - 3] * 255) / opacity))
+      }
     }
     return colorImageData
   }
@@ -372,6 +378,10 @@ export default class Render2D extends Canvas2dControl {
   //   return scaled
   // }
   scaleImageData(imageData, scale) {
+    if (scale == 1) {
+      return imageData
+    }
+
     const ctx = this.alphaCtx
     const scaleWidth = Math.floor(imageData.width * scale)
     const scaleHeight = Math.floor(imageData.height * scale)
@@ -414,16 +424,12 @@ export default class Render2D extends Canvas2dControl {
     if (this.op.alphaDirection === 'left') {
       const colorImageData = this.ctx.getImageData(stageWidth, 0, stageWidth, stageHeight)
       const alpathImageData = this.ctx.getImageData(0, 0, stageWidth, stageHeight)
-      for (let i = 3, len = colorImageData?.data.length; i < len; i += 4) {
-        colorImageData.data[i] = alpathImageData.data[i - 1]
-      }
+      this.mixImageData(colorImageData, alpathImageData)
       this.ctx.putImageData(colorImageData, 0, 0, 0, 0, stageWidth, stageHeight)
     } else {
       const alpathImageData = this.ctx.getImageData(stageWidth, 0, stageWidth, stageHeight)
       const colorImageData = this.ctx.getImageData(0, 0, stageWidth, stageHeight)
-      for (let i = 3, len = colorImageData?.data.length; i < len; i += 4) {
-        colorImageData.data[i] = alpathImageData.data[i - 1]
-      }
+      this.mixImageData(colorImageData, alpathImageData)
       this.ctx.putImageData(colorImageData, 0, 0, 0, 0, stageWidth, stageHeight)
       // this.ctx.clearRect(ax, ay, w, h) //清空alpha图层 这个一般用不到
     }
