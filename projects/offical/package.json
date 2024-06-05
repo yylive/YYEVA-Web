@@ -29,7 +29,6 @@
     "@types/react-dom": "^18.0.9",
     "@types/react-router-dom": "^5.3.2",
     "@empjs/cli": "3.0.0-rc.32",
-    "@empjs/plugin-lightningcss": "3.0.0-rc.30",
     "@empjs/plugin-react": "3.0.0-rc.30"
   },
   "author": "",
