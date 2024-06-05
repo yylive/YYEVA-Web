@@ -1,0 +1,31 @@
+{
+  "name": "yyeva-wasm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "devDependencies": {
+    "assemblyscript": "^0.27.22"
+  },
+  "scripts": {
+    "test": "node tests",
+    "dev": "asc --target debug",
+    "pro": "asc --target release",
+    "build": "npm run asbuild:debug && npm run asbuild:release",
+    "start": "serve ."
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/release.js",
+      "types": "./dist/release.d.ts"
+    }
+  },
+  "dependencies": {
+    "zlib.es": "^0.6.0"
+  }
+}
