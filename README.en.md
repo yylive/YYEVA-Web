@@ -1,8 +1,9 @@
 # YY-EVA <sup>web</sup> 🎁
-<a href="https://www.npmjs.com/package/yyeva"><img src="https://img.shields.io/npm/v/yyeva.svg" alt="npm"></a>
-<a href="https://github.com/yylive/YYEVA-Web"><img src="https://img.shields.io/node/v/yyeva.svg" alt="node"></a>
-<a href="https://github.com/yylive/YYEVA-Web"><img src="https://img.shields.io/badge/github-YYEVA-blue" alt="github"></a>
-<a href="https://yyeva.netlify.app/"><img src="https://img.shields.io/badge/demo-YYEVA-black" alt="demo"></a>
+[![npm version][npm-version-src]][npm-version-href]
+[![npm downloads][npm-downloads-src]][npm-downloads-href]
+[![bundle][bundle-src]][bundle-href]
+[![License][license-src]][license-href]
+[![github][github-src]][github-href]
 
 > This is a lightweight, high-performance, and cross-platform MP4 animation player.
 
@@ -62,3 +63,17 @@
      </tr>
   </tbody>
 </table>
+
+
+<!-- Badged -->
+
+[npm-version-src]: https://img.shields.io/npm/v/yyeva?style=flat&colorA=18181B&colorB=F0DB4F
+[npm-version-href]: https://npmjs.com/package/yyeva
+[npm-downloads-src]: https://img.shields.io/npm/dm/yyeva?style=flat&colorA=18181B&colorB=F0DB4F
+[npm-downloads-href]: https://npmjs.com/package/yyeva
+[bundle-src]: https://img.shields.io/bundlephobia/minzip/yyeva?style=flat&colorA=18181B&colorB=F0DB4F
+[bundle-href]: https://bundlephobia.com/result?p=yyeva
+[license-src]: https://img.shields.io/github/license/yylive/YYEVA-Web.svg?style=flat&colorA=18181B&colorB=F0DB4F
+[license-href]: https://github.com/yylive/YYEVA-Web/blob/main/LICENSE
+[github-src]: https://img.shields.io/badge/github-YYEVA-blue?style=flat&colorA=18181B&colorB=F0DB4F
+[github-href]: https://github.com/yylive/YYEVA-Web
