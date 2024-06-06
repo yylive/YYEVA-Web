@@ -1,38 +1,40 @@
 import {logger} from 'src/helper/logger'
+import {Canvas2dControl} from 'src/player/render/canvas2d/control'
 import RenderCache from 'src/player/render/common/renderCache'
 import VideoEntity from 'src/player/render/common/videoEntity'
 import type {MixEvideoOptions, ResizeCanvasType, VideoAnimateDataItemType} from 'src/type/mix'
 
-export default class RenderWebGPU {
+export default class Render2D extends Canvas2dControl {
   public isPlay = false
+  public renderType = 'webgpu'
   public videoEntity: VideoEntity
   public renderCache: RenderCache
-  public isSupport = !!navigator.gpu
-  public renderType = 'webgpu'
+  public op: MixEvideoOptions
 
   private video: HTMLVideoElement | undefined
   private canvas: HTMLCanvasElement
-  private context: GPUCanvasContext
   private device: GPUDevice
+  private context: GPUCanvasContext
+  private swapChainFormat: GPUTextureFormat
   private pipeline: GPURenderPipeline
-  private op!: MixEvideoOptions
-  public currentFrame = -1 //过滤重复帧
-
-  drawEffect: {[key: string]: any}
+  private videoTexture: GPUTexture
+  private frameTexture: GPUTexture
+  drawEffect: any
   public videoSeekedEvent() {
     // return this.renderCache.mCache.videoSeekedEvent()
   }
   constructor(op: MixEvideoOptions) {
+    super()
     logger.debug('[Render In WebGPU]')
     this.op = op
     this.canvas = document.createElement('canvas')
-    this.drawEffect = {}
-    //
-    this.renderCache = new RenderCache(this.canvas, this.op)
-    this.videoEntity = new VideoEntity(this.op)
+    this.renderCache = new RenderCache(this.canvas, op)
+    this.videoEntity = new VideoEntity(op)
+
+    this.initializeWebGPU()
   }
 
-  async initWebGPU(canvas: HTMLCanvasElement) {
+  async initializeWebGPU() {
     if (!navigator.gpu) {
       throw new Error('WebGPU is not supported in this browser.')
     }
@@ -42,83 +44,112 @@ export default class RenderWebGPU {
       throw new Error('Failed to get GPU adapter.')
     }
 
-    const device = await adapter.requestDevice()
-    const context = canvas.getContext('webgpu') as GPUCanvasContext
-    const swapChainFormat = 'bgra8unorm'
+    this.device = await adapter.requestDevice()
+    this.op.container.appendChild(this.canvas)
+    this.context = this.canvas.getContext('webgpu')
 
-    context.configure({
-      device: device,
-      format: swapChainFormat,
+    this.swapChainFormat = 'bgra8unorm'
+    this.context.configure({
+      device: this.device,
+      format: this.swapChainFormat,
     })
 
-    this.device = device
-    this.context = context
+    this.pipeline = this.createPipeline()
   }
 
-  async setup(video?: HTMLVideoElement) {
-    if (!video) throw new Error('video must support!')
-    this.video = video
-    await this.renderCache.setup()
-
-    this.video = video
-
-    if (!this.op.fps) {
-      this.op.fps = 10
-    }
-
-    await this.videoEntity.setup()
-
-    const canvas = this.canvas
-    this.op.container.appendChild(canvas)
-    canvas.width = video.videoWidth / 2
-    canvas.height = video.videoHeight
-    this.canvas = canvas
-
-    await this.initWebGPU(canvas)
-    //
-
-    const shaderCode = `
-      [[stage(vertex)]]
-      fn vs_main([[location(0)]] position : vec4<f32>) -> [[builtin(position)]] vec4<f32> {
-        return position;
-      }
-
-      [[stage(fragment)]]
-      fn fs_main() -> [[location(0)]] vec4<f32> {
-        return vec4<f32>(1.0, 0.0, 0.0, 1.0);
-      }
-    `
-
-    const shaderModule = this.device.createShaderModule({
-      code: shaderCode,
-    })
-
-    const pipeline = this.device.createRenderPipeline({
+  private createPipeline(): GPURenderPipeline {
+    return this.device.createRenderPipeline({
       vertex: {
-        module: shaderModule,
-        entryPoint: 'vs_main',
+        module: this.device.createShaderModule({
+          code: `
+              @vertex
+              fn main(@builtin(vertex_index) vertexIndex: u32) -> @builtin(position) vec4<f32> {
+                var pos = array<vec2<f32>, 4>(
+                  vec2<f32>(-1.0, -1.0),
+                  vec2<f32>( 1.0, -1.0),
+                  vec2<f32>(-1.0,  1.0),
+                  vec2<f32>( 1.0,  1.0)
+                );
+                return vec4<f32>(pos[vertexIndex], 0.0, 1.0);
+              }
+            `,
+        }),
+        entryPoint: 'main',
       },
       fragment: {
-        module: shaderModule,
-        entryPoint: 'fs_main',
+        module: this.device.createShaderModule({
+          code: `
+              @group(0) @binding(0) var mySampler: sampler;
+              @group(0) @binding(1) var myTexture: texture_2d<f32>;
+  
+              @fragment
+              fn main(@builtin(position) fragCoord: vec4<f32>) -> @location(0) vec4<f32> {
+                var uv = fragCoord.xy / vec2<f32>(800.0, 600.0); // assuming canvas size
+                var color = textureSample(myTexture, mySampler, uv);
+                return color;
+              }
+            `,
+        }),
+        entryPoint: 'main',
         targets: [
           {
-            format: 'bgra8unorm',
+            format: this.swapChainFormat,
           },
         ],
       },
       primitive: {
-        topology: 'triangle-list',
+        topology: 'triangle-strip',
+        stripIndexFormat: 'uint32',
       },
       layout: 'auto',
     })
-
-    this.pipeline = pipeline
-
-    this.setSizeCanvas(canvas, this.op.resizeCanvas)
   }
 
-  private setSizeCanvas(canvas: HTMLCanvasElement, resizeCanvas: ResizeCanvasType) {
+  async setup(video?: HTMLVideoElement) {
+    if (!video) throw new Error('video must support!')
+    await this.renderCache.setup()
+    this.video = video
+    if (!this.op.fps) {
+      this.op.fps = 10
+    }
+    await this.videoEntity.setup()
+
+    this.canvas.width = video.videoWidth / 2
+    this.canvas.height = video.videoHeight
+
+    // Create video texture
+    this.videoTexture = this.device.createTexture({
+      size: [video.videoWidth, video.videoHeight, 1],
+      format: 'rgba8unorm',
+      usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
+    })
+
+    // Create frame texture
+    this.frameTexture = this.device.createTexture({
+      size: [video.videoWidth, video.videoHeight, 1],
+      format: 'rgba8unorm',
+      usage: GPUTextureUsage.RENDER_ATTACHMENT,
+    })
+
+    // const descript = this.videoEntity?.config?.descript
+    // const effect = this.videoEntity?.config?.effect
+    // if (descript) {
+    //   const [x, y, w, h] = descript.rgbFrame
+    //   this.canvas.width = w
+    //   this.canvas.height = h
+    // }
+    // if (effect) {
+    //   for (const k in effect) {
+    //     const r = effect[k]
+    //     if (r.img) {
+    //       this.drawEffect[r.effectId] = r
+    //     }
+    //   }
+    // }
+    this.setSizeCanvas(this.canvas, this.op.resizeCanvas)
+  }
+
+  setSizeCanvas(canvas: HTMLCanvasElement, resizeCanvas: ResizeCanvasType) {
     switch (resizeCanvas) {
       case 'percent':
         canvas.style.width = '100%'
@@ -135,8 +166,17 @@ export default class RenderWebGPU {
     }
   }
 
-  render(frame = 0) {
-    this.currentFrame = frame
+  async render(frame = 0) {
+    if (this.video.readyState >= 2) {
+      const videoFrame = new VideoFrame(this.video)
+      this.device.queue.copyExternalImageToTexture({source: videoFrame}, {texture: this.videoTexture}, [
+        this.video.videoWidth,
+        this.video.videoHeight,
+        1,
+      ])
+      videoFrame.close()
+    }
+
     const commandEncoder = this.device.createCommandEncoder()
     const textureView = this.context.getCurrentTexture().createView()
 
@@ -153,14 +193,26 @@ export default class RenderWebGPU {
 
     const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor)
     passEncoder.setPipeline(this.pipeline)
-    passEncoder.draw(3, 1, 0, 0)
+    passEncoder.draw(4, 1, 0, 0)
     passEncoder.end()
 
     this.device.queue.submit([commandEncoder.finish()])
   }
-  public destroy() {
-    // this.webgl.destroy()
+
+  destroy() {
+    this.clear()
     this.videoEntity.destroy()
-    this.renderCache.destroy()
+    if (this.canvas) {
+      this.canvas.remove()
+      delete this.canvas
+      this.canvas = null
+    }
+    this.drawEffect = undefined
+  }
+
+  clear() {
+    // if (this.video && this.context) {
+    //   this.context.clearRect(0, 0, this.video.videoWidth, this.video.videoHeight)
+    // }
   }
 }

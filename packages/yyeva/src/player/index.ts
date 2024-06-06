@@ -91,7 +91,7 @@ export default class EVideo {
   }
 
   private _error(err: any) {
-    logger.error(`[EVdeo] error err:`, err)
+    logger.error(`[YYEVA] error err:`, err)
     const onEnd = this.onEnd
     const onError = this.onError
 
@@ -146,7 +146,7 @@ export default class EVideo {
       // video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : !VideoEntity.hasAudio
       //
       this.fps = this.renderer.videoEntity.fps
-      logger.debug(`[EVdeo] this.renderer.videoEntity.fps`, this.renderer.videoEntity.fps)
+      logger.debug(`[YYEVA] this.renderer.videoEntity.fps`, this.renderer.videoEntity.fps)
       this.animator.setVideoFps({
         fps: this.renderer.videoEntity.fps,
         videoFps: this.renderer.videoEntity.videoFps,
@@ -160,7 +160,7 @@ export default class EVideo {
           try {
             this.renderer.render(frame)
           } catch (err) {
-            logger.error(`[EVdeo] render frame error`)
+            logger.error(`[YYEVA] render frame error`)
             this._error(err)
           }
         }
