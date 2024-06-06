@@ -1,6 +1,6 @@
+import video from 'src/preview/config/video'
 import {create} from 'zustand'
 import {combine} from 'zustand/middleware'
-import video from 'src/preview/config/video'
 const defaultOptions = {
   alphaDirection: 'right',
   mode: 'Fill',
@@ -27,7 +27,9 @@ export const useVideoStore = create(
     },
     (set, get) => ({
       setVideo(v: any) {
-        set(state => ({video: {...state.video, ...defaultOptions, ...v}}))
+        set(state => ({
+          video: {...state.video, ...defaultOptions, ...v},
+        }))
       },
     }),
   ),

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.8.0/schema.json",
+  "extends": ["@empjs/biome-config"],
+  "linter": {
+    "rules": {
+      "style": {
+        "useSelfClosingElements": "off"
+      },
+      "correctness": {
+        "useExhaustiveDependencies": "off"
+      },
+      "suspicious": {
+        "noExplicitAny": "off"
+      }
+    }
+  }
+}

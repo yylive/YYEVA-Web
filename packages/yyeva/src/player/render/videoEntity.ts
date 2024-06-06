@@ -2,7 +2,13 @@ import {logger} from 'src/helper/logger'
 import {isAndroid, isIOS} from 'src/helper/polyfill'
 import {getTextByMaxWidth, isDataUrl, isOffscreenCanvasSupported} from 'src/helper/utils'
 import Animator from 'src/player/video/animator'
-import {MixEvideoOptions, VideoAnimateType, VideoAnimateEffectType, VideoDataType, EScaleMode} from 'src/type/mix'
+import {
+  EScaleMode,
+  type MixEvideoOptions,
+  type VideoAnimateEffectType,
+  type VideoAnimateType,
+  type VideoDataType,
+} from 'src/type/mix'
 
 type ContextType = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
 export default class VideoEntity {
@@ -147,10 +153,10 @@ export default class VideoEntity {
     return new Promise((resolve, reject) => {
       const img = new Image()
       img.crossOrigin = 'anonymous'
-      img.onload = function () {
+      img.onload = () => {
         resolve(img)
       }
-      img.onerror = function (e) {
+      img.onerror = e => {
         logger.error('frame load fail:' + url)
         // reject(new Error('frame load fail:' + url))
         reject(undefined)
@@ -487,7 +493,7 @@ export default class VideoEntity {
       const xhr = new XMLHttpRequest()
       xhr.open('GET', jsonUrl, true)
       xhr.responseType = 'json'
-      xhr.onload = function () {
+      xhr.onload = () => {
         if (xhr.status === 200 || (xhr.status === 304 && xhr.response)) {
           const res = xhr.response
           resolve(res)

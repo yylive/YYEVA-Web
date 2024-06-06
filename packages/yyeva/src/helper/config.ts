@@ -1,5 +1,5 @@
 export default {
-  env: import.meta.env.MODE,
-  mode: import.meta.env.MODE,
-  version: import.meta.env.PKGVERSION,
+  env: process.env.ENV,
+  mode: process.env.ENV,
+  version: process.env.PKGVERSION,
 }

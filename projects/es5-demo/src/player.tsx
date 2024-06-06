@@ -1,5 +1,5 @@
-import {yyEva, YYEvaType, version, YYEvaOptionsType} from 'yyeva'
 import {useEffect, useRef} from 'react'
+import {type YYEvaOptionsType, type YYEvaType, version, yyEva} from 'yyeva'
 
 export const host = `${location.protocol}//${location.host}`
 export type PlayerI = {

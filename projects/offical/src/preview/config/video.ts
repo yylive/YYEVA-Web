@@ -19,7 +19,11 @@ const selected: any = {
     effects: {
       1: '/yy/b6.png',
       2: '/yy/b6c.png',
-      key: {text: 'YYEVA', fontStyle: '600 28px Microsoft YaHei', fontColor: '#ffffff'},
+      key: {
+        text: 'YYEVA',
+        fontStyle: '600 28px Microsoft YaHei',
+        fontColor: '#ffffff',
+      },
     },
     mode: 'Fill',
   },

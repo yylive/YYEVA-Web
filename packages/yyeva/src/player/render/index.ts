@@ -1,9 +1,9 @@
-import {MixEvideoOptions, VideoAnimateDataItemType} from 'src/type/mix'
-import VideoEntity from 'src/player/render/videoEntity'
-import WebGL from 'src/player/render/webglEntity'
-import RenderCache from './renderCache'
 // import MCache from './mCache'
 import {logger} from 'src/helper/logger'
+import VideoEntity from 'src/player/render/videoEntity'
+import WebGL from 'src/player/render/webglEntity'
+import type {MixEvideoOptions, VideoAnimateDataItemType} from 'src/type/mix'
+import RenderCache from './renderCache'
 export default class WglRender {
   private video: HTMLVideoElement | undefined
   private program: WebGLProgram | undefined

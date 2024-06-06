@@ -13,6 +13,8 @@ export class Canvas2dControl {
     }
   }
   get2dContext(ofs: HTMLCanvasElement | OffscreenCanvas) {
-    return ofs.getContext('2d', {willReadFrequently: true}) as CanvasRenderingContext2D
+    return ofs.getContext('2d', {
+      willReadFrequently: true,
+    }) as CanvasRenderingContext2D
   }
 }

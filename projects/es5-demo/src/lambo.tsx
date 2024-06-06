@@ -1,5 +1,5 @@
-import {Player} from './player'
 import {useEffect, useRef} from 'react'
+import {Player} from './player'
 
 const Lambo = () => {
   const div = useRef<HTMLDivElement>(null)

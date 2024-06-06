@@ -1,5 +1,5 @@
 import {logger} from 'src/helper/logger'
-import {MetaDataType, MixEvideoOptions} from 'src/type/mix'
+import type {MetaDataType, MixEvideoOptions} from 'src/type/mix'
 // import VideoEntity from 'src/player/render/videoEntity'
 //
 export type AnimatorType = 'requestVideoFrameCallback' | 'requestAnimationFrame' | 'setTimeout'
@@ -120,11 +120,11 @@ export default class Animator {
               return fn()
             }
             if (this.requestAnim) {
-              if(this.animateId) {
+              if (this.animateId) {
                 this.cancelAnim()
               }
               this.animateId = this.requestAnim(fn)
-            } 
+            }
           })
         }
       default:

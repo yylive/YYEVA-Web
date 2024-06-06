@@ -1,16 +1,16 @@
+import {QuestionCircleOutlined} from '@ant-design/icons'
 import {
   ProCard,
   ProForm,
-  ProFormText,
+  type ProFormInstance,
   ProFormRadio,
-  ProFormSwitch,
   ProFormSelect,
-  ProFormInstance,
+  ProFormSwitch,
+  ProFormText,
 } from '@ant-design/pro-components'
-import {useVideoStore} from 'src/preview/store/usePlayerStore'
-import {Alert, Form, message, Tooltip} from 'antd'
-import {QuestionCircleOutlined} from '@ant-design/icons'
+import {Alert, Form, Tooltip, message} from 'antd'
 import {useEffect, useRef} from 'react'
+import {useVideoStore} from 'src/preview/store/usePlayerStore'
 const swithColSpan = {xs: 8, sm: 12, md: 12, lg: 12}
 const VideoOptionsForm = () => {
   const {video, setVideo} = useVideoStore()

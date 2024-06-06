@@ -1,10 +1,12 @@
-import {MixEvideoOptions} from 'src/type/mix'
 import {logger} from 'src/helper/logger'
-import {AnimatorType} from 'src/player/video/animator'
 // import VideoEntity from './videoEntity'
 import {isDataUrl} from 'src/helper/utils'
+import type {AnimatorType} from 'src/player/video/animator'
+import type {MixEvideoOptions} from 'src/type/mix'
 // import EVideo from 'src/player'
-export type MCacheItem = {[frames: number]: ImageBitmap | HTMLImageElement | undefined}
+export type MCacheItem = {
+  [frames: number]: ImageBitmap | HTMLImageElement | undefined
+}
 //
 function setStoreName(op: MixEvideoOptions) {
   const {effects, mode, container} = op

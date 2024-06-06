@@ -1,4 +1,4 @@
-import {Badge, Card, Typography, Row, Col, Avatar} from 'antd'
+import {Avatar, Badge, Card, Col, Row, Typography} from 'antd'
 import {users} from 'src/preview/config'
 const AuthorItem = ({user}: any) => (
   <div className="author">

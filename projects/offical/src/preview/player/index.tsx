@@ -1,7 +1,7 @@
 import {useEffect, useRef} from 'react'
-import {yyEva, YYEvaType} from 'yyeva'
-import {useVideoStore, useEffectStore, useVideoFormStore, useBackgroundGrid} from '../store/usePlayerStore'
 import UploadVideo from 'src/preview/player/UploadVideo'
+import {type YYEvaType, yyEva} from 'yyeva'
+import {useBackgroundGrid, useEffectStore, useVideoFormStore, useVideoStore} from '../store/usePlayerStore'
 let evideo: YYEvaType
 
 const runOnce = async (container: any, video: any) => {

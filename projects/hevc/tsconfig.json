@@ -8,29 +8,22 @@
     "emitDeclarationOnly": true,
     "target": "esnext",
     "module": "esnext",
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext",
-      "webworker"
-    ],
+    "lib": ["DOM", "DOM.Iterable", "ESNext", "webworker"],
     "paths": {
-      "src/*": [
-        "src/*"
-      ]
+      "src/*": ["src/*"]
     },
     // Note: In order to transform *both* js and d.ts files, you need to add both of the below lines to plugins
     "plugins": [
       // Transform paths in output .js files
       {
         "transform": "typescript-transform-paths",
-        "exclude": [ "**/node_modules/**" ]
+        "exclude": ["**/node_modules/**"]
       },
       // Transform paths in output .d.ts files (Include this line if you output declarations files)
       {
         "transform": "typescript-transform-paths",
         "afterDeclarations": true,
-        "exclude": [ "**/node_modules/**" ]
+        "exclude": ["**/node_modules/**"]
       }
     ],
     "allowJs": true,
@@ -43,13 +36,8 @@
     "resolveJsonModule": true,
     "isolatedModules": false,
     "sourceMap": true,
-    "jsx": "react-jsx",
-    "importsNotUsedAsValues": "preserve",
+    "jsx": "react-jsx"
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }

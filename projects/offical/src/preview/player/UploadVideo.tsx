@@ -1,5 +1,5 @@
-import {useState, useEffect, useRef} from 'react'
-import {useVideoFormStore, useVideoStore, useClickUploadStore} from 'src/preview/store/usePlayerStore'
+import {useEffect, useRef, useState} from 'react'
+import {useClickUploadStore, useVideoFormStore, useVideoStore} from 'src/preview/store/usePlayerStore'
 export type UploadVideoType = {
   // fileInputRef: React.RefObject<HTMLInputElement>
   children: React.ReactNode

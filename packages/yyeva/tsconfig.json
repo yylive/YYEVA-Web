@@ -4,16 +4,9 @@
     "baseUrl": ".",
     "target": "ESNext",
     "module": "ESNext",
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext",
-      "webworker"
-    ],
+    "lib": ["DOM", "DOM.Iterable", "ESNext", "webworker"],
     "paths": {
-      "src/*": [
-        "src/*"
-      ]
+      "src/*": ["src/*"]
     },
     "allowJs": true,
     "skipLibCheck": true,
@@ -23,12 +16,8 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": false,
+    "isolatedModules": false
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }

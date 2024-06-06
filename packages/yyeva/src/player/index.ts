@@ -1,17 +1,24 @@
-import Render from 'src/player/render'
-import Render2D from 'src/player/render/canvas2d'
-import videoEvents from 'src/player/video/videoEvents'
-import {MixEvideoOptions, EventCallback, WebglVersion, EPlayError, EPlayStep, VideoAnimateType} from 'src/type/mix'
-// import {prefetchVideoStream} from 'src/player/video/mse'
-// import {versionTips} from 'src/helper/logger'
-import Animator, {AnimatorType} from 'src/player/video/animator'
 import {logger, versionTips} from 'src/helper/logger'
 import parser from 'src/parser'
 import db from 'src/parser/db'
+import Render from 'src/player/render'
+import Render2D from 'src/player/render/canvas2d'
+// import {prefetchVideoStream} from 'src/player/video/mse'
+// import {versionTips} from 'src/helper/logger'
+import Animator, {type AnimatorType} from 'src/player/video/animator'
+import videoEvents from 'src/player/video/videoEvents'
+import {
+  EPlayError,
+  EPlayStep,
+  type EventCallback,
+  type MixEvideoOptions,
+  type VideoAnimateType,
+  type WebglVersion,
+} from 'src/type/mix'
 // import Webgl from './render/webglEntity'
 
 // import {getVIdeoId} from 'src/helper/utils'
-import {polyfill, clickPlayBtn, isHevc} from 'src/helper/polyfill'
+import {clickPlayBtn, isHevc, polyfill} from 'src/helper/polyfill'
 // import VideoEntity from './render/videoEntity'
 import {LoopChecker} from './loopCheck'
 import {getVideoByHttp} from './player_utils'
@@ -689,7 +696,7 @@ export default class EVideo {
         /**
          * 判断 videoUrl 资源 是否为 H.265
          */
-        const codecRegex = new RegExp('H.265/HEVC')
+        const codecRegex = /H.265\/HEVC/
         const isHevc = codecRegex.test(raw)
         if (isHevc) {
           this.op.isHevc = true

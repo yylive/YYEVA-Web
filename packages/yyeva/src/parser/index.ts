@@ -1,11 +1,11 @@
-import {inflate} from 'zlib.es'
-import {VideoAnimateType} from 'src/type/mix'
 import {logger} from 'src/helper/logger'
-const yyExp = new RegExp('yyeffectmp4json\\[\\[(.*?)\\]\\]yyeffectmp4json')
+import type {VideoAnimateType} from 'src/type/mix'
+import {inflate} from 'zlib.es'
+const yyExp = /yyeffectmp4json\[\[(.*?)\]\]yyeffectmp4json/
 class Parser {
   exp: any
   constructor() {
-    this.exp = new RegExp('eJzt3U1v20gMgOH', 'g')
+    this.exp = /eJzt3U1v20gMgOH/g
   }
   // base64Regex(exact?: boolean): RegExp {
   //   const regex = '(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)'

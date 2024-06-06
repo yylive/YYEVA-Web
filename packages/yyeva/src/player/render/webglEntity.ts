@@ -1,7 +1,7 @@
 import {logger} from 'src/helper/logger'
-import {MixEvideoOptions, ResizeCanvasType, WebglVersion} from 'src/type/mix'
-import MCache from './mCache'
 import {isOffscreenCanvasSupported} from 'src/helper/utils'
+import type {MixEvideoOptions, ResizeCanvasType, WebglVersion} from 'src/type/mix'
+import MCache from './mCache'
 export default class Webgl {
   public PER_SIZE = 9
   public canvas?: HTMLCanvasElement //显示画布
