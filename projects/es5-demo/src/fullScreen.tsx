@@ -25,7 +25,7 @@ const getOpt: any = () => {
   const opt = opts[i]
   i++
   return {
-    videoID: 'yyeva_full_screen_position',
+    // videoID: 'yyeva_full_screen_position',
     mode: 'AspectFill',
     mute: true,
     useMetaData: true,
@@ -33,15 +33,15 @@ const getOpt: any = () => {
     // usePrefetch: false,
     // showVideo: true,
     useAccurate: false,
-    logLevel: 'info',
+    // logLevel: 'info',
     // videoUrl: getUrl(),
     // effects: {
     //   name: `YYEVAER`,
     //   fontColor: 'white',
     //   fontSize: 40,
     // },
-    useFrameCache: true,
-    renderType: 'canvas2d',
+    // useFrameCache: true,
+    // renderType: 'canvas2d',
     ...opt,
   }
 }

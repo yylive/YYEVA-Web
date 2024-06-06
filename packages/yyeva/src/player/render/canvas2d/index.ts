@@ -1,12 +1,13 @@
 import {logger} from 'src/helper/logger'
 import {Canvas2dControl} from 'src/player/render/canvas2d/control'
-import RenderCache from 'src/player/render/renderCache'
-import VideoEntity from 'src/player/render/videoEntity'
+import RenderCache from 'src/player/render/common/renderCache'
+import VideoEntity from 'src/player/render/common/videoEntity'
 import type {MixEvideoOptions, ResizeCanvasType, VideoAnimateDataItemType} from 'src/type/mix'
 //
 export default class Render2D extends Canvas2dControl {
   public isPlay = false
-  public webgl: any = {version: 'canvas2d'}
+  // public webgl: any = {version: 'canvas2d'}
+  public renderType = 'canvas2d'
   public videoEntity: VideoEntity
   public renderCache: RenderCache
   //

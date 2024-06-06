@@ -346,4 +346,4 @@ export type VideoAnimateDataItemType = {
   [key: string]: any
 }
 
-export type WebglVersion = 1 | 2 | 'canvas2d'
+export type WebglVersion = 1 | 2 | null

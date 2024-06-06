@@ -1,24 +1,27 @@
 // import MCache from './mCache'
 import {logger} from 'src/helper/logger'
-import VideoEntity from 'src/player/render/videoEntity'
-import WebGL from 'src/player/render/webglEntity'
+import RenderCache from 'src/player/render/common/renderCache'
+import VideoEntity from 'src/player/render/common/videoEntity'
+import WebGL from 'src/player/render/webgl/webglEntity'
 import type {MixEvideoOptions, VideoAnimateDataItemType} from 'src/type/mix'
-import RenderCache from './renderCache'
 export default class WglRender {
-  private video: HTMLVideoElement | undefined
-  private program: WebGLProgram | undefined
+  //
   public isPlay = false
-  // private dpr = 1
-  private op: MixEvideoOptions
   public videoEntity: VideoEntity
   public webgl: WebGL
+  public renderType = 'webgl'
   public renderCache: RenderCache
-  private textureMap: any = {}
-  private imagePos: any
-  private currentFrame = -1 //过滤重复帧
   public videoSeekedEvent() {
     return this.renderCache.mCache.videoSeekedEvent()
   }
+  //
+  // private dpr = 1
+  private op: MixEvideoOptions
+  private textureMap: any = {}
+  private imagePos: any
+  private currentFrame = -1 //过滤重复帧
+  private video: HTMLVideoElement | undefined
+  private program: WebGLProgram | undefined
   constructor(op: MixEvideoOptions) {
     logger.debug('[Render In Webgl]')
     this.op = op

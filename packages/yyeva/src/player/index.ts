@@ -1,8 +1,9 @@
 import {logger, versionTips} from 'src/helper/logger'
 import parser from 'src/parser'
 import db from 'src/parser/db'
-import Render from 'src/player/render'
-import Render2D from 'src/player/render/canvas2d'
+import type Render2DType from 'src/player/render/canvas2d'
+import type RenderWebglType from 'src/player/render/webgl'
+import type RenderWebGPUType from 'src/player/render/webgpu'
 // import {prefetchVideoStream} from 'src/player/video/mse'
 // import {versionTips} from 'src/helper/logger'
 import Animator, {type AnimatorType} from 'src/player/video/animator'
@@ -49,8 +50,8 @@ export default class EVideo {
   private onLoadedmetadata: EventCallback
   //
   public isPlay = false
-  public renderer: Render | Render2D
-  public renderType: 'canvas2d' | 'webgl'
+  public renderer: RenderWebglType | Render2DType | RenderWebGPUType
+  public renderType: 'canvas2d' | 'webgl' | 'webgpu'
   public animationType: AnimatorType
   public op: MixEvideoOptions
   public fps = 0
@@ -70,24 +71,6 @@ export default class EVideo {
     this.animator = new Animator(this.video, this.op)
     // 是否创建 object url
     this.polyfillCreateObjectURL = (polyfill.baidu || polyfill.quark || polyfill.uc) && this.op.forceBlob === false
-    //
-    if (this.op.renderType === 'canvas2d') {
-      this.renderer = new Render2D(this.op)
-      this.renderType = 'canvas2d'
-    } else {
-      this.renderer = new Render(this.op)
-      this.renderType = 'webgl'
-    }
-    this.webglVersion = this.renderer.webgl.version
-    //
-    //实例化后但是不支持 webgl后降级
-    if (this.webglVersion === 'canvas2d' && this.renderType == 'webgl') {
-      this.op.renderType = 'canvas2d'
-      logger.debug('[player] webgl to canvas2d')
-      this.renderer.destroy()
-      this.renderer = new Render2D(this.op)
-      this.renderType = 'canvas2d'
-    }
     // check IndexDB cache
     db.IndexDB = this.op.useVideoDBCache
 
@@ -117,12 +100,42 @@ export default class EVideo {
     onEnd && onEnd?.(err)
     onError && onError?.(err)
   }
+  async prepareRender() {
+    //
+    if (navigator.gpu) {
+      const RenderWebGPU = (await import('src/player/render/webgpu')).default
+      this.renderer = new RenderWebGPU(this.op)
+    } else if (this.op.renderType === 'canvas2d') {
+      const Render2D = (await import('src/player/render/canvas2d')).default
+      this.renderer = new Render2D(this.op)
+    } else {
+      const RenderWebGl = (await import('src/player/render/webgl')).default
+      this.renderer = new RenderWebGl(this.op)
+    }
+    this.renderType = this.renderer.renderType as 'canvas2d' | 'webgl' | 'webgpu'
+    //
+    //实例化后但是不支持 webgl后降级
+    const renderer = this.renderer as RenderWebglType
+    this.webglVersion = renderer.webgl ? renderer.webgl.version : null
+    if (renderer.renderType === 'webgl' && renderer.webgl.version === null) {
+      const Render2D = (await import('src/player/render/canvas2d')).default
+      this.op.renderType = 'canvas2d'
+      logger.debug('[player] webgl to canvas2d')
+      this.renderer.destroy()
+      this.renderer = new Render2D(this.op)
+      this.renderType = 'canvas2d'
+    }
+  }
 
   public async setup() {
     try {
       logger.debug('[=== e-video setup ===]')
+
+      await this.prepareRender()
+
       await this.videoLoad()
       await this.renderer.setup(this.video)
+
       //判断是否存在 audio 默认为 false
       if (!this.renderer.videoEntity.hasAudio) {
         this.video.muted = true
@@ -140,7 +153,6 @@ export default class EVideo {
       })
 
       this._updateEndFrame()
-
       //
       await this.animator.setup()
       this.animator.onUpdate = frame => {
@@ -163,8 +175,8 @@ export default class EVideo {
       //
       logger.debug('[setup]', this.animationType, this.webglVersion)
       // 纯在缓存后不再显示 video标签 节省性能
-      if (this.webglVersion !== 'canvas2d' && this.op.renderType !== 'canvas2d') {
-        const render = this.renderer as Render
+      if (this.webglVersion && this.op.renderType !== 'canvas2d') {
+        const render = this.renderer as RenderWebglType
         const isCache = this.op.useFrameCache ? render.renderCache.isCache() : false
         if (
           this.animationType !== 'requestVideoFrameCallback' &&
@@ -185,9 +197,9 @@ export default class EVideo {
         }
       }
     } catch (e) {
-      this.onEnd?.(e)
-      this.onError?.(e)
-      this.destroy()
+      // this.onEnd?.(e)
+      // this.onError?.(e)
+      // this.destroy()
       logger.error(e)
     }
 

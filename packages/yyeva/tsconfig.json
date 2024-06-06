@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["@webgpu/types"],
     "experimentalDecorators": true,
     "baseUrl": ".",
     "target": "ESNext",

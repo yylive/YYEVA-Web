@@ -14,7 +14,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@efox/emp": "^2.4.6",
+    "@empjs/cli": "3.0.0-rc.34",
+    "@empjs/plugin-react": "3.0.0-rc.34",
     "@types/react": "18",
     "@types/react-dom": "18",
     "vconsole": "^3.15.0"

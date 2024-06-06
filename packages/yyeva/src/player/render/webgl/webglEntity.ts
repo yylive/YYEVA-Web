@@ -1,7 +1,7 @@
 import {logger} from 'src/helper/logger'
 import {isOffscreenCanvasSupported} from 'src/helper/utils'
+// import MCache from 'src/player/render/common/mCache'
 import type {MixEvideoOptions, ResizeCanvasType, WebglVersion} from 'src/type/mix'
-import MCache from './mCache'
 export default class Webgl {
   public PER_SIZE = 9
   public canvas?: HTMLCanvasElement //显示画布
@@ -71,7 +71,7 @@ export default class Webgl {
       this.gl = canvas.getContext('webgl', op) as WebGLRenderingContext
       this.version = 1
       if (!this.gl) {
-        this.version = 'canvas2d'
+        this.version = null
       }
     }
     logger.debug('[Webgl]initGlContext, version=', this.version)
