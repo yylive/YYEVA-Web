@@ -1,64 +1,45 @@
 {
-  "name": "yyeva",
-  "version": "1.0.6",
-  "description": "mp4 gift player",
-  "files": [
-    "dist",
-    "types"
-  ],
-  "maintainers": [
-    {
-      "name": "xuhongbin",
-      "email": "xuhongbin@yy.com"
-    },
-    {
-      "name": "liangxiaoming",
-      "email": "liangxiaoming@yy.com"
-    },
-    {
-      "name": "zhanghaifeng2",
-      "email": "zhanghaifeng2@yy.com"
-    }
-  ],
-  "engines": {
-    "node": "^14.18.0 || >=16.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/yylive/YYEVA-Web.git",
-    "directory": "packages/yyeva"
-  },
-  "main": "./dist/esm/yyeva.js",
-  "types": "./types/index.d.ts",
-  "scripts": {
-    "build": "pnpm run /^build:.*/",
-    "build:esm": "cross-env FORMAT=esm vite build --mode prod",
-    "build:tsc": "rimraf types && tsc && tsc-alias",
-    "dev": "pnpm run /^dev:.*/",
-    "dev:esm": "cross-env FORMAT=esm vite build -w --mode dev",
-    "dev:tsc": "tsc -w",
-    "dev:tsc-alias": "tsc-alias -w",
-    "lint": "eslint ./src --ext js,ts,tsx --fix"
-  },
-  "author": "Ken",
-  "license": "Apache-2.0",
-  "dependencies": {
-    "zlib.es": "^0.6.0"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.16.7",
-    "@babel/plugin-transform-runtime": "^7.16.0",
-    "@babel/preset-env": "^7.16.8",
-    "@babel/runtime": "^7.16.0",
-    "@rollup/plugin-babel": "^5.3.0",
-    "@rollup/plugin-terser": "^0.4.4",
-    "@rollup/plugin-typescript": "^8.3.0",
-    "@types/node": "^18.0.0",
-    "@types/offscreencanvas": "^2019.6.4",
-    "cross-env": "^7.0.3",
-    "rimraf": "^3.0.2",
-    "tsc-alias": "^1.8.5",
-    "typescript": "^5.1.3",
-    "vite": "^4.4.2"
-  }
+	"name": "yyeva",
+	"version": "1.0.6",
+	"description": "mp4 gift player",
+	"files": ["dist"],
+	"maintainers": [
+		{
+			"name": "xuhongbin",
+			"email": "xuhongbin@yy.com"
+		},
+		{
+			"name": "liangxiaoming",
+			"email": "liangxiaoming@yy.com"
+		},
+		{
+			"name": "zhanghaifeng2",
+			"email": "zhanghaifeng2@yy.com"
+		}
+	],
+	"engines": {
+		"node": "^14.18.0 || >=16.0.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/yylive/YYEVA-Web.git",
+		"directory": "packages/yyeva"
+	},
+	"main": "dist/index.mjs",
+	"types": "dist/index.d.mts",
+	"scripts": {
+		"dev": "tsup --watch",
+		"build": "tsup"
+	},
+	"author": "Ken",
+	"license": "Apache-2.0",
+	"dependencies": {
+		"zlib.es": "^0.6.0"
+	},
+	"devDependencies": {
+		"@types/node": "^18.0.0",
+		"@types/offscreencanvas": "^2019.6.4",
+		"typescript": "^5.1.3",
+		"tsup": "^8.1.0"
+	}
 }

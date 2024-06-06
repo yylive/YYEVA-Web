@@ -1,46 +1,34 @@
 {
-    "compilerOptions": {
-      "experimentalDecorators": true,
-      "baseUrl": ".",
-      "outDir": "types",
-      // "rootDirs": [
-      //   "src"
-      // ],
-      "declaration": true,
-      "declarationDir": "types",
-      "emitDeclarationOnly": true,
-      "target": "ESNext",
-      "module": "ESNext",
-      "lib": [
-        "DOM",
-        "DOM.Iterable",
-        "ESNext",
-        "webworker"
-      ],
-      "paths": {
-        "src/*": [
-          "src/*"
-        ]
-      },
-      "allowJs": true,
-      "skipLibCheck": true,
-      "esModuleInterop": true,
-      "allowSyntheticDefaultImports": true,
-      "strict": false,
-      "forceConsistentCasingInFileNames": true,
-      "moduleResolution": "node",
-      "resolveJsonModule": true,
-      "isolatedModules": false,
-      "jsx": "react",
-      // "typeRoots": [
-      //   "./node_modules/@types",
-      //   "src/typings"
-      // ],
-    },
-    "include": [
-      "src"
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "target": "ESNext",
+    "module": "ESNext",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext",
+      "webworker"
     ],
-    "exclude": [
-      "node_modules"
-    ]
-  }
+    "paths": {
+      "src/*": [
+        "src/*"
+      ]
+    },
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": false,
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
