@@ -1,9 +1,8 @@
 # YY-EVA <sup>web</sup> 🎁
-<a href="https://www.npmjs.com/package/yyeva"><img src="https://img.shields.io/npm/v/yyeva.svg" alt="npm"></a>
-<a href="https://github.com/yylive/YYEVA-Web"><img src="https://img.shields.io/node/v/yyeva.svg" alt="node"></a>
-<a href="https://github.com/yylive/YYEVA-Web"><img src="https://img.shields.io/badge/github-YYEVA-blue" alt="github"></a>
-<a href="https://yyeva.netlify.app/"><img src="https://img.shields.io/badge/demo-YYEVA-black" alt="demo"></a>
-[![Netlify Status](https://api.netlify.com/api/v1/badges/a7ac69cf-0562-4dd3-9c4b-3886cc019206/deploy-status)](https://app.netlify.com/sites/yyeva/deploys)
+[![npm version][npm-version-src]][npm-version-href]
+[![npm downloads][npm-downloads-src]][npm-downloads-href]
+[![bundle][bundle-src]][bundle-href]
+[![License][license-src]][license-href]
 
 > 轻量级 高性能 跨平台 MP4 动效播放器
 
