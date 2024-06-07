@@ -22,6 +22,8 @@ export default class WglRender {
   private currentFrame = -1 //过滤重复帧
   private video: HTMLVideoElement | undefined
   private program: WebGLProgram | undefined
+  private VERTEX_SHADER: string
+  private FRAGMENT_SHADER: string
   constructor(op: MixEvideoOptions) {
     logger.debug('[Render In Webgl]')
     this.op = op
@@ -50,6 +52,7 @@ export default class WglRender {
   }
   public async setup(video?: HTMLVideoElement) {
     if (!video) throw new Error('video must support!')
+    await this.prepareShader()
     // MCache.videoDurationTime = video.duration
     await this.renderCache.setup()
     await this.videoEntity.setup()
@@ -59,6 +62,17 @@ export default class WglRender {
     this.initWebgl()
     // this.video.currentTime 当前播放位置
     // this.video.duration 媒体的持续时间(总长度)，以秒为单位
+  }
+  private async prepareShader() {
+    if (this.version === 2) {
+      const {VERTEX_SHADER, FRAGMENT_SHADER} = await import('./webgl-2')
+      this.VERTEX_SHADER = VERTEX_SHADER()
+      this.FRAGMENT_SHADER = FRAGMENT_SHADER(this.gl, this.PER_SIZE)
+    } else if (this.version === 1) {
+      const {VERTEX_SHADER, FRAGMENT_SHADER} = await import('./webgl-1')
+      this.VERTEX_SHADER = VERTEX_SHADER()
+      this.FRAGMENT_SHADER = FRAGMENT_SHADER(this.gl, this.PER_SIZE)
+    }
   }
   private resizeCanvasToDisplaySize() {
     const descript = this.videoEntity.config?.descript
@@ -308,10 +322,10 @@ export default class WglRender {
   private createProgram(gl: WebGLRenderingContext) {
     // vec4代表4维变量，因为rgba是4个值
     // -0.5代表画布左侧，取值是rgb中的r值
-    const vsSource = this.getVsSource() // 顶点着色器glsl代码
-    const fsSource = this.getFsSource() // 片元着色器 glsl 代码
-    const vsShader = this.createShader(gl, gl.VERTEX_SHADER, vsSource)
-    const fsShader = this.createShader(gl, gl.FRAGMENT_SHADER, fsSource)
+    // const vsSource = this.getVsSource() // 顶点着色器glsl代码
+    // const fsSource = this.getFsSource() // 片元着色器 glsl 代码
+    const vsShader = this.createShader(gl, gl.VERTEX_SHADER, this.VERTEX_SHADER)
+    const fsShader = this.createShader(gl, gl.FRAGMENT_SHADER, this.FRAGMENT_SHADER)
     const program = gl.createProgram()
     if (!program || !vsShader || !fsShader) return
     gl.attachShader(program, vsShader)
@@ -454,192 +468,5 @@ export default class WglRender {
       this.gl = null
       logger.debug('[destroy remove canvas]')
     } else this.ofs = undefined
-  }
-  getVsSource(): string {
-    const cb = this.version === 2 ? this.getVs2() : this.getVs1()
-    // console.log('vs', cb)
-    return cb
-  }
-  getFsSource(): string {
-    const cb = this.version === 2 ? this.getFs2() : this.getFs1()
-    // console.log('fs', cb)
-    return cb
-  }
-  getVs2() {
-    return `#version 300 es
-    in vec2 a_position; // 接受顶点坐标
-    in vec2 a_texCoord; // 接受纹理坐标
-    in vec2 a_alpha_texCoord; // 接受纹理坐标
-    out vec2 v_alpha_texCoord; // 接受纹理坐标
-    out vec2 v_texcoord; // 传递纹理坐标给片元着色器
-    uniform vec2 u_scale;
-    void main(void) {
-      gl_Position = vec4(u_scale * a_position, 0.0, 1.0); // 设置坐标
-      v_texcoord = a_texCoord; // 设置纹理坐标
-      v_alpha_texCoord = a_alpha_texCoord; // 设置纹理坐标
-    }
-    `
-  }
-  getVs1() {
-    return `attribute vec2 a_position; // 接受顶点坐标
-    attribute vec2 a_texCoord; // 接受纹理坐标
-    attribute vec2 a_alpha_texCoord; // 接受纹理坐标
-    varying vec2 v_alpha_texCoord; // 接受纹理坐标
-    varying vec2 v_texcoord; // 传递纹理坐标给片元着色器
-    uniform vec2 u_scale;
-    void main(void){
-       gl_Position = vec4(u_scale * a_position, 0.0, 1.0); // 设置坐标
-       v_texcoord = a_texCoord; // 设置纹理坐标
-       v_alpha_texCoord = a_alpha_texCoord; // 设置纹理坐标
-    }`
-  }
-  getFs2() {
-    if (!this.gl) return ''
-    const gl = this.gl
-    /*     const bgColor =
-      this.op.alphaDirection === 'right'
-        ? `vec4(texture(u_image_video, v_texcoord).rgb, texture(u_image_video,v_alpha_texCoord).r);`
-        : `vec4(texture(u_image_video,v_alpha_texCoord).rgb,texture(u_image_video, v_texcoord).r);` */
-    const bgColor = `vec4(texture(u_image_video, v_texcoord).rgb, texture(u_image_video,v_alpha_texCoord).r);`
-    //片断着色器没有默认精度，所以我们需要设置一个精度
-    const textureSize = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS) - 1
-    // const textureSize =0
-    let sourceTexure = ''
-    let sourceUniform = ''
-    if (textureSize > 0 && (this.op.dataUrl || this.op.useMetaData)) {
-      const imgColor = []
-      const samplers = []
-      for (let i = 0; i < textureSize; i++) {
-        imgColor.push(
-          `if(ndx == ${i + 1}){
-                          color = texture(u_image${i + 1},uv);
-                      }`,
-        )
-        samplers.push(`uniform sampler2D u_image${i + 1};`)
-      }
-
-      sourceUniform = `
-              ${samplers.join('\n')}
-              uniform float image_pos[${textureSize * this.PER_SIZE}];
-              vec4 getSampleFromArray(int ndx, vec2 uv) {
-                  vec4 color;
-                  ${imgColor.join(' else ')}
-                  return color;
-              }
-              `
-      sourceTexure = `
-              vec4 srcColor,maskColor;
-              vec2 srcTexcoord,maskTexcoord;
-              int srcIndex;
-              float x1,x2,y1,y2,mx1,mx2,my1,my2; //显示的区域
-              for(int i=0;i<${textureSize * this.PER_SIZE};i+= ${this.PER_SIZE}){
-                  if ((int(image_pos[i]) > 0)) {
-                    srcIndex = int(image_pos[i]);
-                      x1 = image_pos[i+1];
-                      x2 = image_pos[i+2];
-                      y1 = image_pos[i+3];
-                      y2 = image_pos[i+4];
-                      mx1 = image_pos[i+5];
-                      mx2 = image_pos[i+6];
-                      my1 = image_pos[i+7];
-                      my2 = image_pos[i+8];
-                      if (v_texcoord.s>x1 && v_texcoord.s<x2 && v_texcoord.t>y1 && v_texcoord.t<y2) {
-                          srcTexcoord = vec2((v_texcoord.s-x1)/(x2-x1),(v_texcoord.t-y1)/(y2-y1));
-                           maskTexcoord = vec2(mx1+srcTexcoord.s*(mx2-mx1),my1+srcTexcoord.t*(my2-my1));
-                           srcColor = getSampleFromArray(srcIndex,srcTexcoord);
-                           maskColor = texture(u_image_video, maskTexcoord);
-                           srcColor.a = srcColor.a*(maskColor.r);
-                           bgColor = vec4(srcColor.rgb*srcColor.a,srcColor.a) + (1.0-srcColor.a)*bgColor;
-
-                      }
-                  }
-              }
-              `
-    }
-    return `#version 300 es
-      precision lowp float;
-      in vec2 v_texcoord;
-      in vec2 v_alpha_texCoord;
-      out vec4 fragColor;
-      uniform sampler2D u_image_video;
-      ${sourceUniform}
-      void main(void) {
-          vec4 bgColor = ${bgColor}
-          ${sourceTexure}
-          fragColor = bgColor;
-      }
-      `
-  }
-  getFs1() {
-    if (!this.gl) return ''
-    const gl = this.gl
-    const bgColor = `vec4(texture2D(u_image_video, v_texcoord).rgb, texture2D(u_image_video,v_alpha_texCoord).r);`
-    //片断着色器没有默认精度，所以我们需要设置一个精度
-    const textureSize = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS) - 1
-    // const textureSize =0
-    let sourceTexure = ''
-    let sourceUniform = ''
-    if (textureSize > 0) {
-      const imgColor = []
-      const samplers = []
-      for (let i = 0; i < textureSize; i++) {
-        imgColor.push(
-          `if(ndx == ${i + 1}){
-                          color = texture2D(u_image${i + 1},uv);
-                      }`,
-        )
-        samplers.push(`uniform sampler2D u_image${i + 1};`)
-      }
-      sourceUniform = `
-              ${samplers.join('\n')}
-              uniform float image_pos[${textureSize * this.PER_SIZE}];
-              vec4 getSampleFromArray(int ndx, vec2 uv) {
-                  vec4 color;
-                  ${imgColor.join(' else ')}
-                  return color;
-              }
-              `
-      sourceTexure = `
-              vec4 srcColor,maskColor;
-              vec2 srcTexcoord,maskTexcoord;
-              int srcIndex;
-              float x1,x2,y1,y2,mx1,mx2,my1,my2; //显示的区域
-              for(int i=0;i<${textureSize * this.PER_SIZE};i+= ${this.PER_SIZE}){
-                  if ((int(image_pos[i]) > 0)) {
-                    srcIndex = int(image_pos[i]);
-                      x1 = image_pos[i+1];
-                      x2 = image_pos[i+2];
-                      y1 = image_pos[i+3];
-                      y2 = image_pos[i+4];
-                      mx1 = image_pos[i+5];
-                      mx2 = image_pos[i+6];
-                      my1 = image_pos[i+7];
-                      my2 = image_pos[i+8];
-                      if (v_texcoord.s>x1 && v_texcoord.s<x2 && v_texcoord.t>y1 && v_texcoord.t<y2) {
-                          srcTexcoord = vec2((v_texcoord.s-x1)/(x2-x1),(v_texcoord.t-y1)/(y2-y1));
-                           maskTexcoord = vec2(mx1+srcTexcoord.s*(mx2-mx1),my1+srcTexcoord.t*(my2-my1));
-                           srcColor = getSampleFromArray(srcIndex,srcTexcoord);
-                           maskColor = texture2D(u_image_video, maskTexcoord);
-                           srcColor.a = srcColor.a*(maskColor.r);
-                           bgColor = vec4(srcColor.rgb*srcColor.a,srcColor.a) + (1.0-srcColor.a)*bgColor;
-
-                      }
-                  }
-              }
-              `
-    }
-    return `
-      precision lowp float;
-      varying vec2 v_texcoord;
-      varying vec2 v_alpha_texCoord;
-      uniform sampler2D u_image_video;
-      ${sourceUniform}
-      void main(void) {
-          vec4 bgColor = ${bgColor}
-          ${sourceTexure}
-          // bgColor = texture2D(u_image[0], v_texcoord);
-          gl_FragColor = bgColor;
-      }
-      `
   }
 }
