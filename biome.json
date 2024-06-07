@@ -1,6 +1,11 @@
 {
   "$schema": "https://biomejs.dev/schemas/1.8.0/schema.json",
   "extends": ["@empjs/biome-config"],
+  "files": {
+    "ignore": ["*.vue", "*.svelte", "*.astro"],
+    "ignoreUnknown": true,
+    "include": ["*.mjs", "*.cjs", "*.ts", "*.json", "*.jsonc", "emp-config.js", ".vscode/"]
+  },
   "linter": {
     "rules": {
       "style": {

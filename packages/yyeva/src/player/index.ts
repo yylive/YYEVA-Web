@@ -102,10 +102,11 @@ export default class EVideo {
   }
   async prepareRender() {
     //
-    if (navigator.gpu) {
-      const RenderWebGPU = (await import('src/player/render/webgpu')).default
-      this.renderer = new RenderWebGPU(this.op)
-    } else if (this.op.renderType === 'canvas2d') {
+    // if (navigator.gpu) {
+    //   const RenderWebGPU = (await import('src/player/render/webgpu')).default
+    //   this.renderer = new RenderWebGPU(this.op)
+    // } else
+    if (this.op.renderType === 'canvas2d') {
       const Render2D = (await import('src/player/render/canvas2d')).default
       this.renderer = new Render2D(this.op)
     } else {
@@ -116,8 +117,8 @@ export default class EVideo {
     //
     //实例化后但是不支持 webgl后降级
     const renderer = this.renderer as RenderWebglType
-    this.webglVersion = renderer.webgl ? renderer.webgl.version : null
-    if (renderer.renderType === 'webgl' && renderer.webgl.version === null) {
+    this.webglVersion = renderer ? renderer.version : null
+    if (renderer.renderType === 'webgl' && renderer.version === null) {
       const Render2D = (await import('src/player/render/canvas2d')).default
       this.op.renderType = 'canvas2d'
       logger.debug('[player] webgl to canvas2d')
@@ -197,9 +198,9 @@ export default class EVideo {
         }
       }
     } catch (e) {
-      // this.onEnd?.(e)
-      // this.onError?.(e)
-      // this.destroy()
+      this.onEnd?.(e)
+      this.onError?.(e)
+      this.destroy()
       logger.error(e)
     }
 
@@ -488,13 +489,13 @@ export default class EVideo {
     const video = this.video
     // register events
     this.eventsFn.canplaythrough = () => {
-      logger.log('[canplaythrough paused] ', video.paused)
+      logger.debug('[canplaythrough paused] ', video.paused)
       if (video.paused) {
-        logger.log('[canplaythrough] isPlay=', this.isPlay)
+        logger.debug('[canplaythrough] isPlay=', this.isPlay)
         if (this.isPlay) {
           this._playVideo()
         } else {
-          logger.log('[canplaythrough] isPlay is false!')
+          logger.debug('[canplaythrough] isPlay is false!')
         }
       }
     }
@@ -505,7 +506,7 @@ export default class EVideo {
     this.eventsFn.playing = () => {
       // this.setPlay(true)
       //
-      logger.log('[player]on playing.')
+      logger.debug('[player]on playing.')
       this.startEvent()
       this.onStart && this.onStart()
       //
@@ -513,7 +514,7 @@ export default class EVideo {
       this.hidePollyfileTips()
     }
     this.eventsFn.pause = () => {
-      logger.log('[player]on pause.')
+      logger.debug('[player]on pause.')
       // this.stop()
       this.onPause && this.onPause()
     }

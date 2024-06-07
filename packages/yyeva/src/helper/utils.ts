@@ -57,14 +57,14 @@ export function getTextByMaxWidth(text: string, font: string, maxWidth: number) 
   let str = text
   // Get the width
   let width = window.getComputedStyle(ele).width
-  logger.info('getTextByMaxWidth width=', width)
+  logger.debug('getTextByMaxWidth width=', width)
   if (Number.parseInt(width, 10) > maxWidth) {
     let len = text.length
     while (true) {
       str = text.substring(0, len - 1) + '...'
       ele.innerText = str
       width = window.getComputedStyle(ele).width
-      console.log('getTextByMaxWidth.. width=', width, str)
+      logger.debug('getTextByMaxWidth.. width=', width, str)
       if (Number.parseInt(width, 10) <= maxWidth) {
         break
       }

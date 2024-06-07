@@ -447,7 +447,6 @@ export default class VideoEntity {
       if (fontStyle === 'b') {
         font.unshift('bold')
       }
-      // console.log(`getFontStyle`, font)
       return font.join(' ')
     }
     if (!fontStyle) {
@@ -465,7 +464,7 @@ export default class VideoEntity {
       if (fontColor) ctx.fillStyle = fontColor
       fontStyle(null, ctx, item)
     }
-    logger.info('getFontStyle, style: ', ctx.font, ', text:', txt)
+    logger.debug('getFontStyle, style: ', ctx.font, ', text:', txt)
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     const posx = Math.floor(w / 2)
     const posy = Math.floor(h / 2)
