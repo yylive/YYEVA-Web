@@ -102,10 +102,10 @@ export default class EVideo {
   }
   async prepareRender() {
     //
-    // if (navigator.gpu) {
-    //   const RenderWebGPU = (await import('src/player/render/webgpu')).default
-    //   this.renderer = new RenderWebGPU(this.op)
-    // } else
+    if (this.op.renderType === 'webgpu' && navigator.gpu) {
+      const RenderWebGPU = (await import('src/player/render/webgpu')).default
+      this.renderer = new RenderWebGPU(this.op)
+    } else
     if (this.op.renderType === 'canvas2d') {
       const Render2D = (await import('src/player/render/canvas2d')).default
       this.renderer = new Render2D(this.op)

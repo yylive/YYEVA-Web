@@ -131,7 +131,7 @@ export type MixEvideoOptions = VideoEvent & {
    * 渲染模式
    * @default webgl
    */
-  renderType?: 'webgl' | 'canvas2d'
+  renderType?: 'webgl' | 'canvas2d' | 'webgpu'
   /**
    * 兼容vap 启动后 不需要填写 dataUrl
    * usePrefetch 强制打开
