@@ -385,7 +385,7 @@ export default class WglRender {
     }
     return texture
   }
-  createCanvas(op: MixEvideoOptions) {
+  private createCanvas(op: MixEvideoOptions) {
     if (op.useOfsRender) {
       this.canvas = document.createElement('canvas')
       this.ctx = this.canvas.getContext('2d')
@@ -428,7 +428,7 @@ export default class WglRender {
         break
     }
   }
-  public initGlContext() {
+  private initGlContext() {
     const canvas = this.ofs
     const op: WebGLContextAttributes = {
       alpha: true, //指示Canvas是否含有透明通道，若设置为false不透明，如果Canvas下叠加了其他元素时，可以在绘制时提升一些性能
@@ -451,7 +451,7 @@ export default class WglRender {
     logger.debug('[Webgl]initGlContext, version=', this.version)
     // gl.enable(this.gl.STENCIL_TEST)
   }
-  public webglDestroy() {
+  private webglDestroy() {
     if (this.gl) {
       this.gl.clear(this.gl.COLOR_BUFFER_BIT)
       const lose_context = this.gl.getExtension('WEBGL_lose_context')

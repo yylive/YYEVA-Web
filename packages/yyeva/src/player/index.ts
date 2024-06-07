@@ -102,11 +102,13 @@ export default class EVideo {
   }
   async prepareRender() {
     //
-    if (this.op.renderType === 'webgpu' && navigator.gpu) {
+    if (
+      // this.op.renderType === 'webgpu' &&
+      navigator.gpu
+    ) {
       const RenderWebGPU = (await import('src/player/render/webgpu')).default
       this.renderer = new RenderWebGPU(this.op)
-    } else
-    if (this.op.renderType === 'canvas2d') {
+    } else if (this.op.renderType === 'canvas2d') {
       const Render2D = (await import('src/player/render/canvas2d')).default
       this.renderer = new Render2D(this.op)
     } else {
@@ -198,9 +200,9 @@ export default class EVideo {
         }
       }
     } catch (e) {
-      this.onEnd?.(e)
-      this.onError?.(e)
-      this.destroy()
+      // this.onEnd?.(e)
+      // this.onError?.(e)
+      // this.destroy()
       logger.error(e)
     }
 
