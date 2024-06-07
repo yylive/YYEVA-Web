@@ -1,0 +1,17 @@
+video{
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 50px;
+}
+body{
+    background: 0 0/15px 15px, 0 0/15px 15px, 0 0/75px 75px, 0 0/75px 75px #222;
+	background-image: 
+	linear-gradient(hsla(0, 0%, 100%, .2) 1px, transparent 0), 
+	linear-gradient(90deg, hsla(0, 0%, 100%, .2) 1px, transparent 0);
+}
+
+body,html{
+    margin: 0;
+    padding: 0;
+}

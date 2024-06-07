@@ -1,9 +1,5 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 importers:
 
   .:
@@ -137,6 +133,22 @@ importers:
       '@types/react-router-dom':
         specifier: ^5.3.2
         version: 5.3.3
+
+  projects/webgpu-demo:
+    dependencies:
+      yyeva:
+        specifier: workspace:*
+        version: link:../../packages/yyeva
+    devDependencies:
+      '@empjs/cli':
+        specifier: 3.0.0-rc.34
+        version: 3.0.0-rc.34(less@4.2.0)(typescript@5.4.5)(webpack@5.89.0)
+      '@webgpu/types':
+        specifier: ^0.1.42
+        version: 0.1.42
+      webpack-wgsl-loader:
+        specifier: ^1.0.2
+        version: 1.0.2
 
 packages:
 
@@ -5761,6 +5773,11 @@ packages:
     engines: {node: '>=6.11.5'}
     dev: true
 
+  /loader-utils@3.3.1:
+    resolution: {integrity: sha512-FMJTLMXfCLMLfJxcX9PFqX5qD88Z5MRGaZCVzfuqeZSPsyiBzs+pahDQjbIWz2QIzPZz0NX9Zy4FX3lmK6YHIg==}
+    engines: {node: '>= 12.13.0'}
+    dev: true
+
   /lodash.camelcase@4.3.0:
     resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
     dev: true
@@ -8527,6 +8544,12 @@ packages:
     engines: {node: '>=10.13.0'}
     dev: true
 
+  /webpack-wgsl-loader@1.0.2:
+    resolution: {integrity: sha512-vgndVH0UyzAit6aZe6Eun+gx3wAv6xBLuB8TM0oP41tUKUT+QJjDIVN3vGx0F45WNO+Ne6huHX96y11YHFnvEg==}
+    dependencies:
+      loader-utils: 3.3.1
+    dev: true
+
   /webpack@5.89.0:
     resolution: {integrity: sha512-qyfIC10pOr70V+jkmud8tMfajraGCZMBWJtrmuBymQKCrLTRejBI8STDp1MCyZu/QTdZSeacCQYpYNQVOzX5kw==}
     engines: {node: '>=10.13.0'}
@@ -8708,3 +8731,7 @@ packages:
       react: 18.2.0
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
