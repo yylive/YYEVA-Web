@@ -11,7 +11,8 @@ body{
 	linear-gradient(90deg, hsla(0, 0%, 100%, .2) 1px, transparent 0);
 }
 
-body,html{
+body,html,#emp-root{
     margin: 0;
     padding: 0;
+    height: 100vh;
 }

@@ -1,3 +1,4 @@
 import './style.css'
 
-import './bootstrap'
+// import './demo_01'
+import './demo_02'

@@ -1,6 +1,6 @@
-import frag from './frag.wgsl'
-import {mat4} from './webgpu-matrix'
-;(async () => {
+import {mat4} from '../webgpu-matrix'
+;
+import frag from './frag.wgsl'(async () => {
   const adapter = await navigator.gpu.requestAdapter()
   if (!adapter) return
   const device = await adapter.requestDevice()
