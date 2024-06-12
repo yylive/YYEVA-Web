@@ -1,6 +1,9 @@
 import {defineConfig} from '@empjs/cli'
 export default defineConfig(() => {
   return {
+    server: {
+      https: true,
+    },
     chain(config) {
       config.merge({
         module: {
