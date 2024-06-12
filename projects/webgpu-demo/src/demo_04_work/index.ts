@@ -1,8 +1,6 @@
 import {WebGPUBase} from 'src/base'
 import flag from './flag.wgsl'
 import vert from './texture.wgsl'
-// import flag from './_flag.wgsl'
-// import vert from './_vertext.wgsl'
 class MP4PWebGPUPlayer extends WebGPUBase {
   public pipeline!: GPURenderPipeline
   public sampler!: GPUSampler
@@ -12,18 +10,12 @@ class MP4PWebGPUPlayer extends WebGPUBase {
   }
   async setup() {
     await super.setup()
-    // console.log('this.device', this.device)
     this.setPipe()
     this.setSampler()
-    //
-    // this.canvas.addEventListener('click', () => {
-    //   this.startToRender()
-    // })
     this.startToRender()
   }
   setPipe() {
     const {device, video, context, presentationFormat} = this
-    if (!device || !video) return
     this.pipeline = device.createRenderPipeline({
       layout: 'auto',
       vertex: {
@@ -44,7 +36,6 @@ class MP4PWebGPUPlayer extends WebGPUBase {
   }
   setSampler() {
     const {device} = this
-    if (!device) return
     this.sampler = device.createSampler({
       magFilter: 'linear',
       minFilter: 'linear',
@@ -52,7 +43,6 @@ class MP4PWebGPUPlayer extends WebGPUBase {
   }
   render = () => {
     const {device, video, context, pipeline} = this
-    if (!device || !video) return
     const uniformBindGroup = device.createBindGroup({
       layout: pipeline.getBindGroupLayout(0),
       entries: [
