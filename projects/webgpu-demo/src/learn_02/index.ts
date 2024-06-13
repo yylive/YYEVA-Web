@@ -7,11 +7,13 @@
   const context = canvas.getContext('webgpu') as GPUCanvasContext
   const root = document.getElementById('emp-root')
   root?.appendChild(canvas)
+  // ========= video =========
+  const video = document.createElement('video')
+  video.muted = true
+  video.loop = true
+  video.preload = 'auto'
+  video.src = '/af.mp4'
   // ==================
-  // const dpr = window.devicePixelRatio
-  // canvas.width = canvas.clientWidth * dpr
-  // canvas.height = canvas.clientHeight * dpr
-  // console.log('dpr', dpr, canvas.clientWidth, canvas.clientHeight)
   const presentationFormat = navigator.gpu.getPreferredCanvasFormat()
 
   context.configure({
@@ -32,18 +34,55 @@
   const cellShaderModule = device.createShaderModule({
     label: 'Cell shader',
     code: `
-    @vertex
-    fn vertexMain(@location(0) pos: vec2f) ->
-      @builtin(position) vec4f {
-      return vec4f(pos, 0, 1);
-    }
-  
-      @fragment
-      fn fragmentMain() -> @location(0) vec4f {
-        return vec4(0, 0, 1, 0.1);
-      }
+@group(0) @binding(0) var mySampler : sampler;
+@group(0) @binding(1) var myTexture : texture_2d<f32>;
+
+struct VertexOutput {
+  @builtin(position) Position : vec4f,
+  @location(0) fragUV : vec2f,
+}
+
+@vertex
+fn vertexMain(@builtin(vertex_index) VertexIndex : u32) -> VertexOutput {
+  const pos = array(
+    vec2( 1.0,  1.0),
+    vec2( 1.0, -1.0),
+    vec2(-1.0, -1.0),
+    vec2( 1.0,  1.0),
+    vec2(-1.0, -1.0),
+    vec2(-1.0,  1.0),
+  );
+
+  const uv = array(
+    vec2(1.0, 0.0),
+    vec2(1.0, 1.0),
+    vec2(0.0, 1.0),
+    vec2(1.0, 0.0),
+    vec2(0.0, 1.0),
+    vec2(0.0, 0.0),
+  );
+
+  var output : VertexOutput;
+  output.Position = vec4(pos[VertexIndex], 0.0, 1.0);
+  output.fragUV = uv[VertexIndex];
+  return output;
+}
+
+@fragment
+fn fragmentMain(@location(0) fragUV : vec2f) -> @location(0) vec4f {
+  return textureSample(myTexture, mySampler, fragUV);
+}
     `,
   })
+  //
+  //
+  // const vertices = new Float32Array([-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0])
+  // const vertexBuffer = device.createBuffer({
+  //   label: 'Cell vertices',
+  //   size: vertices.byteLength,
+  //   usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+  // })
+  // device.queue.writeBuffer(vertexBuffer, /*bufferOffset=*/ 0, vertices)
   //
   const vertexBufferLayout: GPUVertexBufferLayout = {
     // arrayStride: 2 * 4：stride 单词是 步幅 的意思，所谓 arrayStride 就是指每次读取的字节数应该是多少。
@@ -57,14 +96,6 @@
       },
     ],
   }
-  //
-  const vertices = new Float32Array([-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0])
-
-  const vertexBuffer = device.createBuffer({
-    label: 'Cell vertices',
-    size: vertices.byteLength,
-    usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
-  })
   const pipeline = device.createRenderPipeline({
     layout: 'auto',
     vertex: {
@@ -86,10 +117,30 @@
     },
   })
   //
-  device.queue.writeBuffer(vertexBuffer, /*bufferOffset=*/ 0, vertices)
   // console.log('vertices.length / 2', vertices.length / 2)
+  const sampler = device.createSampler({
+    magFilter: 'linear',
+    minFilter: 'linear',
+  })
   //
   function frame() {
+    //
+    const uniformBindGroup = device.createBindGroup({
+      layout: pipeline.getBindGroupLayout(0),
+      entries: [
+        {
+          binding: 1,
+          resource: sampler,
+        },
+        {
+          binding: 2,
+          resource: device.importExternalTexture({
+            source: video,
+          }),
+        },
+      ],
+    })
+    //
     const commandEncoder = device.createCommandEncoder()
     const textureView = context.getCurrentTexture().createView()
 
@@ -106,14 +157,15 @@
 
     const pass = commandEncoder.beginRenderPass(renderPassDescriptor)
     pass.setPipeline(pipeline)
-    // passEncoder.draw(4)
-    pass.setVertexBuffer(0, vertexBuffer)
-    pass.draw(vertices.length / 2) // 6 vertices
+    pass.setBindGroup(0, uniformBindGroup)
+    pass.draw(6)
+    // pass.setVertexBuffer(0, vertexBuffer)
+    // pass.draw(vertices.length / 2) // 6 vertices
     pass.end()
 
     device.queue.submit([commandEncoder.finish()])
-    requestAnimationFrame(frame)
+    video.requestVideoFrameCallback(frame)
   }
-
-  requestAnimationFrame(frame)
+  await video.play()
+  video.requestVideoFrameCallback(frame)
 })()

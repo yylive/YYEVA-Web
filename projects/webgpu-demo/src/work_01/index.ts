@@ -1,6 +1,5 @@
 import {WebGPUBase} from 'src/base'
-import flag from './flag.wgsl'
-import vert from './texture.wgsl'
+import shaderModuleCode from './full.wgsl'
 class MP4PWebGPUPlayer extends WebGPUBase {
   public pipeline!: GPURenderPipeline
   public sampler!: GPUSampler
@@ -15,14 +14,17 @@ class MP4PWebGPUPlayer extends WebGPUBase {
     this.startToRender()
   }
   setPipe() {
-    const {device, video, context, presentationFormat} = this
+    const {device, presentationFormat} = this
+    const cellShaderModule = device.createShaderModule(shaderModuleCode)
     this.pipeline = device.createRenderPipeline({
       layout: 'auto',
       vertex: {
-        module: device.createShaderModule(vert),
+        module: cellShaderModule,
+        entryPoint: 'vertMain',
       },
       fragment: {
-        module: device.createShaderModule(flag),
+        module: cellShaderModule,
+        entryPoint: 'fragMain',
         targets: [
           {
             format: presentationFormat,
