@@ -45,7 +45,8 @@ export class WebGPUBase {
           这种模式下，颜色值没有预乘 alpha 值。即颜色的 RGB 分量没有乘以 alpha 分量。
           适用于没有预乘 alpha 的图像数据。
        */
-      alphaMode: 'opaque',
+      // alphaMode: 'opaque',
+      alphaMode: 'premultiplied',
     })
     //
     const root = document.getElementById('emp-root')!
@@ -118,5 +119,37 @@ export class WebGPUBase {
       }
     }
     return [scaleX, scaleY]
+  }
+  public get verPos() {
+    const alphaDirection = 'right'
+    //默认为左右均分
+    const vW = this.video.videoWidth ? this.video.videoWidth : 1800
+    const vH = this.video.videoHeight ? this.video.videoHeight : 1000
+    const stageW = vW / 2
+    const [rgbX, rgbY, rgbW, rgbH] = alphaDirection === 'right' ? [0, 0, stageW, vH] : [stageW, 0, stageW, vH]
+    const [aX, aY, aW, aH] = alphaDirection === 'right' ? [stageW, 0, stageW, vH] : [0, 0, stageW, vH]
+    const ver = []
+    const rgbCoord = this.computeCoord(rgbX, rgbY, rgbW, rgbH, vW, vH)
+    const aCoord = this.computeCoord(aX, aY, aW, aH, vW, vH)
+    ver.push(...[-1, 1, rgbCoord[0], rgbCoord[3], aCoord[0], aCoord[3]])
+    ver.push(...[1, 1, rgbCoord[1], rgbCoord[3], aCoord[1], aCoord[3]])
+    ver.push(...[-1, -1, rgbCoord[0], rgbCoord[2], aCoord[0], aCoord[2]])
+    ver.push(...[1, -1, rgbCoord[1], rgbCoord[2], aCoord[1], aCoord[2]])
+    return new Float32Array(ver)
+    // return ver
+  }
+  /**
+   *
+   * @param x 位移转矩阵坐标
+   * @param y
+   * @param w
+   * @param h
+   * @param vw
+   * @param vh
+   * @returns
+   */
+  private computeCoord(x: number, y: number, w: number, h: number, vw: number, vh: number) {
+    // leftX rightX bottomY topY
+    return [x / vw, (x + w) / vw, (vh - y - h) / vh, (vh - y) / vh]
   }
 }
