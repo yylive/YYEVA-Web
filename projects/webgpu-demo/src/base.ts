@@ -158,7 +158,7 @@ export class WebGPUBase {
    * @param vh
    * @returns
    */
-  private computeCoord(x: number, y: number, w: number, h: number, vw: number, vh: number) {
+  public computeCoord(x: number, y: number, w: number, h: number, vw: number, vh: number) {
     // leftX rightX bottomY topY
     return [x / vw, (x + w) / vw, (vh - y - h) / vh, (vh - y) / vh]
   }

@@ -29,12 +29,10 @@ class MP4PWebGPUPlayer extends WebGPUBase {
     const {device} = this
     const u_scale = this.getScale()
     const scaleData = new Float32Array(u_scale)
-
     this.uniformBuffer = device.createBuffer({
       size: scaleData.byteLength,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     })
-
     device.queue.writeBuffer(this.uniformBuffer, 0, scaleData.buffer)
   }
 
@@ -80,14 +78,14 @@ class MP4PWebGPUPlayer extends WebGPUBase {
   setPipeline() {
     const {device, presentationFormat} = this
     const shaderModule = device.createShaderModule({code})
-    const vertexBufferLayout = this.createVertexBufferLayout()
+    const buffers = this.createVertexBufferLayout()
 
     this.pipeline = device.createRenderPipeline({
       layout: this.pipelineLayout,
       vertex: {
         module: shaderModule,
         entryPoint: 'vertMain',
-        // buffers: vertexBufferLayout,
+        buffers,
       },
       fragment: {
         module: shaderModule,
@@ -125,12 +123,8 @@ class MP4PWebGPUPlayer extends WebGPUBase {
     }
 
     const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor)
-    //
-    // 设置视口
-    passEncoder.setViewport(0, 0, context.canvas.width, context.canvas.height, 0, 1)
-
-    // 设置剪裁矩形
-    passEncoder.setScissorRect(0, 0, context.canvas.width, context.canvas.height)
+    // passEncoder.setViewport(0, 0, context.canvas.width, context.canvas.height, 0, 1)    // 设置视口
+    // passEncoder.setScissorRect(0, 0, context.canvas.width, context.canvas.height)    // 设置剪裁矩形
     //
     passEncoder.setPipeline(pipeline)
     passEncoder.setBindGroup(0, this.uniformBindGroup)
@@ -146,27 +140,48 @@ class MP4PWebGPUPlayer extends WebGPUBase {
   async startToRender() {
     this.video.requestVideoFrameCallback(this.render)
   }
-
+  public get verriceArray() {
+    const alphaDirection = 'right'
+    //默认为左右均分
+    const vW = this.video.videoWidth ? this.video.videoWidth : 1800
+    const vH = this.video.videoHeight ? this.video.videoHeight : 1000
+    const stageW = vW / 2
+    const [rgbX, rgbY, rgbW, rgbH] = alphaDirection === 'right' ? [0, 0, stageW, vH] : [stageW, 0, stageW, vH]
+    const [aX, aY, aW, aH] = alphaDirection === 'right' ? [stageW, 0, stageW, vH] : [0, 0, stageW, vH]
+    const ver = []
+    const rgbCoord = this.computeCoord(rgbX, rgbY, rgbW, rgbH, vW, vH)
+    const aCoord = this.computeCoord(aX, aY, aW, aH, vW, vH)
+    // ver.push(...[-1, 1, rgbCoord[0], rgbCoord[3], aCoord[0], aCoord[3]])
+    // ver.push(...[1, 1, rgbCoord[1], rgbCoord[3], aCoord[1], aCoord[3]])
+    // ver.push(...[-1, -1, rgbCoord[0], rgbCoord[2], aCoord[0], aCoord[2]])
+    // ver.push(...[1, -1, rgbCoord[1], rgbCoord[2], aCoord[1], aCoord[2]])
+    // =====a_position | a_texCoord | a_alpha_texCoord
+    ver.push(...[1, 1, 0.5, 0, 1, 0])
+    ver.push(...[1, -1, 0.5, 1, 1, 1])
+    ver.push(...[-1, -1, 0, 1, 0.5, 1])
+    ver.push(...[1, 1, 0.5, 0, 1, 0])
+    ver.push(...[-1, -1, 0, 1, 0.5, 1])
+    ver.push(...[-1, 1, 0, 0, 0.5, 0])
+    return new Float32Array(ver)
+  }
   createVertexBufferLayout(): GPUVertexState['buffers'] {
-    const ver = this.verPos
-
+    const vertices = this.verriceArray
     this.vertexBuffer = this.device.createBuffer({
-      size: ver.byteLength,
+      size: vertices.byteLength,
       usage: GPUBufferUsage.VERTEX,
       mappedAtCreation: true,
     })
-
     const mappedBuffer = new Float32Array(this.vertexBuffer.getMappedRange())
-    mappedBuffer.set(ver)
+    mappedBuffer.set(vertices)
     this.vertexBuffer.unmap()
 
     return [
       {
-        arrayStride: ver.BYTES_PER_ELEMENT * 6,
+        arrayStride: vertices.BYTES_PER_ELEMENT * 6, // 6 floats per vertex (2 for position, 2 for texCoord,2 for a_alpha_texCoord)
         attributes: [
           {shaderLocation: 0, offset: 0, format: 'float32x2'},
-          {shaderLocation: 1, offset: ver.BYTES_PER_ELEMENT * 2, format: 'float32x2'},
-          {shaderLocation: 2, offset: ver.BYTES_PER_ELEMENT * 4, format: 'float32x2'},
+          {shaderLocation: 1, offset: 2 * vertices.BYTES_PER_ELEMENT, format: 'float32x2'},
+          {shaderLocation: 2, offset: 4 * vertices.BYTES_PER_ELEMENT, format: 'float32x2'},
         ],
       },
     ]
