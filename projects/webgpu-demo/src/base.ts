@@ -56,6 +56,8 @@ export class WebGPUBase {
     //
     const vw = this.video.videoWidth ? this.video.videoWidth / 2 : 900
     const vh = this.video.videoHeight ? this.video.videoHeight : 1000
+    //
+    const dpr = window.devicePixelRatio || 1
     // 默认左右结构
     this.canvas.width = vw
     this.canvas.height = vh
