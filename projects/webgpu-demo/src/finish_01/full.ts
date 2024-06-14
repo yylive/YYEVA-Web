@@ -21,24 +21,29 @@ fn vertMain(@builtin(vertex_index) VertexIndex : u32) -> VertexOutput {
     vec2( 1.0,  1.0),
     vec2( 1.0, -1.0),
     vec2(-1.0, -1.0),
+    
     vec2( 1.0,  1.0),
     vec2(-1.0, -1.0),
     vec2(-1.0,  1.0),
   );
 
+  // color
   const uv = array(
     vec2(0.5, 0.0),
     vec2(0.5, 1.0),
     vec2(0.0, 1.0),
+
     vec2(0.5, 0.0),
     vec2(0.0, 1.0),
     vec2(0.0, 0.0),
   );
 
+  // alpha
   const af = array(
     vec2(1, 0),
     vec2(1, 1.0),
     vec2(0.5, 1.0),
+
     vec2(1, 0.0),
     vec2(0.5, 1),
     vec2(0.5, 0),
