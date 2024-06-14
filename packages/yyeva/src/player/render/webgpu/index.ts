@@ -10,7 +10,6 @@ export default class RenderWebGPU extends RenderWebGPUBase {
     await this.videoEntity.setup()
     this.video = video
     this.resizeCanvasToDisplaySize()
-    //
     await this.initGPUContext()
   }
 

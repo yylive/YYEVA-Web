@@ -3,21 +3,31 @@ import {isOffscreenCanvasSupported} from 'src/helper/utils'
 import RenderCache from 'src/player/render/common/renderCache'
 import VideoEntity from 'src/player/render/common/videoEntity'
 import type {MixEvideoOptions, ResizeCanvasType, WebglVersion} from 'src/type/mix'
+import {code} from './sharder'
 
 export class RenderWebGPUBase {
   public isPlay = false
   public videoEntity: VideoEntity
-  public renderType = 'webgl'
+  public renderType = 'webgpu'
   public renderCache: RenderCache
   public PER_SIZE = 9
-  public version: WebglVersion
+  public version = 0
   public op: MixEvideoOptions
   public currentFrame = -1 //过滤重复帧
   public video: HTMLVideoElement | undefined
   // webGPU
-  public ofs: HTMLCanvasElement
-  private device: GPUDevice
-  public ctx: GPUCanvasContext
+  public ofs!: HTMLCanvasElement
+  public ctx!: GPUCanvasContext
+  public adapter!: GPUAdapter
+  public device!: GPUDevice
+  public presentationFormat!: GPUTextureFormat
+  public pipeline!: GPURenderPipeline
+  public sampler!: GPUSampler
+  public uniformBuffer!: GPUBuffer
+  public vertexBuffer!: GPUBuffer
+  public pipelineLayout!: GPUPipelineLayout
+  public bindGroupLayout!: GPUBindGroupLayout
+  //
   constructor(op: MixEvideoOptions) {
     logger.debug('[Render In Webgl]')
     this.op = op
@@ -31,120 +41,238 @@ export class RenderWebGPUBase {
       this.setSizeCanvas(this.ofs, op.resizeCanvas)
     }
     op.container.appendChild(this.ofs)
-    this.op = op
   }
   async initGPUContext() {
     this.ctx = this.ofs.getContext('webgpu')
-    // 创建一个适配器对象 adapter，适配器是一个 GPU 物理硬件设备的抽象。
-    // 比如 { powerPreference: 'low-power' } 表示优先使用低能耗的 GPU
-    const adapter = await navigator.gpu.requestAdapter()
-    if (!adapter) {
+    this.adapter = await navigator.gpu.requestAdapter({
+      // powerPreference: 'low-power'
+    })
+    if (!this.adapter) {
       throw new Error('WebGPU adapter not available')
     }
-
-    // requestDevice 方法也可以传入配置项，去开启一些高级特性，或是指定一些硬件限制，比如最大纹理尺寸。
-    this.device = await adapter.requestDevice()
-    // 接着是调用 ctx.configure() 方法配置刚刚声明的 device 对象和像素格式。
-    const canvasFormat = navigator.gpu.getPreferredCanvasFormat()
+    this.device = await this.adapter.requestDevice()
+    if (!this.device) {
+      throw new Error('need a browser that supports WebGPU')
+    }
+    this.presentationFormat = navigator.gpu.getPreferredCanvasFormat()
     this.ctx.configure({
       device: this.device,
-      format: canvasFormat,
-      usage: GPUTextureUsage.RENDER_ATTACHMENT,
+      format: this.presentationFormat,
+      alphaMode: 'premultiplied',
     })
-  }
-  createRender() {
-    const {device, ctx} = this
-    const canvasFormat = navigator.gpu.getPreferredCanvasFormat()
-    //
-    const texture = device.importExternalTexture({source: this.video})
-    //
-    const encoder = device.createCommandEncoder()
-    const pass = encoder.beginRenderPass({
-      colorAttachments: [
-        {
-          view: ctx.getCurrentTexture().createView(),
-          loadOp: 'clear',
-          clearValue: {r: 0.6, g: 0.8, b: 0.9, a: 1},
-          storeOp: 'store',
-        },
-      ],
+    // createSampler
+    this.sampler = this.device.createSampler({
+      magFilter: 'linear',
+      minFilter: 'linear',
+      mipmapFilter: 'linear',
+      addressModeU: 'repeat',
+      addressModeV: 'repeat',
     })
-
-    // 创建顶点数据
-    // prettier-ignore
-    const vertices = new Float32Array([-0.5, -0.5, 0.5, -0.5, 0.5, 0.5])
-
-    // 缓冲区
-    const vertexBuffer = device.createBuffer({
-      // 标识，字符串随意写，报错时会通过它定位，
-      label: 'Triangle Vertices',
-      // 缓冲区大小，这里是 24 字节。6 个 4 字节（即 32 位）的浮点数
+    // setUniform
+    const u_scale = this.getScale()
+    const uniformArray = new Float32Array(u_scale)
+    const uniformBuffer = this.device.createBuffer({
+      size: uniformArray.byteLength,
+      usage: GPUBufferUsage.UNIFORM,
+      mappedAtCreation: true,
+    })
+    const uMappedBuffer = new Float32Array(uniformBuffer.getMappedRange())
+    uMappedBuffer.set(uniformArray)
+    uniformBuffer.unmap()
+    this.uniformBuffer = uniformBuffer
+    // setVertextBuffer
+    const vertices = this.verriceArray
+    this.vertexBuffer = this.device.createBuffer({
       size: vertices.byteLength,
-      // 标识缓冲区用途（1）用于顶点着色器（2）可以从 CPU 复制数据到缓冲区
-      // eslint-disable-next-line no-undef
-      usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+      usage: GPUBufferUsage.VERTEX,
+      mappedAtCreation: true,
     })
-    // 将顶点数据复制到缓冲区
-    device.queue.writeBuffer(vertexBuffer, /* bufferOffset */ 0, vertices)
-
-    // GPU 应该如何读取缓冲区中的数据
-    const vertexBufferLayout: GPUVertexBufferLayout = {
-      arrayStride: 2 * 4, // 每一组的字节数，每组有两个数字（2 * 4字节）
-      attributes: [
+    const vMappedBuffer = new Float32Array(this.vertexBuffer.getMappedRange())
+    vMappedBuffer.set(vertices)
+    this.vertexBuffer.unmap()
+    // setLayout
+    this.bindGroupLayout = this.device.createBindGroupLayout({
+      entries: [
         {
-          format: 'float32x2', // 每个数字是32位浮点数
-          offset: 0, // 从每组的第一个数字开始
-          shaderLocation: 0, // 顶点着色器中的位置
+          binding: 0,
+          visibility: GPUShaderStage.VERTEX,
+          buffer: {type: 'uniform'},
+        },
+        {
+          binding: 1,
+          visibility: GPUShaderStage.FRAGMENT,
+          sampler: {type: 'filtering'},
+        },
+        {
+          binding: 2,
+          visibility: GPUShaderStage.FRAGMENT,
+          externalTexture: {},
         },
       ],
-    }
-
-    // 着色器用的是 WGSL 着色器语言
-    const vertexShaderModule = device.createShaderModule({
-      label: 'Cell shader',
-      code: `
-        @vertex
-        fn vertexMain(@location(0) pos: vec2f) ->
-          @builtin(position) vec4f {
-          return vec4f(pos, 0, 1);
-        }
-    
-        @fragment
-        fn fragmentMain() -> @location(0) vec4f {
-          return vec4f(1, 0, 0, 1);
-        }
-      `,
     })
-
-    // 渲染流水线
-    const pipeline = device.createRenderPipeline({
-      label: 'pipeline',
-      layout: 'auto',
+    this.pipelineLayout = this.device.createPipelineLayout({
+      bindGroupLayouts: [this.bindGroupLayout],
+    })
+    // setPipeline
+    const shaderModule = this.device.createShaderModule({code})
+    this.pipeline = this.device.createRenderPipeline({
+      layout: this.pipelineLayout,
       vertex: {
-        module: vertexShaderModule,
-        entryPoint: 'vertexMain',
-        buffers: [vertexBufferLayout],
-      },
-      fragment: {
-        module: vertexShaderModule,
-        entryPoint: 'fragmentMain',
-        targets: [
+        module: shaderModule,
+        entryPoint: 'vertMain',
+        buffers: [
           {
-            format: canvasFormat,
+            // 6 floats per vertex (2 for position, 2 for texCoord,2 for a_alpha_texCoord)
+            arrayStride: vertices.BYTES_PER_ELEMENT * 6,
+            attributes: [
+              {shaderLocation: 0, offset: 0, format: 'float32x2'},
+              {shaderLocation: 1, offset: 2 * vertices.BYTES_PER_ELEMENT, format: 'float32x2'},
+              {shaderLocation: 2, offset: 4 * vertices.BYTES_PER_ELEMENT, format: 'float32x2'},
+            ],
           },
         ],
       },
+      fragment: {
+        module: shaderModule,
+        entryPoint: 'fragMain',
+        targets: [{format: this.presentationFormat}],
+      },
+      primitive: {topology: 'triangle-list'},
     })
-
-    pass.setPipeline(pipeline)
-    pass.setVertexBuffer(0, vertexBuffer)
-    pass.draw(vertices.length / 2)
-
-    pass.end()
-    const commandBuffer = encoder.finish()
-    device.queue.submit([commandBuffer])
   }
-  //
+  createRender() {
+    const {device, video, ctx, pipeline, sampler, vertexBuffer} = this
+
+    const uniformBindGroup = device.createBindGroup({
+      layout: this.bindGroupLayout,
+      entries: [
+        {binding: 0, resource: {buffer: this.uniformBuffer}},
+        {binding: 1, resource: sampler},
+        {binding: 2, resource: device.importExternalTexture({source: video})},
+      ],
+    })
+    const commandEncoder = device.createCommandEncoder()
+    const textureView = ctx.getCurrentTexture().createView()
+    const renderPassDescriptor: GPURenderPassDescriptor = {
+      colorAttachments: [
+        {
+          view: textureView,
+          clearValue: [0, 0, 0, 1],
+          loadOp: 'clear',
+          storeOp: 'store',
+        },
+      ],
+    }
+    const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor)
+    // passEncoder.setViewport(0, 0, context.canvas.width, context.canvas.height, 0, 1)    // 设置视口
+    // passEncoder.setScissorRect(0, 0, context.canvas.width, context.canvas.height)    // 设置剪裁矩形
+    passEncoder.setPipeline(pipeline)
+    passEncoder.setBindGroup(0, uniformBindGroup)
+    passEncoder.setVertexBuffer(0, vertexBuffer)
+    passEncoder.draw(6)
+    passEncoder.end()
+    device.queue.submit([commandEncoder.finish()])
+  }
+  public destroy() {
+    console.log('destroy')
+    // this.webglDestroy()
+    this.ofs.remove()
+    this.videoEntity.destroy()
+    this.renderCache.destroy()
+  }
+  private get verriceArray() {
+    const {rgbX, rgbY, rgbW, rgbH, vW, vH, aX, aY, aW, aH} = this.getRgbaPos()
+    console.log('rgbX, rgbY, rgbW, rgbH, aX, aY, aW, aH', rgbX, rgbY, rgbW, rgbH, aX, aY, aW, aH, vW, vH)
+    const rgbCoord = this.computeCoord(rgbX, rgbY, rgbW, rgbH, vW, vH)
+    const aCoord = this.computeCoord(aX, aY, aW, aH, vW, vH)
+    const ver = []
+    ver.push(...[1, 1, rgbCoord[1], rgbCoord[2], aCoord[1], aCoord[2]])
+    ver.push(...[1, -1, rgbCoord[1], rgbCoord[3], aCoord[1], aCoord[3]])
+    ver.push(...[-1, -1, rgbCoord[0], rgbCoord[3], aCoord[0], aCoord[3]])
+    ver.push(...[1, 1, rgbCoord[1], rgbCoord[2], aCoord[1], aCoord[2]])
+    ver.push(...[-1, -1, rgbCoord[0], rgbCoord[3], aCoord[0], aCoord[3]])
+    ver.push(...[-1, 1, rgbCoord[0], rgbCoord[2], aCoord[0], aCoord[2]])
+    //
+    // ver.push(...[1, 1, rgbCoord[1], rgbCoord[2], aCoord[1], aCoord[2]])
+    // ver.push(...[1, -1, rgbCoord[1], rgbCoord[3], aCoord[1], aCoord[3]])
+    // ver.push(...[-1, -1, rgbCoord[0], rgbCoord[3], aCoord[0], aCoord[3]])
+    // ver.push(...[1, 1, rgbCoord[1], rgbCoord[2], aCoord[1], aCoord[2]])
+    // ver.push(...[-1, -1, rgbCoord[0], rgbCoord[3], aCoord[0], aCoord[3]])
+    // ver.push(...[-1, 1, rgbCoord[0], rgbCoord[2], aCoord[0], aCoord[2]])
+    //
+    return new Float32Array(ver)
+  }
+  private getRgbaPos() {
+    const descript = this.videoEntity.config?.descript
+    if (descript) {
+      //=================== 创建缓冲区
+      const {width: vW, height: vH} = descript
+      const [rgbX, rgbY, rgbW, rgbH] = descript.rgbFrame
+      const [aX, aY, aW, aH] = descript.alphaFrame
+      return {rgbX, rgbY, rgbW, rgbH, vW, vH, aX, aY, aW, aH}
+    } else if (this.video) {
+      //默认为左右均分
+      const vW = this.video.videoWidth ? this.video.videoWidth : 1800
+      const vH = this.video.videoHeight ? this.video.videoHeight : 1000
+      const stageW = vW / 2
+      const [rgbX, rgbY, rgbW, rgbH] = this.op.alphaDirection === 'right' ? [0, 0, stageW, vH] : [stageW, 0, stageW, vH]
+      const [aX, aY, aW, aH] = this.op.alphaDirection === 'right' ? [stageW, 0, stageW, vH] : [0, 0, stageW, vH]
+      return {rgbX, rgbY, rgbW, rgbH, vW, vH, aX, aY, aW, aH}
+    }
+  }
+  public computeCoord(x: number, y: number, w: number, h: number, vw: number, vh: number) {
+    // leftX rightX bottomY topY
+    const leftX = x / vw
+    const rightX = (x + w) / vw
+    const bottomY = (vh - y - h) / vh
+    const topY = (vh - y) / vh
+    // console.log(`leftX, rightX, bottomY, topY`, leftX, rightX, bottomY, topY)
+    return [leftX, rightX, bottomY, topY]
+  }
+  private getScale() {
+    let scaleX = 1
+    let scaleY = 1
+    if (this.video && this.op.mode) {
+      const ofs = this.ofs
+      const canvasAspect = ofs.clientWidth / ofs.clientHeight
+      const videoAspect = ofs.width / ofs.height
+
+      ofs.setAttribute('class', `e-video-${this.op.mode.toLocaleLowerCase()}`)
+      switch (this.op.mode) {
+        case 'AspectFill':
+        case 'vertical': //fit vertical | AspectFill 竖屏
+          scaleY = 1
+          scaleX = videoAspect / canvasAspect
+          break
+        case 'AspectFit':
+        case 'horizontal': //fit horizontal | AspectFit 横屏
+          scaleX = 1
+          scaleY = canvasAspect / videoAspect
+          break
+        case 'contain':
+          scaleY = 1
+          scaleX = videoAspect / canvasAspect
+          if (scaleX > 1) {
+            scaleY = 1 / scaleX
+            scaleX = 1
+          }
+          break
+        case 'Fill':
+        case 'cover':
+          scaleY = 1
+          scaleX = videoAspect / canvasAspect
+          if (scaleX < 1) {
+            scaleY = 1 / scaleX
+            scaleX = 1
+          }
+          break
+      }
+      // console.log('canvasAspect', canvasAspect)
+      // console.log('videoAspect', videoAspect)
+      // console.log('scaleX', scaleX, scaleY)
+    }
+    return [scaleX, scaleY]
+  }
   private setSizeCanvas(canvas: HTMLCanvasElement, resizeCanvas: ResizeCanvasType) {
     switch (resizeCanvas) {
       case 'percent':
@@ -178,12 +306,5 @@ export class RenderWebGPUBase {
       ofs.width = w
       ofs.height = h
     }
-  }
-  public destroy() {
-    console.log('destroy')
-    // this.webglDestroy()
-    this.ofs.remove()
-    this.videoEntity.destroy()
-    this.renderCache.destroy()
   }
 }

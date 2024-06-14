@@ -2,13 +2,16 @@ import {useEffect, useRef} from 'react'
 import {Player, host} from './player'
 // const urls = ['https://yyeva.yy.com/yy/music.mp4', 'https://yyeva.yy.com/yy/mface.mp4']
 const opts = [
-  {
-    videoUrl: '/yy/music.mp4',
-    effects: {
-      'keyname.png': 'music video',
-      key: '/yy/q1.jpeg',
-    },
-  },
+  // {
+  //   videoUrl: '/yy/aspectFill.mp4',
+  // },
+  // {
+  //   videoUrl: '/yy/music.mp4',
+  //   effects: {
+  //     'keyname.png': 'music video',
+  //     key: '/yy/q1.jpeg',
+  //   },
+  // },
   {
     videoUrl: '/yy/pld_264_new.mp4',
     effects: {
@@ -27,13 +30,14 @@ const getOpt: any = () => {
   return {
     // videoID: 'yyeva_full_screen_position',
     mode: 'AspectFill',
+    alphaDirection: 'right',
     mute: true,
     useMetaData: true,
     loop: false,
     // usePrefetch: false,
     // showVideo: true,
     useAccurate: false,
-    // logLevel: 'info',
+    logLevel: 'info',
     // videoUrl: getUrl(),
     // effects: {
     //   name: `YYEVAER`,

@@ -102,6 +102,7 @@ export default class EVideo {
   }
   async prepareRender() {
     //
+    console.log('navigator.gpu', navigator.gpu)
     if (
       // this.op.renderType === 'webgpu' &&
       navigator.gpu
