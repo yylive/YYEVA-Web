@@ -1,78 +1,113 @@
 import {WebGPUBase} from 'src/base'
-import shaderModuleCode from './full.wgsl'
+import {code} from './full'
+
 class MP4PWebGPUPlayer extends WebGPUBase {
   public pipeline!: GPURenderPipeline
   public sampler!: GPUSampler
   public vertexBuffer!: GPUBuffer
+  public pipelineLayout!: GPUPipelineLayout
+  public bindGroupLayout!: GPUBindGroupLayout
+  public uniformBindGroup!: GPUBindGroup
+  public uniformBuffer!: GPUBuffer
+
   constructor() {
     super()
     this.setup()
   }
+
   async setup() {
     await super.setup()
-    this.setPipe()
+    await this.video.play()
     this.setSampler()
+    this.setUniform()
+    this.setLayout()
+    this.setPipeline()
     this.startToRender()
   }
-  setPipe() {
-    const {device, presentationFormat} = this
-    const cellShaderModule = device.createShaderModule(shaderModuleCode)
-    //
-    const ver = this.verPos
-    this.vertexBuffer = this.device.createBuffer({
-      size: ver.byteLength,
-      usage: GPUBufferUsage.VERTEX,
-      mappedAtCreation: true, // 创建时立刻映射，让 CPU 端能读写数据
-    })
-    // 让 GPUBuffer 映射出一块 CPU 端的内存，即 ArrayBuffer，此时这个 Float32Array 仍是空的
-    const mappedBuffer = new Float32Array(this.vertexBuffer.getMappedRange())
-    // 将数据传入这个 Float32Array
-    mappedBuffer.set(ver)
-    // 令 GPUBuffer 解除映射，此时 verticesBufferArray 那块内存才能被 GPU 访问
-    this.vertexBuffer.unmap()
-    //
-    this.pipeline = device.createRenderPipeline({
-      layout: 'auto',
-      vertex: {
-        module: cellShaderModule,
-        entryPoint: 'vertMain',
-      },
-      fragment: {
-        module: cellShaderModule,
-        entryPoint: 'fragMain',
-        targets: [
-          {
-            format: presentationFormat,
-          },
-        ],
-      },
-      primitive: {
-        topology: 'triangle-list',
-      },
-    })
-  }
-  setSampler() {
+
+  setUniform() {
     const {device} = this
-    this.sampler = device.createSampler({
-      magFilter: 'linear',
-      minFilter: 'linear',
+    const u_scale = this.getScale()
+    const scaleData = new Float32Array(u_scale)
+
+    this.uniformBuffer = device.createBuffer({
+      size: scaleData.byteLength,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     })
+
+    device.queue.writeBuffer(this.uniformBuffer, 0, scaleData.buffer)
   }
-  render = () => {
-    const {device, video, context, pipeline} = this
-    const uniformBindGroup = device.createBindGroup({
-      layout: pipeline.getBindGroupLayout(0),
+
+  setLayout() {
+    const {device} = this
+
+    this.bindGroupLayout = device.createBindGroupLayout({
       entries: [
         {
+          binding: 0,
+          visibility: GPUShaderStage.VERTEX,
+          buffer: {type: 'uniform'},
+        },
+        {
           binding: 1,
-          resource: this.sampler,
+          visibility: GPUShaderStage.FRAGMENT,
+          sampler: {type: 'filtering'},
         },
         {
           binding: 2,
-          resource: device.importExternalTexture({
-            source: video,
-          }),
+          visibility: GPUShaderStage.FRAGMENT,
+          externalTexture: {},
         },
+      ],
+    })
+
+    this.pipelineLayout = device.createPipelineLayout({
+      bindGroupLayouts: [this.bindGroupLayout],
+    })
+  }
+
+  setSampler() {
+    const {device} = this
+
+    this.sampler = device.createSampler({
+      magFilter: 'linear',
+      minFilter: 'linear',
+      mipmapFilter: 'linear',
+      addressModeU: 'repeat',
+      addressModeV: 'repeat',
+    })
+  }
+
+  setPipeline() {
+    const {device, presentationFormat} = this
+    const shaderModule = device.createShaderModule({code})
+    const vertexBufferLayout = this.createVertexBufferLayout()
+
+    this.pipeline = device.createRenderPipeline({
+      layout: this.pipelineLayout,
+      vertex: {
+        module: shaderModule,
+        entryPoint: 'vertMain',
+        // buffers: vertexBufferLayout,
+      },
+      fragment: {
+        module: shaderModule,
+        entryPoint: 'fragMain',
+        targets: [{format: presentationFormat}],
+      },
+      primitive: {topology: 'triangle-list'},
+    })
+  }
+
+  render = () => {
+    const {device, video, context, pipeline, sampler, vertexBuffer} = this
+
+    this.uniformBindGroup = device.createBindGroup({
+      layout: this.bindGroupLayout,
+      entries: [
+        {binding: 0, resource: {buffer: this.uniformBuffer}},
+        {binding: 1, resource: sampler},
+        {binding: 2, resource: device.importExternalTexture({source: video})},
       ],
     })
 
@@ -91,21 +126,51 @@ class MP4PWebGPUPlayer extends WebGPUBase {
     }
 
     const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor)
-    passEncoder.setPipeline(pipeline)
-    passEncoder.setBindGroup(0, uniformBindGroup)
     //
-    const {vertexBuffer} = this
+    // 设置视口
+    passEncoder.setViewport(0, 0, context.canvas.width, context.canvas.height, 0, 1)
+
+    // 设置剪裁矩形
+    passEncoder.setScissorRect(0, 0, context.canvas.width, context.canvas.height)
+    //
+    passEncoder.setPipeline(pipeline)
+    passEncoder.setBindGroup(0, this.uniformBindGroup)
     passEncoder.setVertexBuffer(0, vertexBuffer)
     passEncoder.draw(6)
     passEncoder.end()
+
     device.queue.submit([commandEncoder.finish()])
 
-    //
     video.requestVideoFrameCallback(this.render)
   }
+
   async startToRender() {
-    await this.video.play()
     this.video.requestVideoFrameCallback(this.render)
+  }
+
+  createVertexBufferLayout(): GPUVertexState['buffers'] {
+    const ver = this.verPos
+
+    this.vertexBuffer = this.device.createBuffer({
+      size: ver.byteLength,
+      usage: GPUBufferUsage.VERTEX,
+      mappedAtCreation: true,
+    })
+
+    const mappedBuffer = new Float32Array(this.vertexBuffer.getMappedRange())
+    mappedBuffer.set(ver)
+    this.vertexBuffer.unmap()
+
+    return [
+      {
+        arrayStride: ver.BYTES_PER_ELEMENT * 6,
+        attributes: [
+          {shaderLocation: 0, offset: 0, format: 'float32x2'},
+          {shaderLocation: 1, offset: ver.BYTES_PER_ELEMENT * 2, format: 'float32x2'},
+          {shaderLocation: 2, offset: ver.BYTES_PER_ELEMENT * 4, format: 'float32x2'},
+        ],
+      },
+    ]
   }
 }
 

@@ -153,16 +153,16 @@ class MP4PWebGPUPlayer extends WebGPUBase {
       ],
     }
 
-    const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor)
-    passEncoder.setPipeline(pipeline)
-    passEncoder.setBindGroup(0, this.uniformBindGroup)
+    const pass = commandEncoder.beginRenderPass(renderPassDescriptor)
+    pass.setPipeline(pipeline)
+    pass.setBindGroup(0, this.uniformBindGroup)
     //
     const {vertexBuffer} = this
-    passEncoder.setVertexBuffer(0, vertexBuffer)
+    pass.setVertexBuffer(0, vertexBuffer)
     const vertexCount = vertexBuffer.size / (4 * 6)
-    passEncoder.draw(vertexCount, 1, 0, 0)
-    // passEncoder.draw(6)
-    passEncoder.end()
+    pass.draw(vertexCount, 1, 0, 0)
+    // pass.draw(6)
+    pass.end()
     device.queue.submit([commandEncoder.finish()])
 
     //
@@ -175,6 +175,7 @@ class MP4PWebGPUPlayer extends WebGPUBase {
   createVertexBufferMap(): GPUVertexState['buffers'] {
     // const ver = new Float32Array(this.verPos)
     const ver = this.verPos
+    console.log(ver, ver.byteLength)
     this.vertexBuffer = this.device.createBuffer({
       size: ver.byteLength,
       usage: GPUBufferUsage.VERTEX,

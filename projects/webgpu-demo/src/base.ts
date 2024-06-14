@@ -6,8 +6,8 @@ export class WebGPUBase {
   public device!: GPUDevice
   public presentationFormat!: GPUTextureFormat
   async setup() {
-    await this.createCanvas()
     this.createMP4()
+    await this.createCanvas()
   }
   private async createCanvas() {
     this.adapter = (await navigator.gpu.requestAdapter()) as GPUAdapter
@@ -53,6 +53,12 @@ export class WebGPUBase {
     root.appendChild(this.canvas)
     //
     this.presentationFormat = presentationFormat
+    //
+    const vw = this.video.videoWidth ? this.video.videoWidth / 2 : 900
+    const vh = this.video.videoHeight ? this.video.videoHeight : 1000
+    // 默认左右结构
+    this.canvas.width = vw
+    this.canvas.height = vh
   }
   private setSizeCanvas(canvas: HTMLCanvasElement, resizeCanvas = 'percent') {
     switch (resizeCanvas) {
@@ -117,7 +123,9 @@ export class WebGPUBase {
           }
           break
       }
+      console.log('[scaleX, scaleY]', ofs.clientWidth, ofs.width)
     }
+
     return [scaleX, scaleY]
   }
   public get verPos() {
