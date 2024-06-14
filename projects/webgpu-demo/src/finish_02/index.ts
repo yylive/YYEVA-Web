@@ -28,12 +28,21 @@ class MP4PWebGPUPlayer extends WebGPUBase {
   setUniform() {
     const {device} = this
     const u_scale = this.getScale()
-    const scaleData = new Float32Array(u_scale)
-    this.uniformBuffer = device.createBuffer({
-      size: scaleData.byteLength,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    //
+    const uniformArray = new Float32Array(u_scale)
+    // 缓冲映射，创建映射（Mapping）后的某块显存，就能被 CPU 访问
+    const uniformBuffer = device.createBuffer({
+      size: uniformArray.byteLength,
+      usage: GPUBufferUsage.UNIFORM,
+      mappedAtCreation: true,
     })
-    device.queue.writeBuffer(this.uniformBuffer, 0, scaleData.buffer)
+    // 然后马上就可以获取映射后的 ArrayBuffer
+    const mappedBuffer = new Float32Array(uniformBuffer.getMappedRange())
+    mappedBuffer.set(uniformArray)
+    // 解映射，还管理权给 GPU
+    uniformBuffer.unmap()
+    //
+    this.uniformBuffer = uniformBuffer
   }
 
   setLayout() {
@@ -151,17 +160,21 @@ class MP4PWebGPUPlayer extends WebGPUBase {
     const ver = []
     const rgbCoord = this.computeCoord(rgbX, rgbY, rgbW, rgbH, vW, vH)
     const aCoord = this.computeCoord(aX, aY, aW, aH, vW, vH)
-    // ver.push(...[-1, 1, rgbCoord[0], rgbCoord[3], aCoord[0], aCoord[3]])
-    // ver.push(...[1, 1, rgbCoord[1], rgbCoord[3], aCoord[1], aCoord[3]])
-    // ver.push(...[-1, -1, rgbCoord[0], rgbCoord[2], aCoord[0], aCoord[2]])
-    // ver.push(...[1, -1, rgbCoord[1], rgbCoord[2], aCoord[1], aCoord[2]])
     // =====a_position | a_texCoord | a_alpha_texCoord
-    ver.push(...[1, 1, 0.5, 0, 1, 0])
-    ver.push(...[1, -1, 0.5, 1, 1, 1])
-    ver.push(...[-1, -1, 0, 1, 0.5, 1])
-    ver.push(...[1, 1, 0.5, 0, 1, 0])
-    ver.push(...[-1, -1, 0, 1, 0.5, 1])
-    ver.push(...[-1, 1, 0, 0, 0.5, 0])
+    // ver.push(...[1, 1, 0.5, 0, 1, 0])
+    // ver.push(...[1, -1, 0.5, 1, 1, 1])
+    // ver.push(...[-1, -1, 0, 1, 0.5, 1])
+    // ver.push(...[1, 1, 0.5, 0, 1, 0])
+    // ver.push(...[-1, -1, 0, 1, 0.5, 1])
+    // ver.push(...[-1, 1, 0, 0, 0.5, 0])
+    //===  `leftX, rightX, bottomY, topY` 只能 X跟Y组合
+    ver.push(...[1, 1, rgbCoord[1], rgbCoord[2], aCoord[1], aCoord[2]])
+    ver.push(...[1, -1, rgbCoord[1], rgbCoord[3], aCoord[1], aCoord[3]])
+    ver.push(...[-1, -1, rgbCoord[0], rgbCoord[3], aCoord[0], aCoord[3]])
+    ver.push(...[1, 1, rgbCoord[1], rgbCoord[2], aCoord[1], aCoord[2]])
+    ver.push(...[-1, -1, rgbCoord[0], rgbCoord[3], aCoord[0], aCoord[3]])
+    ver.push(...[-1, 1, rgbCoord[0], rgbCoord[2], aCoord[0], aCoord[2]])
+    //
     return new Float32Array(ver)
   }
   createVertexBufferLayout(): GPUVertexState['buffers'] {

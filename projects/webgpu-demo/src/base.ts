@@ -125,7 +125,7 @@ export class WebGPUBase {
           }
           break
       }
-      console.log('[scaleX, scaleY]', ofs.clientWidth, ofs.width)
+      // console.log('[scaleX, scaleY]', ofs.clientWidth, ofs.width)
     }
 
     return [scaleX, scaleY]
@@ -160,6 +160,11 @@ export class WebGPUBase {
    */
   public computeCoord(x: number, y: number, w: number, h: number, vw: number, vh: number) {
     // leftX rightX bottomY topY
-    return [x / vw, (x + w) / vw, (vh - y - h) / vh, (vh - y) / vh]
+    const leftX = x / vw
+    const rightX = (x + w) / vw
+    const bottomY = (vh - y - h) / vh
+    const topY = (vh - y) / vh
+    // console.log(`leftX, rightX, bottomY, topY`, leftX, rightX, bottomY, topY)
+    return [leftX, rightX, bottomY, topY]
   }
 }
