@@ -27,7 +27,7 @@ importers:
         specifier: ^0.1.42
         version: 0.1.42
       tsup:
-        specifier: ^8.1.0
+        specifier: ^8.0.2
         version: 8.1.0(typescript@5.1.3)
       typescript:
         specifier: ^5.1.3

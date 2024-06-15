@@ -13,6 +13,7 @@ import {
   EPlayStep,
   type EventCallback,
   type MixEvideoOptions,
+  type RenderType,
   type VideoAnimateType,
   type WebglVersion,
 } from 'src/type/mix'
@@ -51,7 +52,7 @@ export default class EVideo {
   //
   public isPlay = false
   public renderer: RenderWebglType | Render2DType | RenderWebGPUType
-  public renderType: 'canvas2d' | 'webgl' | 'webgpu'
+  public renderType: RenderType
   public animationType: AnimatorType
   public op: MixEvideoOptions
   public fps = 0
@@ -100,34 +101,44 @@ export default class EVideo {
     onEnd && onEnd?.(err)
     onError && onError?.(err)
   }
-  async prepareRender() {
-    //
-    console.log('navigator.gpu', navigator.gpu)
-    if (
-      // this.op.renderType === 'webgpu' &&
-      navigator.gpu
-    ) {
-      const RenderWebGPU = (await import('src/player/render/webgpu')).default
-      this.renderer = new RenderWebGPU(this.op)
-    } else if (this.op.renderType === 'canvas2d') {
-      const Render2D = (await import('src/player/render/canvas2d')).default
-      this.renderer = new Render2D(this.op)
-    } else {
-      const RenderWebGl = (await import('src/player/render/webgl')).default
-      this.renderer = new RenderWebGl(this.op)
-    }
-    this.renderType = this.renderer.renderType as 'canvas2d' | 'webgl' | 'webgpu'
-    //
-    //实例化后但是不支持 webgl后降级
+  async selectRender(rt: RenderType) {
+    logger.debug('this.renderer', this.renderer)
+    if (this.op.renderType !== rt) this.op.renderType = rt
+    const Renderer = (await this.renderLoader[rt]()).default
+    this.renderer = new Renderer(this.op)
+    this.renderType = this.renderer.renderType as RenderType
+  }
+  private renderLoader = {
+    webgl: () => import(`src/player/render/webgl`),
+    webgpu: () => import(`src/player/render/webgpu`),
+    canvas2d: () => import(`src/player/render/canvas2d`),
+  }
+  /**
+   *  实例化后但是不支持 webgl后降级
+   */
+  private async webglChange2d() {
     const renderer = this.renderer as RenderWebglType
     this.webglVersion = renderer ? renderer.version : null
     if (renderer.renderType === 'webgl' && renderer.version === null) {
-      const Render2D = (await import('src/player/render/canvas2d')).default
-      this.op.renderType = 'canvas2d'
       logger.debug('[player] webgl to canvas2d')
       this.renderer.destroy()
-      this.renderer = new Render2D(this.op)
-      this.renderType = 'canvas2d'
+      this.selectRender('canvas2d')
+    }
+  }
+  async prepareRender() {
+    logger.debug('navigator.gpu', navigator.gpu)
+    if (this.op.renderType === 'webgpu') {
+      if (navigator.gpu) {
+        await this.selectRender('webgpu')
+      } else {
+        await this.selectRender('webgl')
+        await this.webglChange2d()
+      }
+    } else if (this.op.renderType === 'canvas2d') {
+      await this.selectRender('canvas2d')
+    } else {
+      await this.selectRender('webgl')
+      await this.webglChange2d()
     }
   }
 
@@ -179,7 +190,7 @@ export default class EVideo {
       //
       logger.debug('[setup]', this.animationType, this.webglVersion)
       // 纯在缓存后不再显示 video标签 节省性能
-      if (this.webglVersion && this.op.renderType !== 'canvas2d') {
+      if (this.webglVersion && this.op.renderType === 'webgl') {
         const render = this.renderer as RenderWebglType
         const isCache = this.op.useFrameCache ? render.renderCache.isCache() : false
         if (
@@ -298,7 +309,7 @@ export default class EVideo {
     this.video.currentTime = 0
     // this.video.load()
     if (document.hidden) {
-      logger.info(`startEvent() document.hidden..`)
+      logger.debug(`startEvent() document.hidden..`)
       return
     }
 

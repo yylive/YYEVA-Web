@@ -45,7 +45,7 @@ export class RenderWebGPUBase {
   async initGPUContext() {
     this.ctx = this.ofs.getContext('webgpu')
     this.adapter = await navigator.gpu.requestAdapter({
-      // powerPreference: 'low-power'
+      // powerPreference: 'low-power',
     })
     if (!this.adapter) {
       throw new Error('WebGPU adapter not available')
@@ -82,14 +82,15 @@ export class RenderWebGPUBase {
     this.uniformBuffer = uniformBuffer
     // setVertextBuffer
     const vertices = this.verriceArray
-    this.vertexBuffer = this.device.createBuffer({
+    const vertexBuffer = this.device.createBuffer({
       size: vertices.byteLength,
       usage: GPUBufferUsage.VERTEX,
       mappedAtCreation: true,
     })
-    const vMappedBuffer = new Float32Array(this.vertexBuffer.getMappedRange())
+    const vMappedBuffer = new Float32Array(vertexBuffer.getMappedRange())
     vMappedBuffer.set(vertices)
-    this.vertexBuffer.unmap()
+    vertexBuffer.unmap()
+    this.vertexBuffer = vertexBuffer
     // setLayout
     this.bindGroupLayout = this.device.createBindGroupLayout({
       entries: [
@@ -173,10 +174,15 @@ export class RenderWebGPUBase {
     passEncoder.end()
     device.queue.submit([commandEncoder.finish()])
   }
+  public webgpuDestroy() {
+    this.uniformBuffer.destroy()
+    this.vertexBuffer.destroy()
+    this.device.destroy()
+    this.ofs.remove()
+  }
   public destroy() {
     console.log('destroy')
-    // this.webglDestroy()
-    this.ofs.remove()
+    this.webgpuDestroy()
     this.videoEntity.destroy()
     this.renderCache.destroy()
   }
