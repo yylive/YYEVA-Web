@@ -1,4 +1,4 @@
-export const VERTEX_SHADER = () => `
+export const VERTEX_SHADER = () => /* wgsl */ `
   struct VertexInput {
     @location(0) position: vec2<f32>,
     @location(1) texCoord: vec2<f32>,
@@ -46,7 +46,7 @@ export const FRAGMENT_SHADER = (device: GPUDevice, PER_SIZE = 9) => {
       `)
     }
 
-    sourceUniform = `
+    sourceUniform = /* wgsl */ `
       struct ImageInfo {
         position: vec4<f32>,
         maskPosition: vec4<f32>,
@@ -62,7 +62,7 @@ export const FRAGMENT_SHADER = (device: GPUDevice, PER_SIZE = 9) => {
       }
     `
 
-    sourceTexture = `
+    sourceTexture = /* wgsl */ `
       var srcColor: vec4<f32>;
       var maskColor: vec4<f32>;
       var srcTexCoord: vec2<f32>;
@@ -96,7 +96,7 @@ export const FRAGMENT_SHADER = (device: GPUDevice, PER_SIZE = 9) => {
     `
   }
 
-  return `
+  return /* wgsl */ `
     @group(0) @binding(${maxTextureUnits + 2})
     var u_image_video: texture_2d<f32>;
     @group(0) @binding(${maxTextureUnits + 3})

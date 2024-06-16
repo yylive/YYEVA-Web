@@ -17,6 +17,6 @@ export default class RenderWebGPU extends RenderWebGPUBase {
     if (!this.isPlay || !this.video || this.currentFrame === frame) return
     this.currentFrame = frame
     // console.log(frame)
-    this.createRender()
+    this.createRender(frame)
   }
 }

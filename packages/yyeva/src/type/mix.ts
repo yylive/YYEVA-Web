@@ -50,7 +50,7 @@ export type MixEvideoOptions = VideoEvent & {
    * 自动播放
    * @default true
    */
-  autoplay: boolean
+  autoplay?: boolean
   /**
    * 停止到某一帧，默认停止到最后一帧
    * @default undefined

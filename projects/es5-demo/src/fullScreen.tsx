@@ -1,7 +1,8 @@
 import {useEffect, useRef} from 'react'
+import type {YYEvaOptionsType} from 'yyeva'
 import {Player, host} from './player'
 // const urls = ['https://yyeva.yy.com/yy/music.mp4', 'https://yyeva.yy.com/yy/mface.mp4']
-const opts = [
+const opts: any = [
   // {
   //   videoUrl: '/yy/aspectFill.mp4',
   // },
@@ -27,7 +28,7 @@ const getOpt: any = () => {
   if (i > opts.length - 1) i = 0
   const opt = opts[i]
   i++
-  return {
+  const options: YYEvaOptionsType = {
     // videoID: 'yyeva_full_screen_position',
     mode: 'AspectFill',
     alphaDirection: 'right',
@@ -48,6 +49,8 @@ const getOpt: any = () => {
     renderType: 'webgpu',
     ...opt,
   }
+  // console.log(options)
+  return options
 }
 const FullScreen = () => {
   const div = useRef<HTMLDivElement>(null)

@@ -10,7 +10,7 @@ export default defineConfig(({watch}) => {
     format: ['esm'],
     platform: 'browser',
     splitting: true,
-    sourcemap: isDev,
+    sourcemap: true,
     minify: !isDev,
     clean: true,
     dts: true,
@@ -23,11 +23,11 @@ export default defineConfig(({watch}) => {
     //   options.legalComments = 'none'
     //   options.keepNames = false
     // },
-    // outExtension({ format }) {
-    // 	return {
-    // 		js: ".js",
-    // 		// dts: `.d.ts`,
-    // 	};
-    // },
+    outExtension({format}) {
+      return {
+        js: '.js',
+        // dts: `.d.ts`,
+      }
+    },
   }
 })

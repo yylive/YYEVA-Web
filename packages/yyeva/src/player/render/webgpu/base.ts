@@ -2,8 +2,8 @@ import logger from 'src/helper/logger'
 import {isOffscreenCanvasSupported} from 'src/helper/utils'
 import RenderCache from 'src/player/render/common/renderCache'
 import VideoEntity from 'src/player/render/common/videoEntity'
-import type {MixEvideoOptions, ResizeCanvasType, WebglVersion} from 'src/type/mix'
-import {code} from './sharder'
+import type {MixEvideoOptions, ResizeCanvasType, VideoAnimateDescriptType, WebglVersion} from 'src/type/mix'
+import getSharderCode from './sharder'
 
 export class RenderWebGPUBase {
   public isPlay = false
@@ -27,6 +27,8 @@ export class RenderWebGPUBase {
   public vertexBuffer!: GPUBuffer
   public pipelineLayout!: GPUPipelineLayout
   public bindGroupLayout!: GPUBindGroupLayout
+  //
+  private textureMap: any = {}
   //
   constructor(op: MixEvideoOptions) {
     logger.debug('[Render In Webgl]')
@@ -60,7 +62,7 @@ export class RenderWebGPUBase {
       format: this.presentationFormat,
       alphaMode: 'premultiplied',
     })
-    // createSampler
+    //=== createSampler
     this.sampler = this.device.createSampler({
       magFilter: 'linear',
       minFilter: 'linear',
@@ -68,7 +70,7 @@ export class RenderWebGPUBase {
       addressModeU: 'repeat',
       addressModeV: 'repeat',
     })
-    // setUniform
+    //=== setUniform
     const u_scale = this.getScale()
     const uniformArray = new Float32Array(u_scale)
     const uniformBuffer = this.device.createBuffer({
@@ -80,7 +82,7 @@ export class RenderWebGPUBase {
     uMappedBuffer.set(uniformArray)
     uniformBuffer.unmap()
     this.uniformBuffer = uniformBuffer
-    // setVertextBuffer
+    //=== setVertextBuffer
     const vertices = this.verriceArray
     const vertexBuffer = this.device.createBuffer({
       size: vertices.byteLength,
@@ -91,7 +93,7 @@ export class RenderWebGPUBase {
     vMappedBuffer.set(vertices)
     vertexBuffer.unmap()
     this.vertexBuffer = vertexBuffer
-    // setLayout
+    //=== setLayout
     this.bindGroupLayout = this.device.createBindGroupLayout({
       entries: [
         {
@@ -114,8 +116,8 @@ export class RenderWebGPUBase {
     this.pipelineLayout = this.device.createPipelineLayout({
       bindGroupLayouts: [this.bindGroupLayout],
     })
-    // setPipeline
-    const shaderModule = this.device.createShaderModule({code})
+    //=== setPipeline
+    const shaderModule = this.device.createShaderModule(getSharderCode(this.device, this.PER_SIZE))
     this.pipeline = this.device.createRenderPipeline({
       layout: this.pipelineLayout,
       vertex: {
@@ -141,15 +143,15 @@ export class RenderWebGPUBase {
       primitive: {topology: 'triangle-list'},
     })
   }
-  createRender() {
+  createRender(frame: number) {
     const {device, video, ctx, pipeline, sampler, vertexBuffer} = this
 
     const uniformBindGroup = device.createBindGroup({
       layout: this.bindGroupLayout,
       entries: [
-        {binding: 0, resource: {buffer: this.uniformBuffer}},
-        {binding: 1, resource: sampler},
-        {binding: 2, resource: device.importExternalTexture({source: video})},
+        {binding: 0, resource: {buffer: this.uniformBuffer}}, // uniforms
+        {binding: 1, resource: sampler}, // u_image_video_sampler
+        {binding: 2, resource: device.importExternalTexture({source: video})}, // u_image_video
       ],
     })
     const commandEncoder = device.createCommandEncoder()
@@ -174,6 +176,36 @@ export class RenderWebGPUBase {
     passEncoder.end()
     device.queue.submit([commandEncoder.finish()])
   }
+  imgPosBuffer(frame: number, descript: VideoAnimateDescriptType) {
+    const {device} = this
+    const frameData = this.videoEntity.getFrame(frame)
+    const frameItem = frameData ? frameData[this.videoEntity.data] : undefined
+    let posArr = []
+    const {width: vW, height: vH} = descript
+
+    if (frameItem) {
+      frameItem.forEach(o => {
+        posArr.push(+this.textureMap[o[this.videoEntity.effectId]])
+        const [rgbX, rgbY] = descript.rgbFrame
+        const [x, y, w, h] = o[this.videoEntity.renderFrame]
+        const [mX, mY, mW, mH] = o[this.videoEntity.outputFrame]
+        const coord = this.computeCoord(x + rgbX, y + rgbY, w, h, vW, vH)
+        const mCoord = this.computeCoord(mX, mY, mW, mH, vW, vH)
+
+        posArr = posArr.concat(coord).concat(mCoord)
+      })
+    }
+
+    const size = (device.limits.maxTextureDimension2D - 1) * this.PER_SIZE
+    posArr = posArr.concat(new Array(size - posArr.length).fill(0))
+
+    const imagePosBuffer = device.createBuffer({
+      size: posArr.length * Float32Array.BYTES_PER_ELEMENT,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    })
+
+    device.queue.writeBuffer(imagePosBuffer, 0, new Float32Array(posArr))
+  }
   public webgpuDestroy() {
     this.uniformBuffer.destroy()
     this.vertexBuffer.destroy()
@@ -181,40 +213,41 @@ export class RenderWebGPUBase {
     this.ofs.remove()
   }
   public destroy() {
-    console.log('destroy')
+    // console.log('destroy')
     this.webgpuDestroy()
     this.videoEntity.destroy()
     this.renderCache.destroy()
   }
   private get verriceArray() {
     const {rgbX, rgbY, rgbW, rgbH, vW, vH, aX, aY, aW, aH} = this.getRgbaPos()
-    console.log('rgbX, rgbY, rgbW, rgbH, aX, aY, aW, aH', rgbX, rgbY, rgbW, rgbH, aX, aY, aW, aH, vW, vH)
+    // console.log('rgbX, rgbY, rgbW, rgbH', rgbX, rgbY, rgbW, rgbH)
+    // console.log(`aX, aY, aW, aH`, aX, aY, aW, aH)
+    // console.log(`vW, vH`, vW, vH)
     const rgbCoord = this.computeCoord(rgbX, rgbY, rgbW, rgbH, vW, vH)
     const aCoord = this.computeCoord(aX, aY, aW, aH, vW, vH)
     const ver = []
-    ver.push(...[1, 1, rgbCoord[1], rgbCoord[2], aCoord[1], aCoord[2]])
-    ver.push(...[1, -1, rgbCoord[1], rgbCoord[3], aCoord[1], aCoord[3]])
-    ver.push(...[-1, -1, rgbCoord[0], rgbCoord[3], aCoord[0], aCoord[3]])
-    ver.push(...[1, 1, rgbCoord[1], rgbCoord[2], aCoord[1], aCoord[2]])
-    ver.push(...[-1, -1, rgbCoord[0], rgbCoord[3], aCoord[0], aCoord[3]])
-    ver.push(...[-1, 1, rgbCoord[0], rgbCoord[2], aCoord[0], aCoord[2]])
     //
-    // ver.push(...[1, 1, rgbCoord[1], rgbCoord[2], aCoord[1], aCoord[2]])
-    // ver.push(...[1, -1, rgbCoord[1], rgbCoord[3], aCoord[1], aCoord[3]])
-    // ver.push(...[-1, -1, rgbCoord[0], rgbCoord[3], aCoord[0], aCoord[3]])
-    // ver.push(...[1, 1, rgbCoord[1], rgbCoord[2], aCoord[1], aCoord[2]])
-    // ver.push(...[-1, -1, rgbCoord[0], rgbCoord[3], aCoord[0], aCoord[3]])
-    // ver.push(...[-1, 1, rgbCoord[0], rgbCoord[2], aCoord[0], aCoord[2]])
+    // 第一个三角形 (右上角 -> 右下角 -> 左下角)
+    ver.push(...[1, 1, rgbCoord[1], rgbCoord[2], aCoord[1], aCoord[2]]) // 右上角
+    ver.push(...[1, -1, rgbCoord[1], rgbCoord[3], aCoord[1], aCoord[3]]) // 右下角
+    ver.push(...[-1, -1, rgbCoord[0], rgbCoord[3], aCoord[0], aCoord[3]]) // 左下角
+    // 第二个三角形 (右上角 -> 左下角 -> 左上角)
+    ver.push(...[1, 1, rgbCoord[1], rgbCoord[2], aCoord[1], aCoord[2]]) // 右上角
+    ver.push(...[-1, -1, rgbCoord[0], rgbCoord[3], aCoord[0], aCoord[3]]) // 左下角
+    ver.push(...[-1, 1, rgbCoord[0], rgbCoord[2], aCoord[0], aCoord[2]]) // 左上角
     //
     return new Float32Array(ver)
   }
   private getRgbaPos() {
     const descript = this.videoEntity.config?.descript
     if (descript) {
+      // console.log('descript', descript)
       //=================== 创建缓冲区
       const {width: vW, height: vH} = descript
       const [rgbX, rgbY, rgbW, rgbH] = descript.rgbFrame
-      const [aX, aY, aW, aH] = descript.alphaFrame
+      let [aX, aY, aW, aH] = descript.alphaFrame
+      // 正向渲染的兼容算法
+      aY = vH - aH
       return {rgbX, rgbY, rgbW, rgbH, vW, vH, aX, aY, aW, aH}
     } else if (this.video) {
       //默认为左右均分
@@ -242,7 +275,6 @@ export class RenderWebGPUBase {
       const ofs = this.ofs
       const canvasAspect = ofs.clientWidth / ofs.clientHeight
       const videoAspect = ofs.width / ofs.height
-
       ofs.setAttribute('class', `e-video-${this.op.mode.toLocaleLowerCase()}`)
       switch (this.op.mode) {
         case 'AspectFill':

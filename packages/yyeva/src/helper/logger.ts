@@ -89,7 +89,7 @@ export const versionTips = (op: MixEvideoOptions, player: EVideo) => {
   }
   // console.log('player', player.renderType)
   console.log(
-    `%c ${prefixName} ${config.version} %c ${player.renderType}${player.webglVersion ? `.${player.webglVersion}` : ''}${self.devicePixelRatio ? ` DPR.${self.devicePixelRatio}` : ''}${` FPS.${player.fps}`}${
+    `%c ${prefixName} ${config.version} %c ${player.renderType.toUpperCase()}${player.webglVersion ? `.${player.webglVersion}` : ''}${self.devicePixelRatio ? ` DPR.${self.devicePixelRatio}` : ''}${` FPS.${player.fps}`}${
       op.mode ? ` ${op.mode}` : ''
     }${op.isHevc ? ' H265' : ' H264'}${op.usePrefetch ? ' MSE' : ''}${op.useOfsRender ? ' OfsRender' : ''}${
       op.useFrameCache ? ` FrameCache` : ''
