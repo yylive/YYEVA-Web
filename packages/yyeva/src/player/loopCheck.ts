@@ -52,7 +52,7 @@ export class LoopChecker {
 
   public updateFrame(frame: number) {
     if (this.checkFrame(frame)) {
-      logger.info(
+      logger.debug(
         '[LoopChecker] this.playedLoopCount=',
         this.playedLoopCount,
         ', this.lastFrameIndex=',

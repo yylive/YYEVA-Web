@@ -19,10 +19,10 @@ export default defineConfig(({watch}) => {
       'process.env.ENV': JSON.stringify(env),
       'process.env.PKGVERSION': JSON.stringify(pkg.version),
     },
-    // esbuildOptions(options, context) {
-    //   options.legalComments = 'none'
-    //   options.keepNames = false
-    // },
+    esbuildOptions(options, context) {
+      options.legalComments = 'none'
+      options.keepNames = false
+    },
     outExtension({format}) {
       return {
         js: '.js',
