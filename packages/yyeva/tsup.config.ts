@@ -10,7 +10,7 @@ export default defineConfig(({watch}) => {
     format: ['esm'],
     platform: 'browser',
     splitting: true,
-    sourcemap: true,
+    sourcemap: isDev,
     minify: !isDev,
     clean: true,
     dts: true,
