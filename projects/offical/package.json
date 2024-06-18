@@ -28,8 +28,8 @@
     "@types/react": "18.0.26",
     "@types/react-dom": "^18.0.9",
     "@types/react-router-dom": "^5.3.2",
-    "@empjs/cli": "3.0.0-rc.34",
-    "@empjs/plugin-react": "3.0.0-rc.34"
+    "@empjs/cli": "3.0.1",
+    "@empjs/plugin-react": "3.0.0"
   },
   "author": "",
   "license": "ISC"

@@ -15,7 +15,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@empjs/cli": "3.0.0",
+    "@empjs/cli": "3.0.1",
     "@webgpu/types": "^0.1.42",
     "webpack-wgsl-loader": "^1.0.2"
   },
