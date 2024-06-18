@@ -18,11 +18,9 @@
     "@empjs/plugin-react": "3.0.0",
     "@types/react": "18",
     "@types/react-dom": "18",
-    "source-map-loader": "^5.0.0",
     "vconsole": "^3.15.0"
   },
   "dependencies": {
-    "core-js": "^3.22.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "yyeva": "workspace:*"
