@@ -38,7 +38,7 @@ const getOpt: any = () => {
     // usePrefetch: false,
     // showVideo: true,
     useAccurate: false,
-    // logLevel: 'info',
+    logLevel: 'info',
     // videoUrl: getUrl(),
     // effects: {
     //   name: `YYEVAER`,

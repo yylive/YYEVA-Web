@@ -23,7 +23,8 @@ export class RenderWebGPUBase {
   public presentationFormat!: GPUTextureFormat
   public pipeline!: GPURenderPipeline
   public sampler!: GPUSampler
-  public uniformBuffer!: GPUBuffer
+  public scaleUniformBuffer!: GPUBuffer
+  public imgPosUniformBuffer!: GPUBuffer
   public vertexBuffer!: GPUBuffer
   public pipelineLayout!: GPUPipelineLayout
   public bindGroupLayout!: GPUBindGroupLayout
@@ -62,7 +63,49 @@ export class RenderWebGPUBase {
       format: this.presentationFormat,
       alphaMode: 'premultiplied',
     })
-    //=== createSampler
+    this.setSampler()
+    this.setScaleUniform()
+    this.setLayout()
+    this.createRenderPipeline()
+  }
+  createRender(frame: number) {
+    const {device, video, ctx, pipeline, sampler, vertexBuffer} = this
+    //
+    // const {descript} = this.videoEntity.config || {}
+    // if (descript) this.setImgPosUniform(frame, descript)
+    //
+    const uniformBindGroup = device.createBindGroup({
+      layout: this.bindGroupLayout,
+      entries: [
+        {binding: 0, resource: {buffer: this.scaleUniformBuffer}}, // uniforms
+        {binding: 1, resource: sampler}, // u_image_video_sampler
+        {binding: 2, resource: device.importExternalTexture({source: video})}, // u_image_video
+        // {binding: 3, resource: {buffer: this.imgPosUniformBuffer}},
+      ],
+    })
+    const commandEncoder = device.createCommandEncoder()
+    const textureView = ctx.getCurrentTexture().createView()
+    const renderPassDescriptor: GPURenderPassDescriptor = {
+      colorAttachments: [
+        {
+          view: textureView,
+          clearValue: [0, 0, 0, 1],
+          loadOp: 'clear',
+          storeOp: 'store',
+        },
+      ],
+    }
+    const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor)
+    // passEncoder.setViewport(0, 0, context.canvas.width, context.canvas.height, 0, 1)    // 设置视口
+    // passEncoder.setScissorRect(0, 0, context.canvas.width, context.canvas.height)    // 设置剪裁矩形
+    passEncoder.setPipeline(pipeline)
+    passEncoder.setBindGroup(0, uniformBindGroup)
+    passEncoder.setVertexBuffer(0, vertexBuffer)
+    passEncoder.draw(6)
+    passEncoder.end()
+    device.queue.submit([commandEncoder.finish()])
+  }
+  private setSampler() {
     this.sampler = this.device.createSampler({
       magFilter: 'linear',
       minFilter: 'linear',
@@ -70,7 +113,8 @@ export class RenderWebGPUBase {
       addressModeU: 'repeat',
       addressModeV: 'repeat',
     })
-    //=== setUniform
+  }
+  private setScaleUniform() {
     const u_scale = this.getScale()
     const uniformArray = new Float32Array(u_scale)
     const uniformBuffer = this.device.createBuffer({
@@ -81,8 +125,9 @@ export class RenderWebGPUBase {
     const uMappedBuffer = new Float32Array(uniformBuffer.getMappedRange())
     uMappedBuffer.set(uniformArray)
     uniformBuffer.unmap()
-    this.uniformBuffer = uniformBuffer
-    //=== setVertextBuffer
+    this.scaleUniformBuffer = uniformBuffer
+  }
+  private setVertextBuffer() {
     const vertices = this.verriceArray
     const vertexBuffer = this.device.createBuffer({
       size: vertices.byteLength,
@@ -93,7 +138,9 @@ export class RenderWebGPUBase {
     vMappedBuffer.set(vertices)
     vertexBuffer.unmap()
     this.vertexBuffer = vertexBuffer
-    //=== setLayout
+    return {vertices}
+  }
+  private setLayout() {
     this.bindGroupLayout = this.device.createBindGroupLayout({
       entries: [
         {
@@ -111,12 +158,21 @@ export class RenderWebGPUBase {
           visibility: GPUShaderStage.FRAGMENT,
           externalTexture: {},
         },
+        // {
+        //   binding: 3,
+        //   visibility: GPUShaderStage.VERTEX,
+        //   buffer: {type: 'uniform'},
+        // },
       ],
     })
     this.pipelineLayout = this.device.createPipelineLayout({
       bindGroupLayouts: [this.bindGroupLayout],
     })
-    //=== setPipeline
+  }
+  private createRenderPipeline() {
+    //
+    const {vertices} = this.setVertextBuffer()
+    //
     const shaderModule = this.device.createShaderModule(getSharderCode(this.device, this.PER_SIZE))
     this.pipeline = this.device.createRenderPipeline({
       layout: this.pipelineLayout,
@@ -143,40 +199,8 @@ export class RenderWebGPUBase {
       primitive: {topology: 'triangle-list'},
     })
   }
-  createRender(frame: number) {
-    const {device, video, ctx, pipeline, sampler, vertexBuffer} = this
-
-    const uniformBindGroup = device.createBindGroup({
-      layout: this.bindGroupLayout,
-      entries: [
-        {binding: 0, resource: {buffer: this.uniformBuffer}}, // uniforms
-        {binding: 1, resource: sampler}, // u_image_video_sampler
-        {binding: 2, resource: device.importExternalTexture({source: video})}, // u_image_video
-      ],
-    })
-    const commandEncoder = device.createCommandEncoder()
-    const textureView = ctx.getCurrentTexture().createView()
-    const renderPassDescriptor: GPURenderPassDescriptor = {
-      colorAttachments: [
-        {
-          view: textureView,
-          clearValue: [0, 0, 0, 1],
-          loadOp: 'clear',
-          storeOp: 'store',
-        },
-      ],
-    }
-    const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor)
-    // passEncoder.setViewport(0, 0, context.canvas.width, context.canvas.height, 0, 1)    // 设置视口
-    // passEncoder.setScissorRect(0, 0, context.canvas.width, context.canvas.height)    // 设置剪裁矩形
-    passEncoder.setPipeline(pipeline)
-    passEncoder.setBindGroup(0, uniformBindGroup)
-    passEncoder.setVertexBuffer(0, vertexBuffer)
-    passEncoder.draw(6)
-    passEncoder.end()
-    device.queue.submit([commandEncoder.finish()])
-  }
-  imgPosBuffer(frame: number, descript: VideoAnimateDescriptType) {
+  //
+  private setImgPosUniform(frame: number, descript: VideoAnimateDescriptType) {
     const {device} = this
     const frameData = this.videoEntity.getFrame(frame)
     const frameItem = frameData ? frameData[this.videoEntity.data] : undefined
@@ -199,15 +223,24 @@ export class RenderWebGPUBase {
     const size = (device.limits.maxTextureDimension2D - 1) * this.PER_SIZE
     posArr = posArr.concat(new Array(size - posArr.length).fill(0))
 
-    const imagePosBuffer = device.createBuffer({
+    const imgPosUniformBuffer = this.device.createBuffer({
       size: posArr.length * Float32Array.BYTES_PER_ELEMENT,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+      usage: GPUBufferUsage.UNIFORM,
+      mappedAtCreation: true,
     })
-
-    device.queue.writeBuffer(imagePosBuffer, 0, new Float32Array(posArr))
+    const uMappedBuffer = new Float32Array(imgPosUniformBuffer.getMappedRange())
+    uMappedBuffer.set(new Float32Array(posArr))
+    imgPosUniformBuffer.unmap()
+    this.imgPosUniformBuffer = imgPosUniformBuffer
+    // const imagePosBuffer = device.createBuffer({
+    //   size: posArr.length * Float32Array.BYTES_PER_ELEMENT,
+    //   usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    // })
+    // device.queue.writeBuffer(imagePosBuffer, 0, new Float32Array(posArr))
   }
   public webgpuDestroy() {
-    this.uniformBuffer.destroy()
+    this.scaleUniformBuffer.destroy()
+    // this.imgPosUniformBuffer.destroy()
     this.vertexBuffer.destroy()
     this.device.destroy()
     this.ofs.remove()
