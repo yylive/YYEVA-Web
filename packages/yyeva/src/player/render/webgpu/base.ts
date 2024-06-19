@@ -30,6 +30,8 @@ export class RenderWebGPUBase {
   public bindGroupLayout!: GPUBindGroupLayout
   //
   private textureMap: any = {}
+  private bindGroupEntries: GPUBindGroupEntry[] = []
+  private bindGroupLayoutEntries: GPUBindGroupLayoutEntry[] = []
   //
   constructor(op: MixEvideoOptions) {
     logger.debug('[Render In Webgl]')
@@ -63,8 +65,10 @@ export class RenderWebGPUBase {
       format: this.presentationFormat,
       alphaMode: 'premultiplied',
     })
+    //
     this.setSampler()
     this.setScaleUniform()
+    //
     this.setLayout()
     this.createRenderPipeline()
   }
@@ -77,10 +81,8 @@ export class RenderWebGPUBase {
     const uniformBindGroup = device.createBindGroup({
       layout: this.bindGroupLayout,
       entries: [
-        {binding: 0, resource: {buffer: this.scaleUniformBuffer}}, // uniforms
-        {binding: 1, resource: sampler}, // u_image_video_sampler
-        {binding: 2, resource: device.importExternalTexture({source: video})}, // u_image_video
-        // {binding: 3, resource: {buffer: this.imgPosUniformBuffer}},
+        {binding: 0, resource: device.importExternalTexture({source: video})}, // u_image_video
+        ...this.bindGroupEntries,
       ],
     })
     const commandEncoder = device.createCommandEncoder()
@@ -105,6 +107,10 @@ export class RenderWebGPUBase {
     passEncoder.end()
     device.queue.submit([commandEncoder.finish()])
   }
+  private pushGroupEntry(g: GPUBindGroupEntry, l: GPUBindGroupLayoutEntry) {
+    if (g) this.bindGroupEntries.push(g)
+    if (l) this.bindGroupLayoutEntries.push(l)
+  }
   private setSampler() {
     this.sampler = this.device.createSampler({
       magFilter: 'linear',
@@ -112,6 +118,20 @@ export class RenderWebGPUBase {
       mipmapFilter: 'linear',
       addressModeU: 'repeat',
       addressModeV: 'repeat',
+    })
+    this.pushGroupEntry(
+      {binding: 1, resource: this.sampler},
+      {
+        binding: 1,
+        visibility: GPUShaderStage.FRAGMENT,
+        sampler: {type: 'filtering'},
+      },
+    )
+    // video group entry need update in render
+    this.pushGroupEntry(null, {
+      binding: 0,
+      visibility: GPUShaderStage.FRAGMENT,
+      externalTexture: {},
     })
   }
   private setScaleUniform() {
@@ -126,6 +146,15 @@ export class RenderWebGPUBase {
     uMappedBuffer.set(uniformArray)
     uniformBuffer.unmap()
     this.scaleUniformBuffer = uniformBuffer
+    //
+    this.pushGroupEntry(
+      {binding: 2, resource: {buffer: this.scaleUniformBuffer}},
+      {
+        binding: 2,
+        visibility: GPUShaderStage.VERTEX,
+        buffer: {type: 'uniform'},
+      },
+    )
   }
   private setVertextBuffer() {
     const vertices = this.verriceArray
@@ -142,28 +171,7 @@ export class RenderWebGPUBase {
   }
   private setLayout() {
     this.bindGroupLayout = this.device.createBindGroupLayout({
-      entries: [
-        {
-          binding: 0,
-          visibility: GPUShaderStage.VERTEX,
-          buffer: {type: 'uniform'},
-        },
-        {
-          binding: 1,
-          visibility: GPUShaderStage.FRAGMENT,
-          sampler: {type: 'filtering'},
-        },
-        {
-          binding: 2,
-          visibility: GPUShaderStage.FRAGMENT,
-          externalTexture: {},
-        },
-        // {
-        //   binding: 3,
-        //   visibility: GPUShaderStage.VERTEX,
-        //   buffer: {type: 'uniform'},
-        // },
-      ],
+      entries: this.bindGroupLayoutEntries,
     })
     this.pipelineLayout = this.device.createPipelineLayout({
       bindGroupLayouts: [this.bindGroupLayout],
@@ -219,6 +227,7 @@ export class RenderWebGPUBase {
         posArr = posArr.concat(coord).concat(mCoord)
       })
     }
+    console.log('posArr', posArr)
 
     const size = (device.limits.maxTextureDimension2D - 1) * this.PER_SIZE
     posArr = posArr.concat(new Array(size - posArr.length).fill(0))

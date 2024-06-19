@@ -14,9 +14,9 @@ struct VertexInput {
     @location(2) a_alpha_texCoord: vec2<f32>
 };
 
-@group(0) @binding(0) var<uniform> u_scale: vec2<f32>;
+@group(0) @binding(0) var u_image_video: texture_external;
 @group(0) @binding(1) var u_image_video_sampler: sampler;
-@group(0) @binding(2) var u_image_video: texture_external;
+@group(0) @binding(2) var<uniform> u_scale: vec2<f32>;
 
 @fragment
 fn fragMain(input: VertexOutput) -> @location(0) vec4f {
