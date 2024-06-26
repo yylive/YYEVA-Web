@@ -5,6 +5,7 @@
 
 ## Bugfixes 
 + 修复 canvas2d mix模式下 黑框问题 
++ 增加 hevc 的适配 https://github.com/yylive/YYEVA-Web/pull/23
 
 
 # 1.0.0-rc1
