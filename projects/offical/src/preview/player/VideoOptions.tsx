@@ -84,6 +84,7 @@ const VideoOptionsForm = () => {
         valueEnum={{
           webgl: 'webgl',
           canvas2d: 'canvas2d',
+          webgpu: 'webgpu'
         }}
       />
       <ProFormSwitch

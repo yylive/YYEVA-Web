@@ -1,49 +1,58 @@
-// import MCache from './mCache'
 import {logger} from 'src/helper/logger'
-import VideoEntity from 'src/player/render/videoEntity'
-import WebGL from 'src/player/render/webglEntity'
-import type {MixEvideoOptions, VideoAnimateDataItemType} from 'src/type/mix'
-import RenderCache from './renderCache'
+import {isOffscreenCanvasSupported} from 'src/helper/utils'
+import RenderCache from 'src/player/render/common/renderCache'
+import VideoEntity from 'src/player/render/common/videoEntity'
+import type {MixEvideoOptions, ResizeCanvasType, VideoAnimateDataItemType, WebglVersion} from 'src/type/mix'
 export default class WglRender {
-  private video: HTMLVideoElement | undefined
-  private program: WebGLProgram | undefined
   public isPlay = false
+  public videoEntity: VideoEntity
+  public renderType = 'webgl'
+  public renderCache: RenderCache
+  public PER_SIZE = 9
+  public canvas?: HTMLCanvasElement //显示画布
+  public ctx?: CanvasRenderingContext2D
+  public ofs: HTMLCanvasElement | OffscreenCanvas
+  public version: WebglVersion
+  public gl!: WebGLRenderingContext | WebGL2RenderingContext | null
+  //
   // private dpr = 1
   private op: MixEvideoOptions
-  public videoEntity: VideoEntity
-  public webgl: WebGL
-  public renderCache: RenderCache
   private textureMap: any = {}
   private imagePos: any
   private currentFrame = -1 //过滤重复帧
-  public videoSeekedEvent() {
-    return this.renderCache.mCache.videoSeekedEvent()
-  }
+  private video: HTMLVideoElement | undefined
+  private program: WebGLProgram | undefined
+  private VERTEX_SHADER: string
+  private FRAGMENT_SHADER: string
   constructor(op: MixEvideoOptions) {
     logger.debug('[Render In Webgl]')
     this.op = op
     // this.dpr = self.devicePixelRatio
-    this.webgl = new WebGL(op)
+    this.createCanvas(op)
 
     //TODO 观察是否需要添加
-    this.webgl.ofs.addEventListener('webglcontextlost', e => {
+    this.ofs.addEventListener('webglcontextlost', e => {
       logger.debug('[webglcontextlost]', e)
       // 阻止浏览器的默认处理行为。（浏览器对上下文丢失事件的默认行为是，不再触发上下文恢复事件，所以我们要阻止浏览器的默认行为）
       e.preventDefault()
       // 重置program， 等恢复上下文后再重新初始化
       this.program = undefined
     })
-    this.webgl.ofs.addEventListener('webglcontextrestored', () => {
+    this.ofs.addEventListener('webglcontextrestored', () => {
       logger.debug('[webglcontextrestored]')
-      this.webgl.initGlContext()
+      this.initGlContext()
       this.initWebgl()
     })
 
-    this.renderCache = new RenderCache(this.webgl.ofs, this.op)
+    this.renderCache = new RenderCache(this.ofs, this.op)
     this.videoEntity = new VideoEntity(op)
+  }
+  public videoSeekedEvent() {
+    return this.renderCache.mCache.videoSeekedEvent()
   }
   public async setup(video?: HTMLVideoElement) {
     if (!video) throw new Error('video must support!')
+    await this.prepareShader()
     // MCache.videoDurationTime = video.duration
     await this.renderCache.setup()
     await this.videoEntity.setup()
@@ -54,9 +63,20 @@ export default class WglRender {
     // this.video.currentTime 当前播放位置
     // this.video.duration 媒体的持续时间(总长度)，以秒为单位
   }
+  private async prepareShader() {
+    if (this.version === 2) {
+      const {VERTEX_SHADER, FRAGMENT_SHADER} = await import('./webgl-2')
+      this.VERTEX_SHADER = VERTEX_SHADER()
+      this.FRAGMENT_SHADER = FRAGMENT_SHADER(this.gl, this.PER_SIZE)
+    } else if (this.version === 1) {
+      const {VERTEX_SHADER, FRAGMENT_SHADER} = await import('./webgl-1')
+      this.VERTEX_SHADER = VERTEX_SHADER()
+      this.FRAGMENT_SHADER = FRAGMENT_SHADER(this.gl, this.PER_SIZE)
+    }
+  }
   private resizeCanvasToDisplaySize() {
     const descript = this.videoEntity.config?.descript
-    const ofs = this.webgl.ofs
+    const ofs = this.ofs
     if (!descript) {
       if (!this.video) return
       const vw = this.video.videoWidth ? this.video.videoWidth / 2 : 900
@@ -72,12 +92,12 @@ export default class WglRender {
       ofs.height = h
     }
     if (this.op.useOfsRender) {
-      this.webgl.canvas.width = ofs.width
-      this.webgl.canvas.height = ofs.height
+      this.canvas.width = ofs.width
+      this.canvas.height = ofs.height
     }
   }
   public destroy() {
-    this.webgl.destroy()
+    this.webglDestroy()
     this.videoEntity.destroy()
     this.renderCache.destroy()
   }
@@ -85,20 +105,20 @@ export default class WglRender {
   // public render(nextFPS: number) {
   public render(frame = 0) {
     // console.log('[render]', frame, this.op.useFrameCache)
-    if (!this.isPlay || !this.webgl.gl || !this.video || !this.program || this.currentFrame === frame) return
+    if (!this.isPlay || !this.gl || !this.video || !this.program || this.currentFrame === frame) return
 
     this.currentFrame = frame
-    const gl = this.webgl.gl
+    const gl = this.gl
     //
     if (this.op.useFrameCache) {
-      const {width, height} = this.webgl.canvas
+      const {width, height} = this.canvas
       const frameItem = this.renderCache.getCache(frame)
       // console.log('[frameItem]', frameItem)
       if (frameItem === 'skip') return
       if (frameItem) {
         // console.log('[in frame cache]', frame, frameItem)
-        this.webgl.ctx.clearRect(0, 0, width, height)
-        this.webgl.ctx.drawImage(frameItem, 0, 0, width, height, 0, 0, width, height)
+        this.ctx.clearRect(0, 0, width, height)
+        this.ctx.drawImage(frameItem, 0, 0, width, height, 0, 0, width, height)
         return
       }
 
@@ -133,7 +153,7 @@ export default class WglRender {
         })
       }
       //
-      const size = (gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS) - 1) * this.webgl.PER_SIZE
+      const size = (gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS) - 1) * this.PER_SIZE
       posArr = posArr.concat(new Array(size - posArr.length).fill(0))
       this.imagePos = this.imagePos || gl.getUniformLocation(this.program, 'image_pos')
       gl.uniform1fv(this.imagePos, new Float32Array(posArr))
@@ -151,9 +171,9 @@ export default class WglRender {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
     //
     if (this.op.useOfsRender) {
-      const {width, height} = this.webgl.canvas
-      this.webgl.ctx.clearRect(0, 0, width, height)
-      this.webgl.ctx.drawImage(gl.canvas, 0, 0, width, height, 0, 0, width, height)
+      const {width, height} = this.canvas
+      this.ctx.clearRect(0, 0, width, height)
+      this.ctx.drawImage(gl.canvas, 0, 0, width, height, 0, 0, width, height)
     }
     if (this.op.useFrameCache) {
       this.renderCache.setCache(frame)
@@ -163,7 +183,7 @@ export default class WglRender {
     let scaleX = 1
     let scaleY = 1
     if (this.video && this.op.mode) {
-      const ofs = this.webgl.canvas ? this.webgl.canvas : (this.webgl.ofs as HTMLCanvasElement)
+      const ofs = this.canvas ? this.canvas : (this.ofs as HTMLCanvasElement)
       const canvasAspect = ofs.clientWidth / ofs.clientHeight
       const videoAspect = ofs.width / ofs.height
 
@@ -204,8 +224,8 @@ export default class WglRender {
     return [scaleX, scaleY]
   }
   private initWebgl() {
-    if (!this.webgl.gl) return
-    const gl = this.webgl.gl
+    if (!this.gl) return
+    const gl = this.gl
     // 设置canvas宽高
     gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight)
     //=================== 混合功能，将片元颜色和颜色缓冲区的颜色进行混合
@@ -302,10 +322,10 @@ export default class WglRender {
   private createProgram(gl: WebGLRenderingContext) {
     // vec4代表4维变量，因为rgba是4个值
     // -0.5代表画布左侧，取值是rgb中的r值
-    const vsSource = this.webgl.getVsSource() // 顶点着色器glsl代码
-    const fsSource = this.webgl.getFsSource() // 片元着色器 glsl 代码
-    const vsShader = this.createShader(gl, gl.VERTEX_SHADER, vsSource)
-    const fsShader = this.createShader(gl, gl.FRAGMENT_SHADER, fsSource)
+    // const vsSource = this.getVsSource() // 顶点着色器glsl代码
+    // const fsSource = this.getFsSource() // 片元着色器 glsl 代码
+    const vsShader = this.createShader(gl, gl.VERTEX_SHADER, this.VERTEX_SHADER)
+    const fsShader = this.createShader(gl, gl.FRAGMENT_SHADER, this.FRAGMENT_SHADER)
     const program = gl.createProgram()
     if (!program || !vsShader || !fsShader) return
     gl.attachShader(program, vsShader)
@@ -364,5 +384,89 @@ export default class WglRender {
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgData)
     }
     return texture
+  }
+  private createCanvas(op: MixEvideoOptions) {
+    if (op.useOfsRender) {
+      this.canvas = document.createElement('canvas')
+      this.ctx = this.canvas.getContext('2d')
+      op.container.appendChild(this.canvas)
+      if (op.resizeCanvas) {
+        // this.canvas.style.width = '100%'
+        // this.canvas.style.height = '100%'
+        this.setSizeCanvas(this.canvas, op.resizeCanvas)
+      }
+      // this.ofs = MCache.getOfs(op)
+      this.ofs =
+        isOffscreenCanvasSupported() && !!self.createImageBitmap && op.useBitmap
+          ? new OffscreenCanvas(300, 300)
+          : document.createElement('canvas')
+    } else {
+      this.ofs = document.createElement('canvas')
+      if (op.resizeCanvas) {
+        // this.ofs.style.width = '100%'
+        // this.ofs.style.height = '100%'
+        this.setSizeCanvas(this.ofs, op.resizeCanvas)
+      }
+      op.container.appendChild(this.ofs)
+    }
+    this.initGlContext()
+    this.op = op
+  }
+  private setSizeCanvas(canvas: HTMLCanvasElement, resizeCanvas: ResizeCanvasType) {
+    switch (resizeCanvas) {
+      case 'percent':
+        canvas.style.width = '100%'
+        canvas.style.height = '100%'
+        break
+      case 'percentH':
+        canvas.style.height = '100%'
+        break
+      case 'percentW':
+        canvas.style.width = '100%'
+        break
+      default:
+        break
+    }
+  }
+  private initGlContext() {
+    const canvas = this.ofs
+    const op: WebGLContextAttributes = {
+      alpha: true, //指示Canvas是否含有透明通道，若设置为false不透明，如果Canvas下叠加了其他元素时，可以在绘制时提升一些性能
+      antialias: false, //绘制时是否开启抗锯齿功能
+      depth: true, //是否开启深度缓冲功能
+      failIfMajorPerformanceCaveat: false, //性能较低时，将不允许创建context。也就是是getContext()返回null [ios 会因此产生问题]
+      premultipliedAlpha: true, //将alpha通道预先乘入rgb通道内，以提高合成性能
+      stencil: false, //是否开启模板缓冲功能
+      preserveDrawingBuffer: false, //是否保留缓冲区数据，如果你需要读取像素，或者复用绘制到主屏幕上的图像
+    }
+    this.gl = canvas.getContext('webgl2', op) as WebGL2RenderingContext
+    this.version = 2
+    if (!this.gl) {
+      this.gl = canvas.getContext('webgl', op) as WebGLRenderingContext
+      this.version = 1
+      if (!this.gl) {
+        this.version = null
+      }
+    }
+    logger.debug('[Webgl]initGlContext, version=', this.version)
+    // gl.enable(this.gl.STENCIL_TEST)
+  }
+  private webglDestroy() {
+    if (this.gl) {
+      this.gl.clear(this.gl.COLOR_BUFFER_BIT)
+      const lose_context = this.gl.getExtension('WEBGL_lose_context')
+      if (lose_context) {
+        lose_context.loseContext()
+        logger.debug('lose_context')
+      }
+
+      this.gl = null
+    }
+    if (this.canvas) this.canvas.remove()
+    if (this.ofs instanceof HTMLCanvasElement) {
+      this.ofs.remove()
+      this.gl = null
+      logger.debug('[destroy remove canvas]')
+    } else this.ofs = undefined
   }
 }

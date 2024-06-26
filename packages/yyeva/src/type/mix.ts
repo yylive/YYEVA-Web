@@ -1,5 +1,4 @@
 // import {LOG_LEVEL} from 'src/helper/log'
-
 import type {LogTypes} from 'src/helper/logger'
 
 /**
@@ -27,7 +26,7 @@ export interface onErrorEvent {
   video: HTMLVideoElement
 }
 export type ResizeCanvasType = 'percent' | 'percentW' | 'percentH' | 'size'
-
+export type RenderType = 'webgl' | 'webgpu' | 'canvas2d'
 export type MixEvideoOptions = VideoEvent & {
   /**
    * 全屏模式模式
@@ -51,7 +50,7 @@ export type MixEvideoOptions = VideoEvent & {
    * 自动播放
    * @default true
    */
-  autoplay: boolean
+  autoplay?: boolean
   /**
    * 停止到某一帧，默认停止到最后一帧
    * @default undefined
@@ -131,7 +130,7 @@ export type MixEvideoOptions = VideoEvent & {
    * 渲染模式
    * @default webgl
    */
-  renderType?: 'webgl' | 'canvas2d'
+  renderType?: RenderType
   /**
    * 兼容vap 启动后 不需要填写 dataUrl
    * usePrefetch 强制打开
@@ -346,4 +345,4 @@ export type VideoAnimateDataItemType = {
   [key: string]: any
 }
 
-export type WebglVersion = 1 | 2 | 'canvas2d'
+export type WebglVersion = 1 | 2 | null

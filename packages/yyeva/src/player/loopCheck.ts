@@ -32,7 +32,7 @@ export class LoopChecker {
   }
 
   public setEndFrame(value: number) {
-    logger.info('[LoopChecker]setEndFrame value=', value)
+    logger.debug('[LoopChecker]setEndFrame value=', value)
     if (value !== undefined) {
       this._endFrame = value
     }
@@ -52,7 +52,7 @@ export class LoopChecker {
 
   public updateFrame(frame: number) {
     if (this.checkFrame(frame)) {
-      logger.info(
+      logger.debug(
         '[LoopChecker] this.playedLoopCount=',
         this.playedLoopCount,
         ', this.lastFrameIndex=',

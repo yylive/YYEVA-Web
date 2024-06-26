@@ -1,9 +1,5 @@
 import config from 'src/helper/config'
 import type EVideo from 'src/player'
-import VideoEntity from 'src/player/render/videoEntity'
-import Webgl from 'src/player/render/webglEntity'
-import Animator from 'src/player/video/animator'
-import type {LoggerLevelType} from 'src/type/mix'
 import type {MixEvideoOptions} from 'src/type/mix'
 const prefixName = 'YYEVA'
 export type ConsoleFn = (message?: any, ...optionalParams: any[]) => void
@@ -91,10 +87,9 @@ export const versionTips = (op: MixEvideoOptions, player: EVideo) => {
       //
     })
   }
+  // console.log('player', player.renderType)
   console.log(
-    `%c ${prefixName} ${config.version} %c ${
-      op.renderType === 'canvas2d' ? op.renderType : `WebGL.${player.webglVersion}`
-    }${self.devicePixelRatio ? ` DPR.${self.devicePixelRatio}` : ''}${` FPS.${player.fps}`}${
+    `%c ${prefixName} ${config.version} %c ${player.renderType.toUpperCase()}${player.webglVersion ? `.${player.webglVersion}` : ''}${self.devicePixelRatio ? ` DPR.${self.devicePixelRatio}` : ''}${` FPS.${player.fps}`}${
       op.mode ? ` ${op.mode}` : ''
     }${op.isHevc ? ' H265' : ' H264'}${op.usePrefetch ? ' MSE' : ''}${op.useOfsRender ? ' OfsRender' : ''}${
       op.useFrameCache ? ` FrameCache` : ''

@@ -1,5 +1,5 @@
+import MCache from 'src/player/render/common/mCache'
 import type {MixEvideoOptions} from 'src/type/mix'
-import MCache from './mCache'
 class RenderCache {
   private canvas: HTMLCanvasElement | OffscreenCanvas
   private op: MixEvideoOptions
