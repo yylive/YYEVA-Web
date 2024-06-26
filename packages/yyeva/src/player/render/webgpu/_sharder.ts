@@ -1,118 +1,106 @@
-export const VERTEX_SHADER = () => /* wgsl */ `
-  struct VertexInput {
+function generateWGSL(textureCount = 8): string {
+  const generateTextureBindings = (count: number) =>
+    Array.from(
+      {length: count},
+      (_, i) => `@group(1) @binding(${i + 1}) var imageTexture${i + 1}: texture_2d<f32>;`,
+    ).join('\n')
+
+  const generateSampleCases = (count: number) =>
+    Array.from(
+      {length: count},
+      (_, i) =>
+        `case ${i + 1}: {
+        return textureSample(imageTexture${i + 1}, imageSampler, uv);
+      }`,
+    ).join('\n')
+
+  return /*wgsl */ `
+struct VertexInput {
     @location(0) position: vec2<f32>,
     @location(1) texCoord: vec2<f32>,
-    @location(2) alphaTex: vec2<f32>,
-  };
+    @location(2) alphaTexCoord: vec2<f32>,
+};
 
-  struct VertexOutput {
+struct VertexOutput {
     @builtin(position) position: vec4<f32>,
     @location(0) texCoord: vec2<f32>,
-    @location(1) alphaTex: vec2<f32>,
-  };
+    @location(1) alphaTexCoord: vec2<f32>,
+};
 
-  @group(0) @binding(0)
-  uniform Uniforms {
+struct Uniforms {
     scale: vec2<f32>,
-  };
+    imagePosCount: u32,
+};
 
-  @vertex
-  fn main(
-    input: VertexInput,
-  ) -> VertexOutput {
+struct ImagePos {
+    index: i32,
+    x1: f32, x2: f32, y1: f32, y2: f32,
+    mx1: f32, mx2: f32, my1: f32, my2: f32,
+};
+
+@group(0) @binding(0) var<uniform> uniforms: Uniforms;
+@group(0) @binding(1) var videoSampler: sampler;
+@group(0) @binding(2) var videoTexture: texture_2d<f32>;
+
+@group(1) @binding(0) var imageSampler: sampler;
+${generateTextureBindings(textureCount)}
+
+@group(2) @binding(0) var<storage, read> imagePos: array<ImagePos>;
+
+@vertex
+fn vertexMain(input: VertexInput) -> VertexOutput {
     var output: VertexOutput;
-    output.position = vec4<f32>(Uniforms.scale * input.position, 0.0, 1.0);
+    output.position = vec4<f32>(uniforms.scale * input.position, 0.0, 1.0);
     output.texCoord = input.texCoord;
-    output.alphaTex = input.alphaTex;
+    output.alphaTexCoord = input.alphaTexCoord;
     return output;
-  }
-`
-
-export const FRAGMENT_SHADER = (device: GPUDevice, PER_SIZE = 9) => {
-  const maxTextureUnits = device.limits.maxSampledTexturesPerShaderStage
-  let sourceUniform = ''
-  let sourceTexture = ''
-
-  if (maxTextureUnits > 0) {
-    const imageSamplers = []
-    const imageColorSampling = []
-
-    for (let i = 0; i < maxTextureUnits; i++) {
-      imageSamplers.push(`@group(0) @binding(${i + 1}) var u_image${i + 1} : texture_2d<f32>;`)
-      imageColorSampling.push(`
-        if (ndx == ${i + 1}) {
-          color = textureSample(u_image${i + 1}, sampler, uv);
-        }
-      `)
-    }
-
-    sourceUniform = /* wgsl */ `
-      struct ImageInfo {
-        position: vec4<f32>,
-        maskPosition: vec4<f32>,
-      };
-
-      @group(0) @binding(${maxTextureUnits + 1})
-      var<storage, read> image_pos: array<ImageInfo, ${maxTextureUnits * PER_SIZE}>;
-
-      fn getSampleFromArray(ndx: i32, uv: vec2<f32>) -> vec4<f32> {
-        var color: vec4<f32>;
-        ${imageColorSampling.join(' else ')}
-        return color;
-      }
-    `
-
-    sourceTexture = /* wgsl */ `
-      var srcColor: vec4<f32>;
-      var maskColor: vec4<f32>;
-      var srcTexCoord: vec2<f32>;
-      var maskTexCoord: vec2<f32>;
-      var srcIndex: i32;
-      var x1: f32, x2: f32, y1: f32, y2: f32;
-      var mx1: f32, mx2: f32, my1: f32, my2: f32;
-
-      for (var i: i32 = 0; i < ${maxTextureUnits * PER_SIZE}; i += ${PER_SIZE}) {
-        if (image_pos[i].position.x > 0.0) {
-          srcIndex = i32(image_pos[i].position.x);
-          x1 = image_pos[i].position.x;
-          x2 = image_pos[i].position.y;
-          y1 = image_pos[i].position.z;
-          y2 = image_pos[i].position.w;
-          mx1 = image_pos[i].maskPosition.x;
-          mx2 = image_pos[i].maskPosition.y;
-          my1 = image_pos[i].maskPosition.z;
-          my2 = image_pos[i].maskPosition.w;
-
-          if (v_texCoord.x > x1 && v_texCoord.x < x2 && v_texCoord.y > y1 && v_texCoord.y < y2) {
-            srcTexCoord = vec2<f32>((v_texCoord.x - x1) / (x2 - x1), (v_texCoord.y - y1) / (y2 - y1));
-            maskTexCoord = vec2<f32>(mx1 + srcTexCoord.x * (mx2 - mx1), my1 + srcTexCoord.y * (my2 - my1));
-            srcColor = getSampleFromArray(srcIndex, srcTexCoord);
-            maskColor = textureSample(u_image_video, sampler, maskTexCoord);
-            srcColor.a = srcColor.a * (maskColor.r);
-            bgColor = vec4<f32>(srcColor.rgb * srcColor.a, srcColor.a) + (vec4<f32>(1.0) - srcColor.a) * bgColor;
-          }
-        }
-      }
-    `
-  }
-
-  return /* wgsl */ `
-    @group(0) @binding(${maxTextureUnits + 2})
-    var u_image_video: texture_2d<f32>;
-    @group(0) @binding(${maxTextureUnits + 3})
-    var sampler: sampler;
-
-    ${sourceUniform}
-
-    @fragment
-    fn main(
-      @builtin(position) position: vec4<f32>,
-      @location(0) v_texCoord: vec2<f32>,
-      @location(1) v_alphaTex: vec2<f32>
-    ) -> @location(0) vec4<f32> {
-      var bgColor: vec4<f32> = vec4<f32>(textureSample(u_image_video, sampler, v_texCoord).rgb, textureSample(u_image_video, sampler, v_alphaTex).r);
-      ${sourceTexture}
-      return bgColor;
-    }
-  `
 }
+
+fn getSampleFromArray(index: i32, uv: vec2<f32>) -> vec4<f32> {
+    switch index {
+        ${generateSampleCases(textureCount)}
+        default: {
+            return vec4<f32>(0.0);
+        }
+    }
+}
+
+@fragment
+fn fragmentMain(input: VertexOutput) -> @location(0) vec4<f32> {
+    var bgColor = textureSample(videoTexture, videoSampler, input.texCoord);
+    bgColor.a = textureSample(videoTexture, videoSampler, input.alphaTexCoord).r;
+
+    for (var i: u32 = 0u; i < uniforms.imagePosCount; i = i + 1u) {
+        let pos = imagePos[i];
+        if (pos.index > 0 &&
+            input.texCoord.x > pos.x1 && input.texCoord.x < pos.x2 &&
+            input.texCoord.y > pos.y1 && input.texCoord.y < pos.y2) {
+            
+            let srcTexcoord = vec2<f32>(
+                (input.texCoord.x - pos.x1) / (pos.x2 - pos.x1),
+                (input.texCoord.y - pos.y1) / (pos.y2 - pos.y1)
+            );
+            let maskTexcoord = vec2<f32>(
+                pos.mx1 + srcTexcoord.x * (pos.mx2 - pos.mx1),
+                pos.my1 + srcTexcoord.y * (pos.my2 - my1)
+            );
+
+            var srcColor = getSampleFromArray(pos.index, srcTexcoord);
+            let maskColor = textureSample(videoTexture, videoSampler, maskTexcoord);
+            srcColor.a = srcColor.a * maskColor.r;
+
+            bgColor = vec4<f32>(
+                srcColor.rgb * srcColor.a + bgColor.rgb * (1.0 - srcColor.a),
+                srcColor.a + bgColor.a * (1.0 - srcColor.a)
+            );
+        }
+    }
+
+    return bgColor;
+}
+`
+}
+
+// 使用示例
+const wgslCode = generateWGSL()
+console.log(wgslCode)
