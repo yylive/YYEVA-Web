@@ -64,6 +64,7 @@ export const isHevc = (video: HTMLVideoElement) => {
   // console.log('video/mp4; codecs="hev1.2.4.L120.B0"', video.canPlayType('video/mp4; codecs="hev1.2.4.L120.B0"'))
   return !!(
     video.canPlayType('video/mp4; codecs="hev1.1.6.L93.B0"') ||
+    video.canPlayType('video/mp4; codecs="hvc1.1.6.L93.B0"') ||
     video.canPlayType('video/mp4; codecs="hev1.2.4.L120.B0"')
   )
 }
