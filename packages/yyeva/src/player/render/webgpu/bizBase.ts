@@ -1,7 +1,7 @@
 import logger from 'src/helper/logger'
 import RenderCache from 'src/player/render/common/renderCache'
 import VideoEntity from 'src/player/render/common/videoEntity'
-import type {MixEvideoOptions, ResizeCanvasType, VideoAnimateDescriptType, WebglVersion} from 'src/type/mix'
+import type {MixEvideoOptions, ResizeCanvasType} from 'src/type/mix'
 export class BizBase {
   public isPlay = false
   public videoEntity: VideoEntity
@@ -21,6 +21,11 @@ export class BizBase {
     this.createCanvas(op)
     this.renderCache = new RenderCache(this.ofs, this.op)
     this.videoEntity = new VideoEntity(op)
+  }
+  public destroy() {
+    this.videoEntity.destroy()
+    this.renderCache.destroy()
+    this.ofs.remove()
   }
   public createCanvas(op: MixEvideoOptions) {
     this.ofs = document.createElement('canvas')

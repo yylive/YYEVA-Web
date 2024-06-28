@@ -21,9 +21,9 @@ struct VertexInput {
 
 @fragment
 fn fragMain(input: VertexOutput) -> @location(0) vec4f {
-    let color = textureSampleBaseClampToEdge(u_image_video, u_image_video_sampler, input.v_texcoord).rgb;
-    let alpha = textureSampleBaseClampToEdge(u_image_video, u_image_video_sampler, input.v_alpha_texCoord).r;
-    return vec4<f32>(color,alpha);
+    var color = textureSampleBaseClampToEdge(u_image_video, u_image_video_sampler, input.v_texcoord);
+    color.a = textureSampleBaseClampToEdge(u_image_video, u_image_video_sampler, input.v_alpha_texCoord).r;
+    return color;
 }
 
 @vertex

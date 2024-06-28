@@ -1,4 +1,3 @@
-import {logger} from 'src/helper/logger'
 import {RenderWebGPUBase} from './base'
 export default class RenderWebGPU extends RenderWebGPUBase {
   public videoSeekedEvent() {
@@ -10,7 +9,7 @@ export default class RenderWebGPU extends RenderWebGPUBase {
     await this.videoEntity.setup()
     this.video = video
     this.resizeCanvasToDisplaySize()
-    await this.initGPUContext()
+    await super.setup()
   }
 
   public render(frame = 0) {

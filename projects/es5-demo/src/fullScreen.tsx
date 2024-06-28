@@ -1,18 +1,18 @@
 import {useEffect, useRef} from 'react'
 import type {YYEvaOptionsType} from 'yyeva'
-import {Player, host} from './player'
+import {Player} from './player'
 // const urls = ['https://yyeva.yy.com/yy/music.mp4', 'https://yyeva.yy.com/yy/mface.mp4']
 const opts: any = [
-  // {
-  //   videoUrl: '/yy/aspectFill.mp4',
-  // },
-  // {
-  //   videoUrl: '/yy/music.mp4',
-  //   effects: {
-  //     'keyname.png': 'music video',
-  //     key: '/yy/q1.jpeg',
-  //   },
-  // },
+  {
+    videoUrl: '/yy/aspectFill.mp4',
+  },
+  {
+    videoUrl: '/yy/music.mp4',
+    effects: {
+      'keyname.png': 'music video',
+      key: '/yy/q1.jpeg',
+    },
+  },
   {
     videoUrl: '/yy/pld_264_new.mp4',
     effects: {
@@ -46,7 +46,7 @@ const getOpt: any = () => {
     //   fontSize: 40,
     // },
     // useFrameCache: true,
-    // renderType: 'webgpu',
+    renderType: 'webgpu',
     // renderType: 'canvas2d',
     ...opt,
   }
