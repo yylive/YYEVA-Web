@@ -224,6 +224,28 @@ export default class VideoEntity {
     }
   }
 
+  public effectTypeById(effectId: any): string {
+    let type = ''
+    const effect = this.config?.effect
+    if (effect) {
+      for (let index = 0; index < effect.length; index++) {
+        const item = effect[index];
+        if (item.effectId == effectId) {
+          type = item.effectType
+          break
+        }        
+      }
+    }
+
+    return type
+  }
+
+  public isTextTypeById(effectId: any): boolean {
+    const type = this.effectTypeById(effectId)
+    // logger.debug('isTextTypeById, else effectId=', effectId, ', type=', type)
+    return this.effectTypes.txt.indexOf(type) > -1
+  }
+
   private parseFromSrcAndOptions() {
     if (!this.config?.effect) return
     const effects = this.op.effects || {}
