@@ -2,14 +2,11 @@ import type {VideoAnimateDescriptType} from 'src/type/mix'
 import {BizBase} from './bizBase'
 import getSharderCode from './sharder'
 //
-export type CacheType = {
+type CacheType = {
   videoSampler: GPUSampler
-  imgSamper: GPUSampler
-  uScale: GPUBuffer
+  uScaleUniformBuffer: GPUBuffer
   vertexBuffer: GPUBuffer // 顶点着色器
-  imgTextures: GPUTexture[]
-  lastIndex: number
-  startIndex: number
+  imgPosBindGroup: GPUBindGroup
 }
 export class RenderWebGPUBase extends BizBase {
   public currentFrame = -1 //过滤重复帧
@@ -21,15 +18,12 @@ export class RenderWebGPUBase extends BizBase {
   public pipeline!: GPURenderPipeline
   private cache: CacheType = {
     videoSampler: undefined,
-    imgSamper: undefined,
-    uScale: undefined,
+    uScaleUniformBuffer: undefined,
     vertexBuffer: undefined,
-    imgTextures: [],
-    lastIndex: 0,
-    startIndex: 0,
+    imgPosBindGroup: undefined,
   }
   private textureMap: any = {}
-  public bindGroupLayout!: GPUBindGroupLayout
+  public pipelineLayouts: GPUBindGroupLayout[] = []
   async initGPUContext() {
     this.ctx = this.ofs.getContext('webgpu')
     this.adapter = await navigator.gpu.requestAdapter({})
@@ -49,99 +43,66 @@ export class RenderWebGPUBase extends BizBase {
   }
   async setup() {
     await this.initGPUContext()
-    this.createbindGroup()
+    this.createPipelineLayouts()
     this.createPipe()
   }
-  createbindGroup() {
-    const {cache, device} = this
-    // group layout
+  createPipelineLayouts() {
+    this.pipelineLayouts[0] = this.device.createBindGroupLayout({
+      entries: [
+        {
+          binding: 0,
+          visibility: GPUShaderStage.FRAGMENT,
+          externalTexture: {},
+        },
+        {
+          binding: 1,
+          visibility: GPUShaderStage.VERTEX,
+          buffer: {type: 'uniform'},
+        },
+        {
+          binding: 2,
+          visibility: GPUShaderStage.FRAGMENT,
+          sampler: {type: 'filtering'},
+        },
+      ],
+    })
+    this.pipelineLayouts[1] = this.device.createBindGroupLayout({
+      entries: [
+        {
+          binding: 0,
+          visibility: GPUShaderStage.FRAGMENT,
+          buffer: {
+            type: 'read-only-storage',
+          },
+        },
+      ],
+    })
+    //
     const entries: GPUBindGroupLayoutEntry[] = [
       {
         binding: 0,
         visibility: GPUShaderStage.FRAGMENT,
-        externalTexture: {}, // video
-      },
-      {
-        binding: 1,
-        visibility: GPUShaderStage.VERTEX,
-        buffer: {type: 'uniform'}, // uScale
-      },
-      {
-        binding: 2,
-        visibility: GPUShaderStage.FRAGMENT,
-        sampler: {type: 'filtering'}, // videoSampler
-      },
-      {
-        binding: 3,
-        visibility: GPUShaderStage.FRAGMENT,
-        sampler: {type: 'filtering'}, // imageSampler
+        sampler: {type: 'filtering'},
       },
     ]
     const {effect} = this.videoEntity.config || {}
     let i = 1
-    this.cache.lastIndex = 4
-    this.cache.startIndex = 4
-    // img texture
     for (const k in effect) {
       entries.push({
-        binding: this.cache.lastIndex,
+        binding: i,
         visibility: GPUShaderStage.FRAGMENT,
         texture: {},
       })
-      // 4 img TextTure
-      const r = effect[k]
-      if (r.img) {
-        cache.imgTextures.push(this.createImageTexture(r.img as ImageBitmap))
-      }
-      this.textureMap[r[this.videoEntity.effectId]] = i++
-      //
-      this.cache.lastIndex++
+      i++
     }
-    const {descript} = this.videoEntity.config || {}
-    if (descript) {
-      entries.push({
-        binding: this.cache.lastIndex,
-        visibility: GPUShaderStage.FRAGMENT,
-        buffer: {
-          type: 'read-only-storage',
-        },
-      })
-    }
-    // console.log('this.cache.lastIndex', this.cache.lastIndex, entries)
-    // createBindGroupLayout
-    this.bindGroupLayout = this.device.createBindGroupLayout({
+    this.pipelineLayouts[2] = this.device.createBindGroupLayout({
       entries,
-    })
-    // 01 u_scale
-    const u_scale = this.getScale()
-    cache.uScale = this.createBufferWrite(new Float32Array(u_scale))
-    // 02 videoSampler
-    cache.videoSampler = device.createSampler({
-      magFilter: 'linear',
-      minFilter: 'linear',
-      mipmapFilter: 'linear',
-      addressModeU: 'repeat',
-      addressModeV: 'repeat',
-    })
-    // 03 imgSamper
-    cache.imgSamper = device.createSampler({
-      magFilter: 'nearest',
-      minFilter: 'nearest',
-      addressModeU: 'clamp-to-edge',
-      addressModeV: 'clamp-to-edge',
     })
   }
   createRender(frame: number) {
     const {device, video, ctx, pipeline, cache} = this
     //
     const {descript} = this.videoEntity.config || {}
-    const lastBuffer = []
-    if (descript) {
-      lastBuffer.push({
-        binding: cache.lastIndex,
-        resource: {buffer: this.imgPosBindGroup(frame, descript)},
-      })
-    }
     //
     const commandEncoder = device.createCommandEncoder()
     const textureView = ctx.getCurrentTexture().createView()
@@ -158,22 +119,10 @@ export class RenderWebGPUBase extends BizBase {
     const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor)
     passEncoder.setPipeline(pipeline)
     //
-    const bindGroup = this.device.createBindGroup({
-      layout: this.bindGroupLayout,
-      entries: [
-        {binding: 0, resource: device.importExternalTexture({source: video})},
-        {binding: 1, resource: {buffer: cache.uScale}},
-        {binding: 2, resource: cache.videoSampler},
-        {binding: 3, resource: cache.imgSamper},
-        ...cache.imgTextures.map((texture, index) => ({
-          binding: index + 4,
-          resource: texture.createView(),
-        })),
-        ...lastBuffer,
-      ],
-    })
-    //
-    passEncoder.setBindGroup(0, bindGroup)
+    passEncoder.setBindGroup(0, this.videoBindGroup(video))
+    passEncoder.setBindGroup(1, this.imgPosBindGroup(frame, descript))
+    passEncoder.setBindGroup(2, this.imageBindGroup())
+
     passEncoder.setVertexBuffer(0, cache.vertexBuffer)
     //
     passEncoder.draw(6)
@@ -188,6 +137,66 @@ export class RenderWebGPUBase extends BizBase {
   public destroy() {
     this.webgpuDestroy()
     super.destroy()
+  }
+  videoBindGroup(video) {
+    const {device, cache} = this
+    if (!cache.videoSampler) {
+      // sampler
+      cache.videoSampler = device.createSampler({
+        magFilter: 'linear',
+        minFilter: 'linear',
+        mipmapFilter: 'linear',
+        addressModeU: 'repeat',
+        addressModeV: 'repeat',
+      })
+      // u_scale
+      const u_scale = this.getScale()
+      const uniformArray = new Float32Array(u_scale)
+      cache.uScaleUniformBuffer = this.createBufferWrite(uniformArray)
+    }
+    //
+    return this.device.createBindGroup({
+      layout: this.pipelineLayouts[0],
+      entries: [
+        {binding: 0, resource: device.importExternalTexture({source: video})},
+        {binding: 1, resource: {buffer: cache.uScaleUniformBuffer}},
+        {binding: 2, resource: cache.videoSampler},
+      ],
+    })
+  }
+  imageBindGroup() {
+    const {device, cache} = this
+    if (!cache.imgPosBindGroup) {
+      const imgSamper = device.createSampler({
+        magFilter: 'nearest',
+        minFilter: 'nearest',
+        addressModeU: 'clamp-to-edge',
+        addressModeV: 'clamp-to-edge',
+      })
+      //
+      const imgTextures = []
+      const {effect} = this.videoEntity.config || {}
+      let i = 1
+      for (const k in effect) {
+        const r = effect[k]
+        if (r.img) {
+          imgTextures.push(this.createImageTexture(r.img as ImageBitmap))
+        }
+        this.textureMap[r[this.videoEntity.effectId]] = i++
+      }
+      //
+      cache.imgPosBindGroup = this.device.createBindGroup({
+        layout: this.pipelineLayouts[2],
+        entries: [
+          {binding: 0, resource: imgSamper},
+          ...imgTextures.map((texture, index) => ({
+            binding: index + 1,
+            resource: texture.createView(),
+          })),
+        ],
+      })
+    }
+    return cache.imgPosBindGroup
   }
   imgPosBindGroup(frame: number, descript: VideoAnimateDescriptType) {
     const {device} = this
@@ -209,10 +218,12 @@ export class RenderWebGPUBase extends BizBase {
     }
     const size = (device.limits.maxSampledTexturesPerShaderStage - 1) * this.PER_SIZE
     posArr = posArr.concat(new Array(size - posArr.length).fill(0))
-    // console.log('posArr', posArr)
     const imagePosData = new Float32Array(posArr)
     const imagePosBuffer = this.createBufferWrite(imagePosData, GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST)
-    return imagePosBuffer
+    return this.device.createBindGroup({
+      layout: this.pipelineLayouts[1],
+      entries: [{binding: 0, resource: {buffer: imagePosBuffer}}],
+    })
   }
   private createImageTexture(source: ImageBitmap) {
     const {device} = this
@@ -229,10 +240,10 @@ export class RenderWebGPUBase extends BizBase {
     // 顶点着色器坐标
     this.cache.vertexBuffer = this.createBufferMapped(this.verriceArray)
     //
-    const shaderModule = this.device.createShaderModule(getSharderCode(this.cache))
+    const shaderModule = this.device.createShaderModule(getSharderCode())
     //
     const pipelineLayout = this.device.createPipelineLayout({
-      bindGroupLayouts: [this.bindGroupLayout],
+      bindGroupLayouts: this.pipelineLayouts,
     })
     this.pipeline = this.device.createRenderPipeline({
       // layout: 'auto',
