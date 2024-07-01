@@ -4,9 +4,6 @@ import {Player} from './player'
 // const urls = ['https://yyeva.yy.com/yy/music.mp4', 'https://yyeva.yy.com/yy/mface.mp4']
 const opts: any = [
   {
-    videoUrl: '/yy/aspectFill.mp4',
-  },
-  {
     videoUrl: '/yy/music.mp4',
     effects: {
       'keyname.png': 'music video',
@@ -20,6 +17,9 @@ const opts: any = [
       2: '/yy/b6c.png',
       key: 'face swap',
     },
+  },
+  {
+    videoUrl: '/yy/aspectFill.mp4',
   },
 ]
 

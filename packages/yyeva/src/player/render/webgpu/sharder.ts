@@ -1,18 +1,58 @@
-const generateTextureBindings = (count: number) =>
-  Array.from({length: count}, (_, i) => `@group(2) @binding(${i + 1}) var imageTexture${i + 1}: texture_2d<f32>;`).join(
-    '\n',
-  )
+import type {CacheType} from './base'
+const generateTextureBindings = (count: number, start) =>
+  Array.from(
+    {length: count},
+    (_, i) => `@group(0) @binding(${i + start}) var imageTexture${i + 1}: texture_2d<f32>;`,
+  ).join('\n')
 
 const generateSampleCases = (count: number) =>
   Array.from(
     {length: count},
     (_, i) =>
       `case ${i + 1}: {
-        return textureSample(imageTexture${i + 1}, imageSampler, uv);
-      }`,
+          return textureSample(imageTexture${i + 1}, imageSampler, uv);
+        }`,
   ).join('\n')
 
-export default (textureCount = 8, PER_SIZE = 9) => {
+const generateLastBind = cache =>
+  cache.lastIndex > cache.startIndex
+    ? `@group(0) @binding(${cache.lastIndex}) var<storage, read> imagePos: array<ImagePos>;`
+    : ''
+
+const genderateImgPos = (textureCount, cache) => {
+  return cache.lastIndex > cache.startIndex
+    ? /* wgsl */ `
+  for (var i: u32 = 0u; i < ${textureCount}u; i = i + 1u) {
+      let pos = imagePos[i];
+      if (pos.index > 0 &&
+          input.v_texcoord.x > pos.x1 && input.v_texcoord.x < pos.x2 &&
+          input.v_texcoord.y > pos.y1 && input.v_texcoord.y < pos.y2) {
+          
+          let srcTexcoord = vec2<f32>(
+              (input.v_texcoord.x - pos.x1) / (pos.x2 - pos.x1),
+              (input.v_texcoord.y - pos.y1) / (pos.y2 - pos.y1)
+          );
+          let maskTexcoord = vec2<f32>(
+              pos.mx1 + srcTexcoord.x * (pos.mx2 - pos.mx1),
+              pos.my1 + srcTexcoord.y * (pos.my2 - pos.my1)
+          );
+
+          // var srcColor = getSampleFromArray(pos.index, srcTexcoord);
+          // let maskColor = textureSampleBaseClampToEdge(u_image_video, u_image_video_sampler, maskTexcoord);
+          // srcColor.a = srcColor.a * maskColor.r;
+
+          // bgColor = vec4<f32>(
+          //     srcColor.rgb * srcColor.a + bgColor.rgb * (1.0 - srcColor.a),
+          //     srcColor.a + bgColor.a * (1.0 - srcColor.a)
+          // );
+      }
+    }
+  `
+    : ''
+}
+// ========================================================================
+export default (cache: CacheType) => {
+  const textureCount = cache.lastIndex - cache.startIndex
   //
   const code = /* wgsl */ `
 struct VertexOutput {
@@ -36,9 +76,9 @@ struct ImagePos {
 @group(0) @binding(0) var u_image_video: texture_external;
 @group(0) @binding(1) var<uniform> u_scale: vec2<f32>;
 @group(0) @binding(2) var u_image_video_sampler: sampler;
-@group(1) @binding(0) var<storage, read> imagePos: array<ImagePos>;
-@group(2) @binding(0) var imageSampler: sampler;
-${generateTextureBindings(textureCount)}
+@group(0) @binding(3) var imageSampler: sampler;
+${generateTextureBindings(textureCount, cache.startIndex)}
+${generateLastBind(cache)}
 
 fn getSampleFromArray(index: i32, uv: vec2<f32>) -> vec4<f32> {
   switch index {
@@ -53,33 +93,7 @@ fn getSampleFromArray(index: i32, uv: vec2<f32>) -> vec4<f32> {
 fn fragMain(input: VertexOutput) -> @location(0) vec4f {
     var bgColor = textureSampleBaseClampToEdge(u_image_video, u_image_video_sampler, input.v_texcoord);
     bgColor.a = textureSampleBaseClampToEdge(u_image_video, u_image_video_sampler, input.v_alpha_texCoord).r;
-
-    // for (var i: u32 = 0u; i < 1u; i = i + 1u) {
-    //   let pos = imagePos[i];
-    //   if (pos.index > 0 &&
-    //       input.v_texcoord.x > pos.x1 && input.v_texcoord.x < pos.x2 &&
-    //       input.v_texcoord.y > pos.y1 && input.v_texcoord.y < pos.y2) {
-          
-    //       let srcTexcoord = vec2<f32>(
-    //           (input.v_texcoord.x - pos.x1) / (pos.x2 - pos.x1),
-    //           (input.v_texcoord.y - pos.y1) / (pos.y2 - pos.y1)
-    //       );
-    //       let maskTexcoord = vec2<f32>(
-    //           pos.mx1 + srcTexcoord.x * (pos.mx2 - pos.mx1),
-    //           pos.my1 + srcTexcoord.y * (pos.my2 - pos.my1)
-    //       );
-
-    //       var srcColor = getSampleFromArray(pos.index, srcTexcoord);
-    //       let maskColor = textureSampleBaseClampToEdge(u_image_video, u_image_video_sampler, maskTexcoord);
-    //       srcColor.a = srcColor.a * maskColor.r;
-
-    //       bgColor = vec4<f32>(
-    //           srcColor.rgb * srcColor.a + bgColor.rgb * (1.0 - srcColor.a),
-    //           srcColor.a + bgColor.a * (1.0 - srcColor.a)
-    //       );
-    //   }
-    // }
-
+   ${genderateImgPos(textureCount, cache)}
     return bgColor;
 }
 
@@ -92,5 +106,6 @@ fn vertMain(input: VertexInput) -> VertexOutput {
   return output;
 }
 `
+  // console.log(code)
   return {code}
 }
