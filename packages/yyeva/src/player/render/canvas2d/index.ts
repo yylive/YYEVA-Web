@@ -258,11 +258,6 @@ export default class Render2D extends Canvas2dControl {
     }
   }
   renderKey(frame = 0) {
-    const {effect} = this.videoEntity?.config
-    if (frame < 10) {
-      console.log('effect=', effect)
-    }
-    
     const frameData = this.videoEntity.getFrame(frame)
     const frameItem = frameData ? frameData[this.videoEntity.data] : undefined
     // let posArr: any = []
@@ -276,19 +271,19 @@ export default class Render2D extends Canvas2dControl {
         const effectId = o[this.videoEntity.effectId]
        const isTextType = this.videoEntity.isTextTypeById(effectId)
 
-        console.log(
-          'renderKey: ',
-          mX,
-          mY,
-          mW,
-          mH,
-          x,
-          y,
-          w,
-          h,
-          ', effectId=' + effectId + ',frame=' + frame + ',scale=' + w / mW,
-          ',isTextType=' + isTextType 
-        )
+        // logger.debug(
+        //   'renderKey: ',
+        //   mX,
+        //   mY,
+        //   mW,
+        //   mH,
+        //   x,
+        //   y,
+        //   w,
+        //   h,
+        //   ', effectId=' + effectId + ',frame=' + frame + ',scale=' + w / mW,
+        //   ',isTextType=' + isTextType 
+        // )
         const r = this.drawEffect[effectId] || {}
 
         if (r.img && w > 0 && h > 0 && mH > 0 && mW > 0) {
