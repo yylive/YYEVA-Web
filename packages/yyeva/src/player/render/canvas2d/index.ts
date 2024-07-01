@@ -287,13 +287,12 @@ export default class Render2D extends Canvas2dControl {
         const r = this.drawEffect[effectId] || {}
 
         if (r.img && w > 0 && h > 0 && mH > 0 && mW > 0) {
-          // let imageData = this.getimgDataByBitmap(r.img, w, h)
-
           this.ctxKey.clearRect(0, 0, w, h)
-          this.ctxKey.drawImage(r.img, 0, 0, w, h)
-          const alphaData = this.ctx.getImageData(mX, mY, mW, mH)
+          this.ctxKey.drawImage(r.img, 0, 0, w, h)          
           let imageData = this.ctxKey.getImageData(0, 0, w, h)
-          if (!isTextType) {
+          // text key合并alphaData会显示黑色背景，暂时不合并alphaData，能满足绝大部分的需求，后续再进一步优化text key的渲染
+          if (!isTextType) {            
+            const alphaData = this.ctx.getImageData(mX, mY, mW, mH)
             imageData = this.mixImageData(imageData, alphaData, w / mW)
           }
 
@@ -301,18 +300,6 @@ export default class Render2D extends Canvas2dControl {
           this.ctxKey.putImageData(imageData, 0, 0)
 
           this.ctx.drawImage(this.canvasKey, 0, 0, w, h, x, y, w, h)
-
-          // if (effectId == '3') {
-          //   const resize1 = document.getElementById('resize1') as HTMLCanvasElement
-          //   resize1.width = w
-          //   resize1.height = h
-          //   if (resize1) {
-          //     const ctx = resize1.getContext('2d')
-          //     ctx.clearRect(0, 0, w, h)
-          //     // ctx.putImageData(imageData, 0, 0, 0, 0, w, h)
-          //     ctx.drawImage(r.img, 0, 0, w, h, 0, 0, w, h)
-          //   }
-          // }
         }
       })
     }
