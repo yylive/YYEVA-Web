@@ -258,7 +258,11 @@ export default class Render2D extends Canvas2dControl {
     }
   }
   renderKey(frame = 0) {
-    // const {descript} = this.videoEntity.config
+    const {effect} = this.videoEntity?.config
+    if (frame < 10) {
+      console.log('effect=', effect)
+    }
+    
     const frameData = this.videoEntity.getFrame(frame)
     const frameItem = frameData ? frameData[this.videoEntity.data] : undefined
     // let posArr: any = []
@@ -270,20 +274,21 @@ export default class Render2D extends Canvas2dControl {
         const [x, y, w, h] = o[this.videoEntity.renderFrame]
         const [mX, mY, mW, mH] = o[this.videoEntity.outputFrame]
         const effectId = o[this.videoEntity.effectId]
+       const isTextType = this.videoEntity.isTextTypeById(effectId)
 
-        // console.log(
-        //   'renderKey: ',
-        //   mX,
-        //   mY,
-        //   mW,
-        //   mH,
-        //   x,
-        //   y,
-        //   w,
-        //   h,
-        //   ', effectId=' + effectId + ',frame=' + frame + ',scale=' + w / mW,
-        //   ',rgbX=' + rgbX + ',rgbY=' + rgbY,
-        // )
+        console.log(
+          'renderKey: ',
+          mX,
+          mY,
+          mW,
+          mH,
+          x,
+          y,
+          w,
+          h,
+          ', effectId=' + effectId + ',frame=' + frame + ',scale=' + w / mW,
+          ',isTextType=' + isTextType 
+        )
         const r = this.drawEffect[effectId] || {}
 
         if (r.img && w > 0 && h > 0 && mH > 0 && mW > 0) {
@@ -293,8 +298,9 @@ export default class Render2D extends Canvas2dControl {
           this.ctxKey.drawImage(r.img, 0, 0, w, h)
           const alphaData = this.ctx.getImageData(mX, mY, mW, mH)
           let imageData = this.ctxKey.getImageData(0, 0, w, h)
-
-          imageData = this.mixImageData(imageData, alphaData, w / mW)
+          if (!isTextType) {
+            imageData = this.mixImageData(imageData, alphaData, w / mW)
+          }
 
           this.ctxKey.clearRect(0, 0, w, h)
           this.ctxKey.putImageData(imageData, 0, 0)
