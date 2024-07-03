@@ -234,13 +234,7 @@ export default class VideoEntity {
     let type = ''
     const effect = this.config?.effect
     if (effect) {
-      for (let index = 0; index < effect.length; index++) {
-        const item = effect[index];
-        if (item.effectId == effectId) {
-          type = item.effectType
-          break
-        }        
-      }
+      type = effect.find((item)=> item.effectId === effectId).effectType
     }
 
     return type
@@ -344,7 +338,6 @@ export default class VideoEntity {
             ctx.restore()
             return ctx.getImageData(0, 0, w, h)
           }
-          break
         case EScaleMode.aspectFit: // 最小适配
           {
             let adapt = 1
@@ -374,10 +367,8 @@ export default class VideoEntity {
             ctx.restore()
             return ctx.getImageData(0, 0, w, h)
           }
-          break
         case EScaleMode.scaleFill: // 变形适配
           return img
-          break
         default:
           return img
       }
