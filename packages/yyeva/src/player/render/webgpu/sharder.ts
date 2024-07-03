@@ -5,28 +5,22 @@ const generateTextureBindings = (count: number, start) =>
     (_, i) => `@group(0) @binding(${i + start}) var imageTexture${i + 1}: texture_2d<f32>;`,
   ).join('\n')
 
-const generateSampleCases = (count: number) =>
-  Array.from(
-    {length: count},
-    (_, i) =>
-      `case ${i + 1}: {
-          return textureSample(imageTexture${i + 1}, imageSampler, uv);
-        }`,
-  ).join('\n')
-
 const generateLastBind = cache =>
   cache.lastIndex > cache.startIndex
     ? `@group(0) @binding(${cache.lastIndex}) var<storage, read> imagePos: array<ImagePos>;`
     : ''
 
-const genderateImgPos = (textureCount, cache) => {
-  return cache.lastIndex > cache.startIndex
+const genderateImgPos = (textureCount, cache) =>
+  cache.lastIndex > cache.startIndex
     ? /* wgsl */ `
   for (var i: u32 = 0u; i < ${textureCount}u; i = i + 1u) {
       let pos = imagePos[i];
-      if (pos.index > 0 &&
-          input.v_texcoord.x > pos.x1 && input.v_texcoord.x < pos.x2 &&
-          input.v_texcoord.y > pos.y1 && input.v_texcoord.y < pos.y2) {
+      // if (pos.index > 0 &&
+      //     input.v_texcoord.x > pos.x1 && input.v_texcoord.x < pos.x2 &&
+      //     input.v_texcoord.y > pos.y1 && input.v_texcoord.y < pos.y2) {
+        let isInBounds = pos.index > 0 &&
+        input.v_texcoord.x > pos.x1 && input.v_texcoord.x < pos.x2 &&
+        input.v_texcoord.y > pos.y1 && input.v_texcoord.y < pos.y2;
           
           let srcTexcoord = vec2<f32>(
               (input.v_texcoord.x - pos.x1) / (pos.x2 - pos.x1),
@@ -37,19 +31,22 @@ const genderateImgPos = (textureCount, cache) => {
               pos.my1 + srcTexcoord.y * (pos.my2 - pos.my1)
           );
 
-          // var srcColor = getSampleFromArray(pos.index, srcTexcoord);
+          var srcColor = getSampleFromArray(1, srcTexcoord);
           // let maskColor = textureSampleBaseClampToEdge(u_image_video, u_image_video_sampler, maskTexcoord);
           // srcColor.a = srcColor.a * maskColor.r;
 
-          // bgColor = vec4<f32>(
-          //     srcColor.rgb * srcColor.a + bgColor.rgb * (1.0 - srcColor.a),
-          //     srcColor.a + bgColor.a * (1.0 - srcColor.a)
-          // );
-      }
+          bgColor = select(
+            bgColor,
+            vec4<f32>(
+                srcColor.rgb * srcColor.a + bgColor.rgb * (1.0 - srcColor.a),
+                srcColor.a + bgColor.a * (1.0 - srcColor.a)
+            ),
+            isInBounds
+        );
+      // }
     }
   `
     : ''
-}
 // ========================================================================
 export default (cache: CacheType) => {
   const textureCount = cache.lastIndex - cache.startIndex
@@ -80,13 +77,21 @@ struct ImagePos {
 ${generateTextureBindings(textureCount, cache.startIndex)}
 ${generateLastBind(cache)}
 
-fn getSampleFromArray(index: i32, uv: vec2<f32>) -> vec4<f32> {
-  switch index {
-      ${generateSampleCases(textureCount)}
-      default: {
-          return vec4<f32>(0.0);
-      }
-  }
+fn getSampleFromArray(ndx: i32, uv: vec2<f32>) -> vec4<f32> {
+  ${Array.from(
+    {length: textureCount},
+    (_, i) => /* wgsl */ `
+  let sample${i + 1} = textureSample(imageTexture${i + 1}, imageSampler, uv);`,
+  ).join('\n')}
+  
+  var result: vec4<f32> = vec4<f32>(0.0);
+  ${Array.from(
+    {length: textureCount},
+    (_, i) => /* wgsl */ `
+  result = select(result, sample${i + 1}, ndx == ${i + 1});`,
+  ).join('\n')}
+  
+  return result;
 }
 
 @fragment

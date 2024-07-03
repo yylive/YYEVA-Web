@@ -10,17 +10,17 @@ const opts: any = [
       key: '/yy/q1.jpeg',
     },
   },
-  {
-    videoUrl: '/yy/pld_264_new.mp4',
-    effects: {
-      1: '/yy/b6.png',
-      2: '/yy/b6c.png',
-      key: 'face swap',
-    },
-  },
-  {
-    videoUrl: '/yy/aspectFill.mp4',
-  },
+  // {
+  //   videoUrl: '/yy/pld_264_new.mp4',
+  //   effects: {
+  //     1: '/yy/b6.png',
+  //     2: '/yy/b6c.png',
+  //     key: 'face swap',
+  //   },
+  // },
+  // {
+  //   videoUrl: '/yy/aspectFill.mp4',
+  // },
 ]
 
 let i = 0

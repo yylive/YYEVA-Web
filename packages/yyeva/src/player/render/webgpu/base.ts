@@ -222,7 +222,7 @@ export class RenderWebGPUBase extends BizBase {
       usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
     })
     //
-    device.queue.copyExternalImageToTexture({source}, {texture: texture}, [source.width, source.height, 1])
+    device.queue.copyExternalImageToTexture({source, flipY: true}, {texture: texture}, [source.width, source.height, 1])
     return texture
   }
   createPipe() {
