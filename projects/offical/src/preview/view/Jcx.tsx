@@ -10,6 +10,7 @@ const Jcx = () => {
         container: div.current,
         useMetaData: true,
         mute: true,
+        logLevel: 'info',
         effects: {
           key1: 'YYEVAER',
         },

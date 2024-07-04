@@ -109,7 +109,11 @@ export default class VideoEntity {
         datas: frame,
       }
     }
-    if (this.op.fps) this.fps = this.op.fps
+    if (this.op.fps) {
+      this.fps = this.op.fps
+    } else {
+      this.op.fps = this.fps
+    }
     // *** requestAnimationFrame 需要降帧防止抖动
     // console.log('this.fps', this.fps)
     await this.parseFromSrcAndOptions()

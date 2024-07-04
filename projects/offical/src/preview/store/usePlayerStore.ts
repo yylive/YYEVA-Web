@@ -12,9 +12,10 @@ const defaultOptions = {
   forceBlob: false,
   showVideo: false,
   showPlayerInfo: true,
-  useAccurate: false,
-  logLevel: 'debug',
-  renderType: 'webgl',
+  useAccurate: true,
+  logLevel: 'info',
+  // renderType: 'webgl',
+  renderType: 'webgpu',
   hevcUrl: undefined,
 }
 export const useVideoStore = create(
@@ -69,6 +70,20 @@ export const useVideoFormStore = create(
     (set, get) => ({
       setVideoFormItem(videoFormItem: any) {
         set(state => ({videoFormItem}))
+      },
+    }),
+  ),
+)
+
+export const usePlayerInfoStore = create(
+  combine(
+    {
+      playerInfo: {},
+    },
+    (set, get) => ({
+      setPlayerInfoStore(playerInfo: any) {
+        // console.log('playerInfo', playerInfo)
+        set(state => ({playerInfo}))
       },
     }),
   ),

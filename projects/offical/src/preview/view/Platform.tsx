@@ -2,21 +2,14 @@ import {
   AndroidOutlined,
   AppleOutlined,
   BugOutlined,
-  ChromeOutlined,
   CommentOutlined,
   DownloadOutlined,
-  EditOutlined,
-  EllipsisOutlined,
-  FileSearchOutlined,
   GithubOutlined,
   Html5Outlined,
-  LinkOutlined,
-  SearchOutlined,
   SettingOutlined,
-  ToolOutlined,
   WechatOutlined,
 } from '@ant-design/icons'
-import {Avatar, Badge, Card, Col, Row, Tooltip, Typography} from 'antd'
+import {Card, Col, Row, Tooltip} from 'antd'
 const PlatformItem = ({children, actions}: any) => (
   <Col span={4} xs={8} sm={6} md={4} lg={4}>
     <Card actions={actions}>{children}</Card>

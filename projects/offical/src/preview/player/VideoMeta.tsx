@@ -1,8 +1,16 @@
-import {ApiOutlined, FileImageOutlined, FileOutlined, UploadOutlined} from '@ant-design/icons'
+import {
+  ApiOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  FileImageOutlined,
+  FileOutlined,
+  UploadOutlined,
+} from '@ant-design/icons'
 import {ProForm, type ProFormInstance, ProFormText} from '@ant-design/pro-components'
-import {Tooltip, message} from 'antd'
+import {Divider, Table, Tooltip, message} from 'antd'
 import {Fragment, useEffect, useRef} from 'react'
-import {useEffectStore, useVideoFormStore, useVideoStore} from 'src/preview/store/usePlayerStore'
+import {useEffectStore, usePlayerInfoStore, useVideoFormStore, useVideoStore} from 'src/preview/store/usePlayerStore'
+import type {YYEvaOptionsType} from 'yyeva'
 const fileToDataUrl = (file: HTMLInputElement): Promise<string | undefined> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -120,9 +128,54 @@ const VideoForm = () => {
     </ProForm>
   )
 }
+const PlayerInfo = () => {
+  const playerInfo = usePlayerInfoStore(state => state.playerInfo) as YYEvaOptionsType
+  const dataSource = [
+    {
+      key: '1',
+      name: '渲染引擎',
+      val: <b>{(playerInfo.renderType as string).toUpperCase()}</b>,
+    },
+    {
+      key: '2',
+      name: '高刷',
+      val: playerInfo.useAccurate ? (
+        <CheckCircleOutlined style={{color: 'green'}} />
+      ) : (
+        <CloseCircleOutlined style={{color: 'red'}} />
+      ),
+    },
+    {
+      key: '3',
+      name: 'FPS',
+      val: <b>{playerInfo.fps}</b>,
+    },
+  ]
+
+  const columns = [
+    {
+      title: '选项',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: '配置',
+      dataIndex: 'val',
+      key: 'val',
+    },
+  ]
+
+  return <Table dataSource={dataSource} columns={columns} pagination={false} />
+}
 const VideoMeta = () => {
   // const {videoFormItem}: any = useVideoFormStore(state => state)
   // return <>{videoFormItem.videoUrl ? <VideoForm /> : <Spin tip="Loading..." />}</>
-  return <VideoForm />
+  return (
+    <>
+      <VideoForm />
+      <Divider />
+      <PlayerInfo />
+    </>
+  )
 }
 export default VideoMeta

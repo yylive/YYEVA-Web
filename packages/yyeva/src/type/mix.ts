@@ -283,6 +283,7 @@ export type VideoEvent = {
   onEnd?: EventCallback
   onError?: EventCallback
   onLoopCount?: EventCallback
+  onGetConfig?: (op: MixEvideoOptions) => void
 }
 
 export type VideoAnimateType = {
