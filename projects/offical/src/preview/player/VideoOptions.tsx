@@ -1,14 +1,6 @@
 import {QuestionCircleOutlined} from '@ant-design/icons'
-import {
-  ProCard,
-  ProForm,
-  type ProFormInstance,
-  ProFormRadio,
-  ProFormSelect,
-  ProFormSwitch,
-  ProFormText,
-} from '@ant-design/pro-components'
-import {Alert, Form, Tooltip, message} from 'antd'
+import {ProForm, type ProFormInstance, ProFormRadio, ProFormSwitch} from '@ant-design/pro-components'
+import {Tooltip, message} from 'antd'
 import {useEffect, useRef} from 'react'
 import {useVideoStore} from 'src/preview/store/usePlayerStore'
 const swithColSpan = {xs: 8, sm: 12, md: 12, lg: 12}
@@ -82,9 +74,9 @@ const VideoOptionsForm = () => {
         }}
         // options={['webgl', 'canvas2d']}
         valueEnum={{
-          webgl: 'webgl',
-          canvas2d: 'canvas2d',
-          webgpu: 'webgpu'
+          webgl: 'WebGL',
+          canvas2d: '2D',
+          webgpu: 'GPU',
         }}
       />
       <ProFormSwitch
