@@ -17,7 +17,7 @@ const runOnce = async (container: any, video: any) => {
     onLoopCount: (args: any) => {
       // test case: loop: 1, loop: 2, loop: 3, loop: false, loop: true
       // [runOnce]onLoopCount args= {count: 1}
-      console.log('[runOnce]onLoopCount args=', args)
+      // console.log('[runOnce]onLoopCount args=', args)
     },
   })
   evideo.start()

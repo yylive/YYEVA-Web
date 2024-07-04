@@ -57,7 +57,7 @@ const VideoOptionsForm = () => {
       <ProFormRadio.Group
         name="renderType"
         label={
-          <Tooltip title="canvas2d 带 key 开发中,不设置可以自动旋转">
+          <Tooltip title="Webgpu 目前在beta状态">
             渲染 <QuestionCircleOutlined />
           </Tooltip>
         }

@@ -1,14 +1,6 @@
 import {ApiOutlined, FileImageOutlined, FileOutlined, UploadOutlined} from '@ant-design/icons'
-import {
-  ProCard,
-  ProForm,
-  type ProFormInstance,
-  ProFormRadio,
-  ProFormSelect,
-  ProFormSwitch,
-  ProFormText,
-} from '@ant-design/pro-components'
-import {Spin, Tooltip, message} from 'antd'
+import {ProForm, type ProFormInstance, ProFormText} from '@ant-design/pro-components'
+import {Tooltip, message} from 'antd'
 import {Fragment, useEffect, useRef} from 'react'
 import {useEffectStore, useVideoFormStore, useVideoStore} from 'src/preview/store/usePlayerStore'
 const fileToDataUrl = (file: HTMLInputElement): Promise<string | undefined> => {
@@ -27,7 +19,7 @@ const VideoForm = () => {
   const inputRefs: any = {}
   useEffect(() => {
     const data: any = {...videoFormItem}
-    console.log('videoFormItem=', videoFormItem)
+    // console.log('videoFormItem=', videoFormItem)
     for (const [key, value] of Object.entries(videoFormItem)) {
       if (typeof value === 'object') {
         const text = (value as any)?.text
