@@ -1,7 +1,6 @@
 import {logger} from 'src/helper/logger'
 import {isAndroid, isIOS} from 'src/helper/polyfill'
 import {getTextByMaxWidth, isDataUrl, isOffscreenCanvasSupported} from 'src/helper/utils'
-import Animator from 'src/player/video/animator'
 import {
   EScaleMode,
   type MixEvideoOptions,
@@ -234,7 +233,7 @@ export default class VideoEntity {
     let type = ''
     const effect = this.config?.effect
     if (effect) {
-      type = effect.find((item)=> item.effectId === effectId).effectType
+      type = effect.find(item => item.effectId === effectId).effectType
     }
 
     return type
@@ -309,64 +308,64 @@ export default class VideoEntity {
     // console.log(`makeImage`, item.scaleMode, w, h, img)
     if (item.scaleMode && img) {
       switch (item.scaleMode) {
-        case EScaleMode.aspectFill: // 最大适配
-          {
-            let adapt = 1
-            if (w / h > img.width / img.height) {
-              adapt = w / img.width
-            } else {
-              adapt = h / img.height
-            }
-            const drawWidth = Math.round(img.width * adapt)
-            const drawHeight = Math.round(img.height * adapt)
-            const sx = Math.round((w - drawWidth) / 2)
-            const sy = Math.round((drawHeight - h) / 2)
-            // console.log(
-            //   `[effect] before draw: w ,h ,drawWidth, drawHeight, sx, sy, adapt`,
-            //   w,
-            //   h,
-            //   drawWidth,
-            //   drawHeight,
-            //   sx,
-            //   sy,
-            //   adapt,
-            // )
-            ctx.save()
-            ctx.translate(0, drawHeight)
-            ctx.scale(1, -1)
-            ctx.drawImage(img, sx, sy, drawWidth, drawHeight)
-            ctx.restore()
-            return ctx.getImageData(0, 0, w, h)
+        case EScaleMode.aspectFill: {
+          // 最大适配
+          let adapt = 1
+          if (w / h > img.width / img.height) {
+            adapt = w / img.width
+          } else {
+            adapt = h / img.height
           }
-        case EScaleMode.aspectFit: // 最小适配
-          {
-            let adapt = 1
-            if (w / h < img.width / img.height) {
-              adapt = w / img.width
-            } else {
-              adapt = h / img.height
-            }
-            const drawWidth = Math.round(img.width * adapt)
-            const drawHeight = Math.round(img.height * adapt)
-            const sx = Math.round((w - drawWidth) / 2)
-            const sy = Math.round((drawHeight - h) / 2)
-            // console.log(
-            //   `[effect] before draw: w ,h ,drawWidth, drawHeight, sx, sy, adapt`,
-            //   w,
-            //   h,
-            //   drawWidth,
-            //   drawHeight,
-            //   sx,
-            //   sy,
-            //   adapt,
-            // )
-            ctx.save()
-            ctx.translate(0, drawHeight)
-            ctx.scale(1, -1)
-            ctx.drawImage(img, sx, sy, drawWidth, drawHeight)
-            ctx.restore()
-            return ctx.getImageData(0, 0, w, h)
+          const drawWidth = Math.round(img.width * adapt)
+          const drawHeight = Math.round(img.height * adapt)
+          const sx = Math.round((w - drawWidth) / 2)
+          const sy = Math.round((drawHeight - h) / 2)
+          // console.log(
+          //   `[effect] before draw: w ,h ,drawWidth, drawHeight, sx, sy, adapt`,
+          //   w,
+          //   h,
+          //   drawWidth,
+          //   drawHeight,
+          //   sx,
+          //   sy,
+          //   adapt,
+          // )
+          ctx.save()
+          ctx.translate(0, drawHeight)
+          ctx.scale(1, -1)
+          ctx.drawImage(img, sx, sy, drawWidth, drawHeight)
+          ctx.restore()
+          return ctx.getImageData(0, 0, w, h)
+        }
+        case EScaleMode.aspectFit: {
+          // 最小适配
+          let adapt = 1
+          if (w / h < img.width / img.height) {
+            adapt = w / img.width
+          } else {
+            adapt = h / img.height
           }
+          const drawWidth = Math.round(img.width * adapt)
+          const drawHeight = Math.round(img.height * adapt)
+          const sx = Math.round((w - drawWidth) / 2)
+          const sy = Math.round((drawHeight - h) / 2)
+          // console.log(
+          //   `[effect] before draw: w ,h ,drawWidth, drawHeight, sx, sy, adapt`,
+          //   w,
+          //   h,
+          //   drawWidth,
+          //   drawHeight,
+          //   sx,
+          //   sy,
+          //   adapt,
+          // )
+          ctx.save()
+          ctx.translate(0, drawHeight)
+          ctx.scale(1, -1)
+          ctx.drawImage(img, sx, sy, drawWidth, drawHeight)
+          ctx.restore()
+          return ctx.getImageData(0, 0, w, h)
+        }
         case EScaleMode.scaleFill: // 变形适配
           return img
         default:

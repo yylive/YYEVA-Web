@@ -1,4 +1,4 @@
-import {logger, versionTips} from 'src/helper/logger'
+import {logger} from 'src/helper/logger'
 import parser from 'src/parser'
 import db from 'src/parser/db'
 import type Render2DType from 'src/player/render/canvas2d'
@@ -107,16 +107,10 @@ export default class EVideo {
     const Renderer = (await this.renderLoader[rt]()).default
     this.renderer = new Renderer(this.op)
     this.renderType = this.renderer.renderType as RenderType
-  }
-  private renderLoader = {
-    webgl: () => import(`src/player/render/webgl`),
-    webgpu: () => import(`src/player/render/webgpu`),
-    canvas2d: () => import(`src/player/render/canvas2d`),
-  }
-  /**
-   *  实例化后但是不支持 webgl后降级
-   */
-  private async webglChange2d() {
+    /**
+     * 实例化后但是不支持 webgl后降级
+     * 兜底 canvas2d 渲染
+     */
     const renderer = this.renderer as RenderWebglType
     this.webglVersion = renderer ? renderer.version : null
     if (renderer.renderType === 'webgl' && renderer.version === null) {
@@ -125,6 +119,11 @@ export default class EVideo {
       this.selectRender('canvas2d')
     }
   }
+  private renderLoader = {
+    webgl: () => import(`src/player/render/webgl`),
+    webgpu: () => import(`src/player/render/webgpu`),
+    canvas2d: () => import(`src/player/render/canvas2d`),
+  }
   async prepareRender() {
     logger.debug('navigator.gpu', navigator.gpu)
     if (this.op.renderType === 'webgpu') {
@@ -132,13 +131,11 @@ export default class EVideo {
         await this.selectRender('webgpu')
       } else {
         await this.selectRender('webgl')
-        await this.webglChange2d()
       }
     } else if (this.op.renderType === 'canvas2d') {
       await this.selectRender('canvas2d')
     } else {
       await this.selectRender('webgl')
-      await this.webglChange2d()
     }
   }
 

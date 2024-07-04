@@ -57,7 +57,7 @@ const VideoOptionsForm = () => {
       <ProFormRadio.Group
         name="renderType"
         label={
-          <Tooltip title="Webgpu 目前在beta状态">
+          <Tooltip title="webgpu 目前在beta状态">
             渲染 <QuestionCircleOutlined />
           </Tooltip>
         }

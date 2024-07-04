@@ -20,7 +20,7 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
       // mute: true,
       usePrefetch: true,
       useBitmap: true,
-      useAccurate: false,
+      useAccurate: true,
       useMetaData: false,
       alphaDirection: 'left',
       useVideoDBCache: true,

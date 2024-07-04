@@ -29,8 +29,10 @@ export default class Animator {
       this.animationType = 'requestVideoFrameCallback'
     } else if (typeof requestAnimationFrame !== 'undefined') {
       this.animationType = 'requestAnimationFrame'
+      this.op.useAccurate = false
     } else {
       this.animationType = 'setTimeout'
+      this.op.useAccurate = false
     }
     //
     // if (this.op.fps) {
