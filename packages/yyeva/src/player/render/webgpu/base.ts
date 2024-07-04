@@ -10,6 +10,7 @@ export type CacheType = {
   imgTextures: GPUTexture[]
   lastIndex: number
   startIndex: number
+  maxTextures: number
 }
 export class RenderWebGPUBase extends BizBase {
   public currentFrame = -1 //过滤重复帧
@@ -27,6 +28,7 @@ export class RenderWebGPUBase extends BizBase {
     imgTextures: [],
     lastIndex: 0,
     startIndex: 0,
+    maxTextures: 0,
   }
   private textureMap: any = {}
   public bindGroupLayout!: GPUBindGroupLayout
@@ -176,7 +178,8 @@ export class RenderWebGPUBase extends BizBase {
     passEncoder.setBindGroup(0, bindGroup)
     passEncoder.setVertexBuffer(0, cache.vertexBuffer)
     //
-    passEncoder.draw(6)
+    // passEncoder.draw(6)
+    passEncoder.draw(4)
     passEncoder.end()
     device.queue.submit([commandEncoder.finish()])
   }
@@ -222,12 +225,13 @@ export class RenderWebGPUBase extends BizBase {
       usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
     })
     //
-    device.queue.copyExternalImageToTexture({source, flipY: true}, {texture: texture}, [source.width, source.height, 1])
+    device.queue.copyExternalImageToTexture({source}, {texture: texture}, [source.width, source.height, 1])
     return texture
   }
   createPipe() {
     // 顶点着色器坐标
     this.cache.vertexBuffer = this.createBufferMapped(this.verriceArray)
+    this.cache.maxTextures = this.device.limits.maxSampledTexturesPerShaderStage
     //
     const shaderModule = this.device.createShaderModule(getSharderCode(this.cache))
     //
@@ -257,7 +261,11 @@ export class RenderWebGPUBase extends BizBase {
         entryPoint: 'fragMain',
         targets: [{format: this.presentationFormat}],
       },
-      primitive: {topology: 'triangle-list'},
+      primitive: {
+        // topology: 'triangle-list', //
+        topology: 'triangle-strip', // 'triangle-strip' 模式可能在某些复杂场景下不如 'triangle-list' 灵活。
+        // stripIndexFormat: 'uint32',
+      },
     })
   }
   private createBufferMapped(vertices: Float32Array, usage: GPUFlagsConstant = GPUBufferUsage.VERTEX) {

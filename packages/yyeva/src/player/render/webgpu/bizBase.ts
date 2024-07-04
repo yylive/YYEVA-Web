@@ -36,23 +36,27 @@ export class BizBase {
   }
   public get verriceArray() {
     const {rgbX, rgbY, rgbW, rgbH, vW, vH, aX, aY, aW, aH} = this.getRgbaPos()
-    logger.debug('rgbX, rgbY, rgbW, rgbH', rgbX, rgbY, rgbW, rgbH)
-    logger.debug(`aX, aY, aW, aH`, aX, aY, aW, aH)
-    logger.debug(`vW, vH`, vW, vH)
+    // logger.debug('rgbX, rgbY, rgbW, rgbH', rgbX, rgbY, rgbW, rgbH)
+    // logger.debug(`aX, aY, aW, aH`, aX, aY, aW, aH)
+    // logger.debug(`vW, vH`, vW, vH)
     const rgbCoord = this.computeCoord(rgbX, rgbY, rgbW, rgbH, vW, vH)
     const aCoord = this.computeCoord(aX, aY, aW, aH, vW, vH)
-    const ver = []
-    //
-    // 第一个三角形 (右上角 -> 右下角 -> 左下角)
-    ver.push(...[1, 1, rgbCoord[1], rgbCoord[2], aCoord[1], aCoord[2]]) // 右上角
-    ver.push(...[1, -1, rgbCoord[1], rgbCoord[3], aCoord[1], aCoord[3]]) // 右下角
-    ver.push(...[-1, -1, rgbCoord[0], rgbCoord[3], aCoord[0], aCoord[3]]) // 左下角
-    // 第二个三角形 (右上角 -> 左下角 -> 左上角)
-    ver.push(...[1, 1, rgbCoord[1], rgbCoord[2], aCoord[1], aCoord[2]]) // 右上角
-    ver.push(...[-1, -1, rgbCoord[0], rgbCoord[3], aCoord[0], aCoord[3]]) // 左下角
-    ver.push(...[-1, 1, rgbCoord[0], rgbCoord[2], aCoord[0], aCoord[2]]) // 左上角
-    //
-    return new Float32Array(ver)
+    // console.log(rgbCoord, aCoord)
+    // biome-ignore format:
+    const vertexData = new Float32Array(
+      [
+        -1, 1, rgbCoord[0], rgbCoord[3], aCoord[0], aCoord[3],
+        1, 1, rgbCoord[1], rgbCoord[3], aCoord[1], aCoord[3],
+        -1, -1, rgbCoord[0], rgbCoord[2], aCoord[0], aCoord[2],
+        1, -1, rgbCoord[1], rgbCoord[2], aCoord[1], aCoord[2]
+    ],
+    )
+    // flipY
+    for (let i = 0; i < vertexData.length; i += 6) {
+      // vertexData[i + 3] = rgbCoord[3] - vertexData[i + 3]
+      vertexData[i + 5] = aCoord[3] - vertexData[i + 5]
+    }
+    return vertexData
   }
   public getRgbaPos() {
     const descript = this.videoEntity.config?.descript
@@ -84,6 +88,7 @@ export class BizBase {
     // console.log(`leftX, rightX, bottomY, topY`, leftX, rightX, bottomY, topY)
     return [leftX, rightX, bottomY, topY]
   }
+
   public getScale() {
     let scaleX = 1
     let scaleY = 1

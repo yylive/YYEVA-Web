@@ -12,4 +12,5 @@ import './style.css'
 // import './learn_03'
 //
 // import './finish_01'
-import './finish_02'
+// import './finish_02'
+import './finish_03'
