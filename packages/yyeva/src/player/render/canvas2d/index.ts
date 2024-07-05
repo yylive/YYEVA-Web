@@ -269,7 +269,7 @@ export default class Render2D extends Canvas2dControl {
         const [x, y, w, h] = o[this.videoEntity.renderFrame]
         const [mX, mY, mW, mH] = o[this.videoEntity.outputFrame]
         const effectId = o[this.videoEntity.effectId]
-       const isTextType = this.videoEntity.isTextTypeById(effectId)
+        const isTextType = this.videoEntity.isTextTypeById(effectId)
 
         // logger.debug(
         //   'renderKey: ',
@@ -332,7 +332,7 @@ export default class Render2D extends Canvas2dControl {
   }
 
   mixImageData(colorImageData, alpathImageData, scale = 1) {
-    if (scale !== 1) alpathImageData = this.scaleImageData(alpathImageData, scale)
+    if (Math.abs(scale - 1) > 0.001) alpathImageData = this.scaleImageData(alpathImageData, scale)
     const len = Math.min(colorImageData?.data.length, alpathImageData?.data.length)
     for (let i = 3; i < len; i += 4) {
       const opacity = alpathImageData.data[i - 1]
