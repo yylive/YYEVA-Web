@@ -1,9 +1,9 @@
 {
   "name": "yy-eva-workspace",
   "scripts": {
-    "dev": "pnpm --filter=yyeva --filter=offical dev",
-    "build": "pnpm --filter=yyeva --filter=offical build",
-    "start": "pnpm --filter=offical start",
+    "dev": "pnpm --filter=yyeva --filter=official dev",
+    "build": "pnpm --filter=yyeva --filter=official build",
+    "start": "pnpm --filter=official start",
     "lint": "biome check . --fix"
   },
   "engines": {

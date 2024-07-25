@@ -1,7 +1,7 @@
 [build]
   command = "npx pnpm install --store-dir=.pnpm-store --no-frozen-lockfile && npx pnpm build"
   #command = "npx pnpm install --store-dir=.pnpm-store --no-frozen-lockfile && npx pnpm docs:build"
-  publish = "projects/offical/dist"
+  publish = "projects/official/dist"
 
 [build.environment]
   NPM_FLAGS="--version"
