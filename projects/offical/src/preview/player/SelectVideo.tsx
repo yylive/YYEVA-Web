@@ -5,7 +5,7 @@ import {
   ThunderboltOutlined,
   UpSquareOutlined,
 } from '@ant-design/icons'
-import {Segmented, Tooltip, Typography} from 'antd'
+import {Segmented, Tooltip} from 'antd'
 import videos from 'src/preview/config/video'
 import {useVideoStore} from 'src/preview/store/usePlayerStore'
 const SelectVideo = () => {

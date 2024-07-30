@@ -36,12 +36,8 @@ export class BizBase {
   }
   public get verriceArray() {
     const {rgbX, rgbY, rgbW, rgbH, vW, vH, aX, aY, aW, aH} = this.getRgbaPos()
-    // logger.debug('rgbX, rgbY, rgbW, rgbH', rgbX, rgbY, rgbW, rgbH)
-    // logger.debug(`aX, aY, aW, aH`, aX, aY, aW, aH)
-    // logger.debug(`vW, vH`, vW, vH)
     const rgbCoord = this.computeCoord(rgbX, rgbY, rgbW, rgbH, vW, vH)
     const aCoord = this.computeCoord(aX, aY, aW, aH, vW, vH)
-    // console.log(rgbCoord, aCoord)
     // biome-ignore format:
     const vertexData = new Float32Array(
       [
@@ -61,7 +57,6 @@ export class BizBase {
   public getRgbaPos() {
     const descript = this.videoEntity.config?.descript
     if (descript) {
-      // console.log('descript', descript)
       //=================== 创建缓冲区
       const {width: vW, height: vH} = descript
       const [rgbX, rgbY, rgbW, rgbH] = descript.rgbFrame
@@ -85,7 +80,6 @@ export class BizBase {
     const rightX = (x + w) / vw
     const bottomY = (vh - y - h) / vh
     const topY = (vh - y) / vh
-    // console.log(`leftX, rightX, bottomY, topY`, leftX, rightX, bottomY, topY)
     return [leftX, rightX, bottomY, topY]
   }
 
@@ -126,9 +120,6 @@ export class BizBase {
           }
           break
       }
-      // console.log('canvasAspect', canvasAspect)
-      // console.log('videoAspect', videoAspect)
-      // console.log('scaleX', scaleX, scaleY)
     }
     return [scaleX, scaleY]
   }
@@ -155,7 +146,6 @@ export class BizBase {
       if (!this.video) return
       const vw = this.video.videoWidth ? this.video.videoWidth / 2 : 900
       const vh = this.video.videoHeight ? this.video.videoHeight : 1000
-      // logger.debug('[resizeCanvasToDisplaySize]', vw, vh)
       // 默认左右结构
       ofs.width = vw
       ofs.height = vh

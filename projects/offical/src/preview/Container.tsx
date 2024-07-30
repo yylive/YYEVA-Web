@@ -1,17 +1,8 @@
 import {SettingOutlined} from '@ant-design/icons'
-import {
-  CodepenOutlined,
-  DashboardOutlined,
-  GithubOutlined,
-  PlusCircleOutlined,
-  QuestionCircleOutlined,
-  SmileFilled,
-  SmileOutlined,
-  UploadOutlined,
-} from '@ant-design/icons'
-import {ProCard, ProForm, ProFormRadio, ProFormSelect, ProFormSwitch, ProFormText} from '@ant-design/pro-components'
+import {CodepenOutlined, QuestionCircleOutlined, UploadOutlined} from '@ant-design/icons'
+import {ProCard} from '@ant-design/pro-components'
 import {PageContainer} from '@ant-design/pro-layout'
-import {Avatar, Badge, Button, Card, Col, Modal, Row, Select, Switch, Tooltip, Typography} from 'antd'
+import {Badge, Button, Select, Switch, Tooltip, Typography} from 'antd'
 import GitHubButton from 'react-github-btn'
 import VideoOptions from 'src/preview/player/VideoOptions'
 import {

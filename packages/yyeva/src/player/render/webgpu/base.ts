@@ -109,7 +109,6 @@ export class RenderWebGPUBase extends BizBase {
         },
       })
     }
-    // console.log('this.cache.lastIndex', this.cache.lastIndex, entries)
     // createBindGroupLayout
     this.bindGroupLayout = this.device.createBindGroupLayout({
       entries,
@@ -212,7 +211,6 @@ export class RenderWebGPUBase extends BizBase {
     }
     const size = (device.limits.maxSampledTexturesPerShaderStage - 1) * this.PER_SIZE
     posArr = posArr.concat(new Array(size - posArr.length).fill(0))
-    // console.log('posArr', posArr)
     const imagePosData = new Float32Array(posArr)
     const imagePosBuffer = this.createBufferWrite(imagePosData, GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST)
     return imagePosBuffer

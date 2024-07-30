@@ -1,7 +1,7 @@
 import {javascript} from '@codemirror/lang-javascript'
 import {dracula} from '@uiw/codemirror-theme-dracula'
 import CodeMirror from '@uiw/react-codemirror'
-import {Avatar, Badge, Button, Card, Col, Modal, Row, Tooltip, Typography} from 'antd'
+import {Modal} from 'antd'
 import {useCallback} from 'react'
 import {useCodeStore, useVideoStore} from '../store/usePlayerStore'
 const genCode = (o?: any) => {
