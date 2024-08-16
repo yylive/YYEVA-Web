@@ -14,8 +14,8 @@ const defaultOptions = {
   showPlayerInfo: true,
   useAccurate: true,
   logLevel: 'info',
-  // renderType: 'webgl',
-  renderType: 'webgpu',
+  renderType: 'webgl',
+  // renderType: 'webgpu',
   hevcUrl: undefined,
 }
 export const useVideoStore = create(
