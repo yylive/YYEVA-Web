@@ -8,19 +8,19 @@ export const users = [
   {
     avatar: 'https://avatars.githubusercontent.com/u/14030762?v=4&s=80',
     name: 'GuoyabiniOS',
-    description: 'iOS Developer',
+    description: 'IOS Developer',
     link: 'https://github.com/GuoyabiniOS',
   },
   {
     avatar: 'https://avatars.githubusercontent.com/u/44636610?v=4',
     name: 'Ganpenglong',
-    description: 'iOS Developer',
+    description: 'IOS Developer',
     link: 'https://github.com/Ganpenglong',
   },
   {
     avatar: 'https://avatars.githubusercontent.com/u/12680946?v=4',
     name: 'WickyLeung',
-    description: 'iOS Developer',
+    description: 'IOS Developer',
     link: 'https://github.com/WickyLeung',
   },
   {
