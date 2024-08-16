@@ -1,4 +1,4 @@
-import {Badge, Card, Typography, Row, Col, Avatar} from 'antd'
+import {Card, Col, Row} from 'antd'
 import {brands} from 'src/preview/config'
 const List = ({brand}: any) => {
   return (

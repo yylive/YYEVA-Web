@@ -1,9 +1,9 @@
-import Player from 'src/player'
 import config from 'src/helper/config'
-import {MixEvideoOptions} from './type/mix'
-import {versionTips, logger} from 'src/helper/logger'
+import {logger, versionTips} from 'src/helper/logger'
+import Player from 'src/player'
 import {polyfill, wechatPolyfill} from './helper/polyfill'
 import {isOffscreenCanvasSupported} from './helper/utils'
+import type {MixEvideoOptions} from './type/mix'
 
 async function yyEva(options: MixEvideoOptions): Promise<Player> {
   // console.log('[yyEva]options=', options)
@@ -12,6 +12,7 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
       showVideo: false,
       useWorker: false,
       loop: true,
+      autoplay: true,
       videoUrl: '',
       videoID: null,
       dataUrl: '',
@@ -19,11 +20,11 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
       // mute: true,
       usePrefetch: true,
       useBitmap: true,
-      useAccurate: false,
+      useAccurate: true,
       useMetaData: false,
       alphaDirection: 'left',
       useVideoDBCache: true,
-      useFrameCache: true, // 默认为5个
+      useFrameCache: false, // 默认为5个
       useOfsRender: false,
       resizeCanvas: 'percent',
       showPlayerInfo: true,
@@ -77,6 +78,8 @@ async function yyEva(options: MixEvideoOptions): Promise<Player> {
   //
   await player.setup()
   op.showPlayerInfo && versionTips(op, player)
+  if (op.onGetConfig) op.onGetConfig(op)
+
   // console.log(op)
   return player
 }

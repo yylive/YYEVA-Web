@@ -47,4 +47,10 @@ export const users = [
     description: 'Web Developer',
     link: 'https://github.com/alexhaifeng',
   },
+  {
+    avatar: 'https://avatars.githubusercontent.com/u/10579296?s=400&v=4',
+    name: 'ynot16',
+    description: 'IOS&AE Developer',
+    link: 'https://github.com/ynot16',
+  },
 ]

@@ -1,16 +1,8 @@
-import {
-  ProCard,
-  ProForm,
-  ProFormText,
-  ProFormRadio,
-  ProFormSwitch,
-  ProFormSelect,
-  ProFormInstance,
-} from '@ant-design/pro-components'
-import {useVideoStore} from 'src/preview/store/usePlayerStore'
-import {Alert, Form, message, Tooltip} from 'antd'
 import {QuestionCircleOutlined} from '@ant-design/icons'
+import {ProForm, type ProFormInstance, ProFormRadio, ProFormSwitch} from '@ant-design/pro-components'
+import {Tooltip, message} from 'antd'
 import {useEffect, useRef} from 'react'
+import {useVideoStore} from 'src/preview/store/usePlayerStore'
 const swithColSpan = {xs: 8, sm: 12, md: 12, lg: 12}
 const VideoOptionsForm = () => {
   const {video, setVideo} = useVideoStore()
@@ -65,7 +57,7 @@ const VideoOptionsForm = () => {
       <ProFormRadio.Group
         name="renderType"
         label={
-          <Tooltip title="canvas2d 带 key 开发中,不设置可以自动旋转">
+          <Tooltip title="webgpu 目前在beta状态">
             渲染 <QuestionCircleOutlined />
           </Tooltip>
         }
@@ -82,8 +74,9 @@ const VideoOptionsForm = () => {
         }}
         // options={['webgl', 'canvas2d']}
         valueEnum={{
-          webgl: 'webgl',
-          canvas2d: 'canvas2d',
+          webgl: 'WebGL',
+          canvas2d: '2D',
+          webgpu: 'GPU',
         }}
       />
       <ProFormSwitch

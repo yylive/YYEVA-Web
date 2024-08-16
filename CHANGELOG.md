@@ -1,3 +1,13 @@
+# 1.1.0-beta.1
+## Features
++ 增加 webgpu 支持 进度80%
++ 重构渲染层、按需加载渲染引擎
+
+## Bugfixes 
++ 修复 canvas2d mix模式下 黑框问题 
++ 增加 hevc 的适配 https://github.com/yylive/YYEVA-Web/pull/23
+
+
 # 1.0.0-rc1
 ## Features
 + 增加 多实例支持

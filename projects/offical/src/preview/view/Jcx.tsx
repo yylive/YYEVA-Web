@@ -1,5 +1,5 @@
 import {useEffect, useRef} from 'react'
-import {yyEva, YYEvaType} from 'yyeva'
+import {type YYEvaType, yyEva} from 'yyeva'
 let player: YYEvaType
 const Jcx = () => {
   const div: any = useRef<HTMLDivElement>(null)
@@ -10,6 +10,7 @@ const Jcx = () => {
         container: div.current,
         useMetaData: true,
         mute: true,
+        logLevel: 'info',
         effects: {
           key1: 'YYEVAER',
         },

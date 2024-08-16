@@ -1,36 +1,27 @@
-import {PageContainer} from '@ant-design/pro-layout'
-import {ProCard, ProForm, ProFormText, ProFormRadio, ProFormSwitch, ProFormSelect} from '@ant-design/pro-components'
-// import {Row, Col, Space} from 'antd'
-import {GiftPlayer} from './player'
-import VideoOptions from 'src/preview/player/VideoOptions'
-import {version} from 'yyeva'
-import VideoMeta from './player/VideoMeta'
 import {SettingOutlined} from '@ant-design/icons'
+import {CodepenOutlined, QuestionCircleOutlined, UploadOutlined} from '@ant-design/icons'
+import {ProCard} from '@ant-design/pro-components'
+import {PageContainer} from '@ant-design/pro-layout'
+import {Badge, Button, Select, Switch, Tooltip, Typography} from 'antd'
+import GitHubButton from 'react-github-btn'
+import VideoOptions from 'src/preview/player/VideoOptions'
 import {
-  useEffectStore,
-  useCodeStore,
-  useClickUploadStore,
   useBackgroundColorStore,
   useBackgroundGrid,
+  useClickUploadStore,
+  useCodeStore,
+  useEffectStore,
   useVideoStore,
 } from 'src/preview/store/usePlayerStore'
-import {
-  DashboardOutlined,
-  GithubOutlined,
-  SmileOutlined,
-  SmileFilled,
-  PlusCircleOutlined,
-  CodepenOutlined,
-  UploadOutlined,
-  QuestionCircleOutlined,
-} from '@ant-design/icons'
-import {Badge, Card, Typography, Row, Col, Avatar, Modal, Button, Tooltip, Select, Switch} from 'antd'
-import SelectVideo from './player/SelectVideo'
-import Platform from './view/Platform'
-import Author from './view/Author'
-import WhoUse from './view/WhoUse'
-import GitHubButton from 'react-github-btn'
+import {version} from 'yyeva'
+// import {Row, Col, Space} from 'antd'
+import {GiftPlayer} from './player'
 import CodePreview from './player/CodePreview'
+import SelectVideo from './player/SelectVideo'
+import VideoMeta from './player/VideoMeta'
+import Author from './view/Author'
+import Platform from './view/Platform'
+import WhoUse from './view/WhoUse'
 // import Jcx from './view/Jcx'
 
 const {Option} = Select
@@ -168,9 +159,6 @@ const Page = () => {
       <ProCard title="Platform" style={{marginTop: '24px'}} gutter={8} wrap ghost size="default" split={'vertical'}>
         <Platform />
       </ProCard>
-      <ProCard title="Power By" style={{marginTop: '24px'}} gutter={8} wrap ghost size="default" split={'vertical'}>
-        <Author />
-      </ProCard>
       <ProCard
         title="Who Use"
         extra={
@@ -186,6 +174,9 @@ const Page = () => {
         split={'vertical'}
       >
         <WhoUse />
+      </ProCard>
+      <ProCard title="Power By" style={{marginTop: '24px'}} gutter={8} wrap ghost size="default" split={'vertical'}>
+        <Author />
       </ProCard>
     </PageContainer>
   )

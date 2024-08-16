@@ -1,0 +1,8 @@
+{
+  "extends": "@empjs/cli/emp-tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "types": ["@webgpu/types"]
+  },
+  "include": ["src"]
+}

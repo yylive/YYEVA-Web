@@ -1,20 +1,21 @@
-import create from 'zustand'
-import {combine} from 'zustand/middleware'
 import video from 'src/preview/config/video'
+import {create} from 'zustand'
+import {combine} from 'zustand/middleware'
 const defaultOptions = {
   alphaDirection: 'right',
   mode: 'Fill',
   useMetaData: true,
   loop: true,
-  useFrameCache: true,
-  useVideoDBCache: true,
+  useFrameCache: false,
+  useVideoDBCache: false,
   mute: true,
   forceBlob: false,
   showVideo: false,
   showPlayerInfo: true,
-  useAccurate: false,
+  useAccurate: true,
   logLevel: 'info',
   renderType: 'webgl',
+  // renderType: 'webgpu',
   hevcUrl: undefined,
 }
 export const useVideoStore = create(
@@ -27,7 +28,9 @@ export const useVideoStore = create(
     },
     (set, get) => ({
       setVideo(v: any) {
-        set(state => ({video: {...state.video, ...defaultOptions, ...v}}))
+        set(state => ({
+          video: {...state.video, ...defaultOptions, ...v},
+        }))
       },
     }),
   ),
@@ -67,6 +70,20 @@ export const useVideoFormStore = create(
     (set, get) => ({
       setVideoFormItem(videoFormItem: any) {
         set(state => ({videoFormItem}))
+      },
+    }),
+  ),
+)
+
+export const usePlayerInfoStore = create(
+  combine(
+    {
+      playerInfo: {},
+    },
+    (set, get) => ({
+      setPlayerInfoStore(playerInfo: any) {
+        // console.log('playerInfo', playerInfo)
+        set(state => ({playerInfo}))
       },
     }),
   ),

@@ -40,7 +40,7 @@ export const createMSE = (source: string, mimeCodec: string): Promise<string> =>
         const xhr = new XMLHttpRequest()
         xhr.open('GET', source, true)
         xhr.responseType = 'blob'
-        xhr.onload = function () {
+        xhr.onload = () => {
           if (xhr.status === 200 || xhr.status === 304) {
             const res = xhr.response
             resolve(URL.createObjectURL(res))
@@ -67,10 +67,10 @@ export const fileReaderBlob = (source: string): Promise<FileReaderType> => {
     const xhr = new XMLHttpRequest()
     xhr.open('GET', source, true)
     xhr.responseType = 'blob'
-    xhr.onload = function () {
+    xhr.onload = () => {
       if (xhr.status === 200 || xhr.status === 304) {
         const fileReader = new FileReader()
-        fileReader.onloadend = function () {
+        fileReader.onloadend = () => {
           const resultStr = fileReader.result as string
           const data = parser.getdata(resultStr)
           const raw = atob(resultStr.slice(resultStr.indexOf(',') + 1))
