@@ -159,9 +159,6 @@ const Page = () => {
       <ProCard title="Platform" style={{marginTop: '24px'}} gutter={8} wrap ghost size="default" split={'vertical'}>
         <Platform />
       </ProCard>
-      <ProCard title="Power By" style={{marginTop: '24px'}} gutter={8} wrap ghost size="default" split={'vertical'}>
-        <Author />
-      </ProCard>
       <ProCard
         title="Who Use"
         extra={
@@ -177,6 +174,9 @@ const Page = () => {
         split={'vertical'}
       >
         <WhoUse />
+      </ProCard>
+      <ProCard title="Power By" style={{marginTop: '24px'}} gutter={8} wrap ghost size="default" split={'vertical'}>
+        <Author />
       </ProCard>
     </PageContainer>
   )
