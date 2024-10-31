@@ -6,13 +6,14 @@ export function getVideoByHttp(videoSource: string) {
         if (r.ok) {
           resolve(r.blob())
         } else {
-          logger.error('fetch request failed, url: ' + this.op.videoSource)
-          return undefined
+          const msg = 'fetch request failed, url: ' + videoSource
+          logger.debug(msg)
+          reject(msg)
         }
       })
       .catch(err => {
-        logger.error('getVideoByHttp fetch, err=', err)
-        return undefined
+        logger.debug('getVideoByHttp fetch, err=', err)
+        reject(err)
       })
   })
 }

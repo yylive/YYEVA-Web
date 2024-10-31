@@ -145,7 +145,9 @@ export default class EVideo {
 
       await this.prepareRender()
 
-      await this.videoLoad()
+      if (!await this.videoLoad()) {        
+        return
+      }
       await this.renderer.setup(this.video)
 
       //判断是否存在 audio 默认为 false
@@ -209,12 +211,8 @@ export default class EVideo {
         }
       }
     } catch (e) {
-      // this.onEnd?.(e)
-      // this.onError?.(e)
-      // this.destroy()
-      logger.error(e)
+      this._error(e)
     }
-
     //this.op.showPlayerInfo && versionTips(this.op, this)
   }
 
@@ -579,19 +577,28 @@ export default class EVideo {
     const video = this.video
     if (this.op.usePrefetch) {
       const url = await this.prefetch()
-      video.src = url
       logger.debug('[prefetch url]', url)
+      if (url) {
+        video.src = url
+      } else {
+        return false
+      }      
     } else {
       video.src = this.op.videoSource
+      logger.debug('[videoSource url]', this.op.videoSource)
       if (this.op.useMetaData) {
         const file = await this.getVideoFile()
-        await this.readFileToBlobUrl(file)
+        if (file) {
+          await this.readFileToBlobUrl(file)
+        } else {
+          return false
+        }       
       }
-      logger.debug('[videoSource url]', this.op.videoSource)
     }
     video.load()
     logger.debug('[video load]')
     await this.videoAddEvents()
+    return true
   }
 
   /**
@@ -692,6 +699,11 @@ export default class EVideo {
     } else {
       file = this.videoFile
     }
+
+    logger.debug('[checkVideoCache]file=', file)
+    if (!file) {
+      this._error('download error.')
+    }
     return file
   }
   async prefetch(): Promise<string> {
@@ -706,9 +718,13 @@ export default class EVideo {
     }
     //
     const file = await this.getVideoFile()
-    const url = await this.readFileToBlobUrl(file)
-    logger.debug('[prefetch result]', url, `this.op.useVideoDBCache`, this.op.useVideoDBCache)
-    return url
+    if (file) {
+      const url = await this.readFileToBlobUrl(file)
+      logger.debug('[prefetch result]', url, `this.op.useVideoDBCache`, this.op.useVideoDBCache)
+      return url
+    } else {
+      return ""
+    }
   }
   private readFileToBlobUrl(file): Promise<string> {
     return new Promise((resolve, reject) => {
