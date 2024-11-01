@@ -392,19 +392,23 @@ export default class Render2D extends Canvas2dControl {
 
     for (let row = 0; row < imageDataHeight; row++) {
       for (let col = 0; col < imageDataWidth; col++) {
-        const sourcePixel = [
-          imageData.data[(row * imageData.width + col) * 4 + 0],
-          imageData.data[(row * imageData.width + col) * 4 + 1],
-          imageData.data[(row * imageData.width + col) * 4 + 2],
-          imageData.data[(row * imageData.width + col) * 4 + 3],
-        ]
+        // const sourcePixel = [
+        //   imageData.data[(row * imageData.width + col) * 4 + 0],
+        //   imageData.data[(row * imageData.width + col) * 4 + 1],
+        //   imageData.data[(row * imageData.width + col) * 4 + 2],
+        //   imageData.data[(row * imageData.width + col) * 4 + 3],
+        // ]
+        const sourceIndex = (row * imageData.width + col) * 4
+        const sourcePixel = imageData.data.subarray(sourceIndex, sourceIndex + 4)
         for (let y = 0; y < scale; y++) {
           const destRow = Math.floor(row * scale) + y
           for (let x = 0; x < scale; x++) {
             const destCol = Math.floor(col * scale) + x
-            for (let i = 0; i < 4; i++) {
-              scaled.data[(destRow * scaleWidth + destCol) * 4 + i] = sourcePixel[i]
-            }
+            // for (let i = 0; i < 4; i++) {
+              // scaled.data[(destRow * scaleWidth + destCol) * 4 + i] = sourcePixel[i]
+            // }
+            const destIndex = (destRow * scaleWidth + destCol) * 4
+            scaled.data.set(sourcePixel, destIndex)
           }
         }
       }
