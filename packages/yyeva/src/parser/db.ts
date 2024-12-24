@@ -112,7 +112,7 @@ class DBCache {
   }
   set IndexDB(isUse: boolean) {
     this.useIndexDB = isUse
-    logger.debug('[DBCache] IndexDB', this.useIndexDB)
+    // logger.debug('[DBCache] IndexDB', this.useIndexDB)
   }
   model() {
     // logger.debug('[DBCache] model', this.useIndexDB)
