@@ -13,7 +13,7 @@ const defaultOptions = {
   showVideo: false,
   showPlayerInfo: true,
   useAccurate: true,
-  logLevel: 'info',
+  // logLevel: 'info',
   // renderType: 'webgl',
   renderType: 'webgpu',
   hevcUrl: undefined,
