@@ -46,7 +46,7 @@ const getOpt: any = () => {
     //   fontSize: 40,
     // },
     // useFrameCache: true,
-    renderType: 'webgpu',
+    // renderType: 'webgpu',
     // renderType: 'canvas2d',
     ...opt,
   }

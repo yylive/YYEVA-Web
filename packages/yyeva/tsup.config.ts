@@ -23,11 +23,11 @@ export default defineConfig(({watch}) => {
       options.legalComments = 'none'
       options.keepNames = false
     },
-    outExtension({format}) {
-      return {
-        js: '.js',
-        // dts: `.d.ts`,
-      }
-    },
+    // outExtension({format}) {
+    //   return {
+    //     js: '.js',
+    //     // dts: `.d.ts`,
+    //   }
+    // },
   }
 })
