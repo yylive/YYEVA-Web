@@ -1,5 +1,5 @@
 import {QuestionCircleOutlined} from '@ant-design/icons'
-import {ProForm, type ProFormInstance, ProFormRadio, ProFormSwitch} from '@ant-design/pro-components'
+import {ProForm, type ProFormInstance, ProFormRadio, ProFormSelect, ProFormSwitch} from '@ant-design/pro-components'
 import {Tooltip, message} from 'antd'
 import {useEffect, useRef} from 'react'
 import {useVideoStore} from 'src/preview/store/usePlayerStore'
@@ -199,10 +199,10 @@ const VideoOptionsForm = () => {
           right: '右',
         }}
       />
-      <ProFormRadio.Group
+      <ProFormSelect
         name="logLevel"
         label="日志"
-        radioType="button"
+        // radioType="button"
         // initialValue={options.logLevel}
         colProps={{
           xs: 16,

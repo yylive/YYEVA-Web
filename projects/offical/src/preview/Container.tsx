@@ -2,7 +2,7 @@ import {SettingOutlined} from '@ant-design/icons'
 import {CodepenOutlined, QuestionCircleOutlined, UploadOutlined} from '@ant-design/icons'
 import {ProCard} from '@ant-design/pro-components'
 import {PageContainer} from '@ant-design/pro-layout'
-import {Badge, Button, Select, Switch, Tooltip, Typography} from 'antd'
+import {Badge, Button, Select, Space, Switch, Tooltip, Typography} from 'antd'
 import GitHubButton from 'react-github-btn'
 import VideoOptions from 'src/preview/player/VideoOptions'
 import {
@@ -143,18 +143,20 @@ const Page = () => {
           title="配置 Config"
           extra={
             <div className="video_options_extra">
-              <Tooltip title="查看代码">
-                <CodepenOutlined onClick={() => setOpenCode(!opencode)} />
-              </Tooltip>
-              <CodePreview />
-              <Typography.Paragraph
-                style={{margin: 0}}
-                copyable={{
-                  text: `${JSON.stringify(video, null, 2)}`,
-                  // icon: [<SmileOutlined key="copy-icon" />, <SmileFilled key="copied-icon" />],
-                  tooltips: ['复制配置', '配置复制成功'],
-                }}
-              />
+              <Space>
+                <Tooltip title="查看代码">
+                  <CodepenOutlined onClick={() => setOpenCode(!opencode)} />
+                </Tooltip>
+                <CodePreview />
+                <Typography.Paragraph
+                  style={{margin: 0}}
+                  copyable={{
+                    text: `${JSON.stringify(video, null, 2)}`,
+                    // icon: [<SmileOutlined key="copy-icon" />, <SmileFilled key="copied-icon" />],
+                    tooltips: ['复制配置', '配置复制成功'],
+                  }}
+                />
+              </Space>
             </div>
           }
           headerBordered
