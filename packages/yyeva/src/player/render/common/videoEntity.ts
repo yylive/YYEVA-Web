@@ -237,7 +237,13 @@ export default class VideoEntity {
     let type = ''
     const effect = this.config?.effect
     if (effect) {
-      type = effect.find(item => item.effectId === effectId).effectType
+      for (let index = 0; index < effect.length; index++) {
+        const item = effect[index]
+        if (item.effectId == effectId) {
+          type = item.effectType
+          break
+        }
+      }
     }
 
     return type
@@ -263,19 +269,29 @@ export default class VideoEntity {
           // if (this.op['fontStyle'] && !item['fontStyle']) {
           //   item['fontStyle'] = this.op['fontStyle']
           // }
-          if (effects[effectTag]) {
+          logger.debug('parseFromSrcAndOptions effectTag=', effectTag)
+          let effectOp = effects[effectTag]
+          if (!effectOp && effectTag.indexOf('_') > 0) {
+            // 对于'key7_ffffff_18'格式的key, 外部传入'key7_'也能支持
+            const tags = effectTag.split('_')
+            const tag = tags[0] + '_'
+            effectOp = effects[tag]
+            logger.debug('parseFromSrcAndOptions 2, tag=', tag)
+          }
+          logger.debug('parseFromSrcAndOptions 2, effectTag=', effectTag, effectOp)
+          if (effectOp) {
             const eOptions = {
               fontStyle: effects.fontStyle,
               fontColor: effects.fontColor,
               fontSize: effects.fontSize,
             }
 
-            if (typeof effects[effectTag] === 'string') {
-              item.text = effects[effectTag]
+            if (typeof effectOp === 'string') {
+              item.text = effectOp
             } else {
-              item.text = effects[effectTag].text
+              item.text = effectOp.text
 
-              const style = effects[effectTag]
+              const style = effectOp
               if (style.fontStyle) eOptions.fontStyle = style.fontStyle
               if (style.fontColor) eOptions.fontColor = style.fontColor
               if (style.fontSize) eOptions.fontSize = style.fontSize

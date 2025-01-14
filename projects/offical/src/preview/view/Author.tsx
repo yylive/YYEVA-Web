@@ -20,7 +20,7 @@ const AuthorItem = ({user}: any) => (
 const Author = () => (
   <Row wrap={true} gutter={[16, 16]}>
     {users.map(user => (
-      <Col key={user.name} span={4} xs={8} sm={6} md={4} lg={3}>
+      <Col key={user.name} span={4} xs={8} sm={6} md={4}>
         <AuthorItem user={user} />
       </Col>
     ))}

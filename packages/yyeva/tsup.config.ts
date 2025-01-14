@@ -7,7 +7,7 @@ export default defineConfig(({watch}) => {
     entry: {
       index: 'src/index.ts',
     },
-    format: ['esm'],
+    format: ['esm', 'cjs'],
     platform: 'browser',
     splitting: true,
     sourcemap: true,

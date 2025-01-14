@@ -282,16 +282,16 @@ export default class Render2D extends Canvas2dControl {
         //   w,
         //   h,
         //   ', effectId=' + effectId + ',frame=' + frame + ',scale=' + w / mW,
-        //   ',isTextType=' + isTextType 
+        //   ',isTextType=' + isTextType
         // )
         const r = this.drawEffect[effectId] || {}
 
         if (r.img && w > 0 && h > 0 && mH > 0 && mW > 0) {
           this.ctxKey.clearRect(0, 0, w, h)
-          this.ctxKey.drawImage(r.img, 0, 0, w, h)          
+          this.ctxKey.drawImage(r.img, 0, 0, w, h)
           let imageData = this.ctxKey.getImageData(0, 0, w, h)
           // text key合并alphaData会显示黑色背景，暂时不合并alphaData，能满足绝大部分的需求，后续再进一步优化text key的渲染
-          if (!isTextType) {            
+          if (!isTextType) {
             const alphaData = this.ctx.getImageData(mX, mY, mW, mH)
             imageData = this.mixImageData(imageData, alphaData, w / mW)
           }
@@ -380,19 +380,23 @@ export default class Render2D extends Canvas2dControl {
 
     for (let row = 0; row < imageDataHeight; row++) {
       for (let col = 0; col < imageDataWidth; col++) {
-        const sourcePixel = [
-          imageData.data[(row * imageData.width + col) * 4 + 0],
-          imageData.data[(row * imageData.width + col) * 4 + 1],
-          imageData.data[(row * imageData.width + col) * 4 + 2],
-          imageData.data[(row * imageData.width + col) * 4 + 3],
-        ]
+        // const sourcePixel = [
+        //   imageData.data[(row * imageData.width + col) * 4 + 0],
+        //   imageData.data[(row * imageData.width + col) * 4 + 1],
+        //   imageData.data[(row * imageData.width + col) * 4 + 2],
+        //   imageData.data[(row * imageData.width + col) * 4 + 3],
+        // ]
+        const sourceIndex = (row * imageData.width + col) * 4
+        const sourcePixel = imageData.data.subarray(sourceIndex, sourceIndex + 4)
         for (let y = 0; y < scale; y++) {
           const destRow = Math.floor(row * scale) + y
           for (let x = 0; x < scale; x++) {
             const destCol = Math.floor(col * scale) + x
-            for (let i = 0; i < 4; i++) {
-              scaled.data[(destRow * scaleWidth + destCol) * 4 + i] = sourcePixel[i]
-            }
+            // for (let i = 0; i < 4; i++) {
+            // scaled.data[(destRow * scaleWidth + destCol) * 4 + i] = sourcePixel[i]
+            // }
+            const destIndex = (destRow * scaleWidth + destCol) * 4
+            scaled.data.set(sourcePixel, destIndex)
           }
         }
       }

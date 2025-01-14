@@ -1,34 +1,37 @@
-video{
-    position: fixed;
-    right: 0;
-    top: 0;
-    width: 50px;
+video {
+	position: fixed;
+	right: 0;
+	top: 0;
+	width: 50px;
 }
-.lambo{
-    position: absolute;
-    z-index: 9;
-    right: 0;
+.lambo {
+	position: absolute;
+	z-index: 9;
+	right: 0;
 }
-.lambo .yyeva{
-    height: 90px;
-    width: 240px;
-   
+.lambo .yyeva {
+	height: 90px;
+	width: 240px;
 }
-.container .fullscreen{
-    position: absolute;
-    top: 0; bottom: 0; right: 0; left: 0;
+.container .fullscreen {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
 }
-.container .fullscreen .yyeva{
-    width: 100%; height: 100%;
+.container .fullscreen .yyeva {
+	width: 100%;
+	height: 100%;
 }
-body{
-    background: 0 0/15px 15px, 0 0/15px 15px, 0 0/75px 75px, 0 0/75px 75px #222;
-	background-image: 
-	linear-gradient(hsla(0, 0%, 100%, .2) 1px, transparent 0), 
-	linear-gradient(90deg, hsla(0, 0%, 100%, .2) 1px, transparent 0);
+body {
+	background: 0 0 / 15px 15px, 0 0 / 15px 15px, 0 0 / 75px 75px, 0 0 / 75px 75px #222;
+	background-image: linear-gradient(hsla(0, 0%, 100%, 0.2) 1px, transparent 0),
+		linear-gradient(90deg, hsla(0, 0%, 100%, 0.2) 1px, transparent 0);
 }
 
-body,html{
-    margin: 0;
-    padding: 0;
+body,
+html {
+	margin: 0;
+	padding: 0;
 }

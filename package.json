@@ -1,17 +1,13 @@
 {
   "name": "yy-eva-workspace",
   "scripts": {
-    "dev": "pnpm --filter=yyeva --filter=official dev",
-    "build": "pnpm --filter=yyeva --filter=official build",
-    "start": "pnpm --filter=official start",
+    "dev": "pnpm --filter=yyeva --filter=offical dev",
+    "build": "pnpm --filter=yyeva --filter=offical build",
+    "start": "pnpm --filter=offical start",
     "lint": "biome check . --fix"
   },
-  "engines": {
-    "node": ">=16.0.0",
-    "pnpm": ">=8"
-  },
   "devDependencies": {
-    "@empjs/biome-config": "^0.4.0",
+    "@empjs/biome-config": "^0.7.2",
     "typescript": "^5.4.5"
   }
 }

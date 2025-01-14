@@ -56,6 +56,7 @@ const UploadVideo = ({children}: UploadVideoType) => {
   return (
     <>
       <form ref={formRef} onDragEnter={handleDrag} onSubmit={e => e.preventDefault()}>
+        {/* biome-ignore lint/a11y/noLabelWithoutControl: <explanation> */}
         <label className="drapUpload" ref={uploadLabelRef}>
           {children}
         </label>
