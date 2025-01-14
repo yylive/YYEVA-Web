@@ -49,7 +49,7 @@ export class Logger {
     this.op = {...this.op, ...options}
     if (typeof showtips === 'boolean') this.op.showtips = showtips
     const lv = level ? this.levels[level] : this.op.level ? this.levels[this.op.level] : config.mode === 'dev' ? 1 : 2
-    // console.log(lv,config)
+    console.log(lv, config)
     const useChannel = !channel || channel === this.op.channel
     const silenceFn = (...args: any[]) => {
       //:TODO 增加上报逻辑

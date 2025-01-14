@@ -104,7 +104,7 @@ export default class EVideo {
   async selectRender(rt: RenderType) {
     logger.debug('this.renderer', this.renderer)
     if (this.op.renderType !== rt) this.op.renderType = rt
-    const Renderer = (await this.renderLoader[rt]()).default
+    const {default: Renderer} = await this.renderLoader[rt]()
     this.renderer = new Renderer(this.op)
     this.renderType = this.renderer.renderType as RenderType
     /**

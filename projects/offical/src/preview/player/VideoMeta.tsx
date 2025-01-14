@@ -150,6 +150,15 @@ const PlayerInfo = () => {
       name: 'FPS',
       val: <b>{playerInfo.fps}</b>,
     },
+    {
+      key: '4',
+      name: 'Hevc',
+      val: playerInfo.hevcUrl ? (
+        <CheckCircleOutlined style={{color: 'green'}} />
+      ) : (
+        <CloseCircleOutlined style={{color: 'red'}} />
+      ),
+    },
   ]
 
   const columns = [

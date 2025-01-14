@@ -1,13 +1,23 @@
 {
   "compilerOptions": {
-    "types": ["@webgpu/types"],
+    "types": [
+      "@webgpu/types",
+      "node"
+    ],
     "experimentalDecorators": true,
     "baseUrl": ".",
     "target": "ESNext",
     "module": "ESNext",
-    "lib": ["DOM", "DOM.Iterable", "ESNext", "webworker"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext",
+      "webworker"
+    ],
     "paths": {
-      "src/*": ["src/*"]
+      "src/*": [
+        "src/*"
+      ]
     },
     "allowJs": true,
     "skipLibCheck": true,
@@ -19,6 +29,10 @@
     "resolveJsonModule": true,
     "isolatedModules": false
   },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

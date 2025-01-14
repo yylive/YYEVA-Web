@@ -20,7 +20,7 @@ const runOnce = async (container: any, video: any, onGetConfig?: any) => {
       console.log('[runOnce]onEnd, e=', e)
       if (!e) runOnce(container, video)
     },
-    onGetConfig: onGetConfig ? onGetConfig : op => {},
+    onGetConfig: onGetConfig ? onGetConfig : () => {},
     onLoopCount: (args: any) => {
       // test case: loop: 1, loop: 2, loop: 3, loop: false, loop: true
       // [runOnce]onLoopCount args= {count: 1}
@@ -43,7 +43,7 @@ export const GiftPlayer = ({backgroundColor}: any) => {
   useEffect(() => {
     runOnce(div.current, video, (op: YYEvaOptionsType) => {
       setPlayerInfoStore(op)
-      console.log('runOnce then op', op)
+      // console.log('runOnce then op', op)
     }).then(op => {
       setEffect(evideo?.renderer?.videoEntity?.config?.effect)
       // setVideoFormItem({})

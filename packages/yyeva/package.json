@@ -49,7 +49,7 @@
     "zlib.es": "^0.6.0"
   },
   "devDependencies": {
-    "@types/node": "^18.0.0",
+    "@types/node": "^22.10.6",
     "@types/offscreencanvas": "^2019.6.4",
     "@webgpu/types": "^0.1.42",
     "tsup": "^8.1.0",
