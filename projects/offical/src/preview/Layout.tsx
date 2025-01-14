@@ -1,9 +1,9 @@
-import BasicLayout, {type BasicLayoutProps} from '@ant-design/pro-layout'
+import ProLayout, {type ProLayoutProps} from '@ant-design/pro-layout'
 import Page from './Container'
 //
-const config: BasicLayoutProps = {
-  navTheme: 'dark',
-  primaryColor: '#1890ff',
+const config: ProLayoutProps = {
+  // navTheme: 'dark',
+  // primaryColor: '#1890ff',
   layout: 'top',
   contentWidth: 'Fixed',
   fixedHeader: true,
@@ -38,9 +38,9 @@ const config: BasicLayoutProps = {
 
 const Layout = () => {
   return (
-    <BasicLayout {...config}>
+    <ProLayout {...config}>
       <Page />
-    </BasicLayout>
+    </ProLayout>
   )
 }
 export default Layout

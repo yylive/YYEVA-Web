@@ -160,7 +160,7 @@ const VideoOptionsForm = () => {
         name="checkTimeout"
         label={
           <Tooltip title="支持小程序、H5等后台运行程序的切换，正常播放不会停止">
-            超时检查 <QuestionCircleOutlined />
+            超时 <QuestionCircleOutlined />
           </Tooltip>
         }
       />
@@ -173,7 +173,7 @@ const VideoOptionsForm = () => {
         name="useMetaData"
         label={
           <Tooltip title="支持内嵌自定义内容、只需要 alphaDirection 的可关闭提升性能">
-            带Key视频 <QuestionCircleOutlined />
+            带Key <QuestionCircleOutlined />
           </Tooltip>
         }
       />

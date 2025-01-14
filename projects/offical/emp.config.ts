@@ -10,7 +10,7 @@ export default defineConfig(() => {
     server: {
       port: 3001,
       open: false,
-      // https: true,
+      https: true,
     },
   }
 })

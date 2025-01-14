@@ -70,7 +70,13 @@ const Page = () => {
         </>
       }
     >
-      <ProCard gutter={8} wrap ghost size="default" split={'vertical'}>
+      <ProCard
+        gutter={8}
+        wrap
+        ghost
+        size="default"
+        // split={'vertical'}
+      >
         <ProCard
           style={{marginTop: 8, height: '100%'}}
           colSpan={{xs: 24, sm: 6, md: 6, lg: 6}}
