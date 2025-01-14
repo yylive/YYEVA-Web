@@ -1,36 +1,36 @@
-import {PageContainer} from '@ant-design/pro-layout'
-import {ProCard, ProForm, ProFormText, ProFormRadio, ProFormSwitch, ProFormSelect} from '@ant-design/pro-components'
-// import {Row, Col, Space} from 'antd'
-import {GiftPlayer} from './player'
-import VideoOptions from 'src/preview/player/VideoOptions'
-import {version} from 'yyeva'
-import VideoMeta from './player/VideoMeta'
 import {SettingOutlined} from '@ant-design/icons'
 import {
-  useEffectStore,
-  useCodeStore,
-  useClickUploadStore,
-  useBackgroundColorStore,
-  useBackgroundGrid,
-  useVideoStore,
-} from 'src/preview/store/usePlayerStore'
-import {
+  CodepenOutlined,
   DashboardOutlined,
   GithubOutlined,
-  SmileOutlined,
-  SmileFilled,
   PlusCircleOutlined,
-  CodepenOutlined,
-  UploadOutlined,
   QuestionCircleOutlined,
+  SmileFilled,
+  SmileOutlined,
+  UploadOutlined,
 } from '@ant-design/icons'
-import {Badge, Card, Typography, Row, Col, Avatar, Modal, Button, Tooltip, Select, Switch} from 'antd'
-import SelectVideo from './player/SelectVideo'
-import Platform from './view/Platform'
-import Author from './view/Author'
-import WhoUse from './view/WhoUse'
+import {ProCard, ProForm, ProFormRadio, ProFormSelect, ProFormSwitch, ProFormText} from '@ant-design/pro-components'
+import {PageContainer} from '@ant-design/pro-layout'
+import {Avatar, Badge, Button, Card, Col, Modal, Row, Select, Switch, Tooltip, Typography} from 'antd'
 import GitHubButton from 'react-github-btn'
+import VideoOptions from 'src/preview/player/VideoOptions'
+import {
+  useBackgroundColorStore,
+  useBackgroundGrid,
+  useClickUploadStore,
+  useCodeStore,
+  useEffectStore,
+  useVideoStore,
+} from 'src/preview/store/usePlayerStore'
+import {version} from 'yyeva'
+// import {Row, Col, Space} from 'antd'
+import {GiftPlayer} from './player'
 import CodePreview from './player/CodePreview'
+import SelectVideo from './player/SelectVideo'
+import VideoMeta from './player/VideoMeta'
+import Author from './view/Author'
+import Platform from './view/Platform'
+import WhoUse from './view/WhoUse'
 // import Jcx from './view/Jcx'
 
 const {Option} = Select

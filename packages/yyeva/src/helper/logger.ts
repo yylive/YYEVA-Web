@@ -1,14 +1,12 @@
 import config from 'src/helper/config'
-import type {LoggerLevelType} from 'src/type/mix'
-import {MixEvideoOptions} from 'src/type/mix'
-import Animator from 'src/player/video/animator'
+import type EVideo from 'src/player'
 import VideoEntity from 'src/player/render/videoEntity'
 import Webgl from 'src/player/render/webglEntity'
-import EVideo from 'src/player'
+import Animator from 'src/player/video/animator'
+import type {LoggerLevelType} from 'src/type/mix'
+import type {MixEvideoOptions} from 'src/type/mix'
 const prefixName = 'YYEVA'
-export interface ConsoleFn {
-  (message?: any, ...optionalParams: any[]): void
-}
+export type ConsoleFn = (message?: any, ...optionalParams: any[]) => void
 export type LogTypes = 'debug' | 'info' | 'warn' | 'error'
 export type LogParams = {
   level?: LogTypes

@@ -1,9 +1,9 @@
-import Player from 'src/player'
 import config from 'src/helper/config'
-import {MixEvideoOptions} from './type/mix'
-import {versionTips, logger} from 'src/helper/logger'
+import {logger, versionTips} from 'src/helper/logger'
+import Player from 'src/player'
 import {polyfill, wechatPolyfill} from './helper/polyfill'
 import {isOffscreenCanvasSupported} from './helper/utils'
+import type {MixEvideoOptions} from './type/mix'
 
 async function yyEva(options: MixEvideoOptions): Promise<Player> {
   // console.log('[yyEva]options=', options)

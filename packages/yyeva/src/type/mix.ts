@@ -1,6 +1,6 @@
 // import {LOG_LEVEL} from 'src/helper/log'
 
-import {LogTypes} from 'src/helper/logger'
+import type {LogTypes} from 'src/helper/logger'
 
 /**
  * 日志级别

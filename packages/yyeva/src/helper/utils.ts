@@ -1,5 +1,5 @@
-import {getChromeVersion, isAndroid, polyfill} from './polyfill'
 import {logger} from 'src/helper/logger'
+import {getChromeVersion, isAndroid, polyfill} from './polyfill'
 
 /**
  * 判断链接是否 dataUrl (base64)
@@ -58,14 +58,14 @@ export function getTextByMaxWidth(text: string, font: string, maxWidth: number) 
   // Get the width
   let width = window.getComputedStyle(ele).width
   logger.info('getTextByMaxWidth width=', width)
-  if (parseInt(width, 10) > maxWidth) {
+  if (Number.parseInt(width, 10) > maxWidth) {
     let len = text.length
     while (true) {
       str = text.substring(0, len - 1) + '...'
       ele.innerText = str
       width = window.getComputedStyle(ele).width
       console.log('getTextByMaxWidth.. width=', width, str)
-      if (parseInt(width, 10) <= maxWidth) {
+      if (Number.parseInt(width, 10) <= maxWidth) {
         break
       }
       len = len - 1

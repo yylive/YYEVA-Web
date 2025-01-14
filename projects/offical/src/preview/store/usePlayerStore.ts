@@ -1,6 +1,6 @@
+import video from 'src/preview/config/video'
 import {create} from 'zustand'
 import {combine} from 'zustand/middleware'
-import video from 'src/preview/config/video'
 const defaultOptions = {
   alphaDirection: 'right',
   mode: 'Fill',

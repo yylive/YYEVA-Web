@@ -1,16 +1,16 @@
-import {useEffectStore, useVideoFormStore, useVideoStore} from 'src/preview/store/usePlayerStore'
+import {ApiOutlined, FileImageOutlined, FileOutlined, UploadOutlined} from '@ant-design/icons'
 import {
   ProCard,
   ProForm,
-  ProFormText,
+  type ProFormInstance,
   ProFormRadio,
-  ProFormSwitch,
   ProFormSelect,
-  ProFormInstance,
+  ProFormSwitch,
+  ProFormText,
 } from '@ant-design/pro-components'
-import {FileOutlined, FileImageOutlined, ApiOutlined, UploadOutlined} from '@ant-design/icons'
-import {message, Spin, Tooltip} from 'antd'
+import {Spin, Tooltip, message} from 'antd'
 import {Fragment, useEffect, useRef} from 'react'
+import {useEffectStore, useVideoFormStore, useVideoStore} from 'src/preview/store/usePlayerStore'
 const fileToDataUrl = (file: HTMLInputElement): Promise<string | undefined> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()

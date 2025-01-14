@@ -3,10 +3,11 @@
   "scripts": {
     "dev": "pnpm --filter=yyeva --filter=offical dev",
     "build": "pnpm --filter=yyeva --filter=offical build",
-    "start": "pnpm --filter=offical start"
+    "start": "pnpm --filter=offical start",
+    "lint": "biome check . --fix"
   },
   "devDependencies": {
-    "@empjs/eslint-config-react": "^1.0.0",
+    "@empjs/biome-config": "^0.7.2",
     "typescript": "^5.4.5"
   }
 }

@@ -1,5 +1,5 @@
-import {useState, useEffect, useRef} from 'react'
-import {useVideoFormStore, useVideoStore, useClickUploadStore} from 'src/preview/store/usePlayerStore'
+import {useEffect, useRef, useState} from 'react'
+import {useClickUploadStore, useVideoFormStore, useVideoStore} from 'src/preview/store/usePlayerStore'
 export type UploadVideoType = {
   // fileInputRef: React.RefObject<HTMLInputElement>
   children: React.ReactNode
@@ -56,6 +56,7 @@ const UploadVideo = ({children}: UploadVideoType) => {
   return (
     <>
       <form ref={formRef} onDragEnter={handleDrag} onSubmit={e => e.preventDefault()}>
+        {/* biome-ignore lint/a11y/noLabelWithoutControl: <explanation> */}
         <label className="drapUpload" ref={uploadLabelRef}>
           {children}
         </label>

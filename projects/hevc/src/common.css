@@ -1,19 +1,17 @@
 video {
-    width: 100%;
-    max-width: 500px;
+	width: 100%;
+	max-width: 500px;
 }
 
 #root {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
 }
 
 body {
-    background: 0 0/15px 15px, 0 0/15px 15px, 0 0/75px 75px, 0 0/75px 75px #222;
-    background-image:
-        linear-gradient(hsla(0, 0%, 100%, .2) 1px, transparent 0),
-        linear-gradient(90deg, hsla(0, 0%, 100%, .2) 1px, transparent 0);
-
+	background: 0 0 / 15px 15px, 0 0 / 15px 15px, 0 0 / 75px 75px, 0 0 / 75px 75px #222;
+	background-image: linear-gradient(hsla(0, 0%, 100%, 0.2) 1px, transparent 0),
+		linear-gradient(90deg, hsla(0, 0%, 100%, 0.2) 1px, transparent 0);
 }

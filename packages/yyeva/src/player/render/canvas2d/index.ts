@@ -1,8 +1,8 @@
-import {MixEvideoOptions, ResizeCanvasType, VideoAnimateDataItemType} from 'src/type/mix'
-import VideoEntity from 'src/player/render/videoEntity'
-import RenderCache from 'src/player/render/renderCache'
 import {logger} from 'src/helper/logger'
 import {Canvas2dControl} from 'src/player/render/canvas2d/control'
+import RenderCache from 'src/player/render/renderCache'
+import VideoEntity from 'src/player/render/videoEntity'
+import type {MixEvideoOptions, ResizeCanvasType, VideoAnimateDataItemType} from 'src/type/mix'
 //
 export default class Render2D extends Canvas2dControl {
   public isPlay = false
@@ -268,7 +268,7 @@ export default class Render2D extends Canvas2dControl {
         const [x, y, w, h] = o[this.videoEntity.renderFrame]
         const [mX, mY, mW, mH] = o[this.videoEntity.outputFrame]
         const effectId = o[this.videoEntity.effectId]
-       const isTextType = this.videoEntity.isTextTypeById(effectId)
+        const isTextType = this.videoEntity.isTextTypeById(effectId)
 
         // logger.debug(
         //   'renderKey: ',
@@ -281,7 +281,7 @@ export default class Render2D extends Canvas2dControl {
         //   w,
         //   h,
         //   ', effectId=' + effectId + ',frame=' + frame + ',scale=' + w / mW,
-        //   ',isTextType=' + isTextType 
+        //   ',isTextType=' + isTextType
         // )
         const r = this.drawEffect[effectId] || {}
 
@@ -405,7 +405,7 @@ export default class Render2D extends Canvas2dControl {
           for (let x = 0; x < scale; x++) {
             const destCol = Math.floor(col * scale) + x
             // for (let i = 0; i < 4; i++) {
-              // scaled.data[(destRow * scaleWidth + destCol) * 4 + i] = sourcePixel[i]
+            // scaled.data[(destRow * scaleWidth + destCol) * 4 + i] = sourcePixel[i]
             // }
             const destIndex = (destRow * scaleWidth + destCol) * 4
             scaled.data.set(sourcePixel, destIndex)

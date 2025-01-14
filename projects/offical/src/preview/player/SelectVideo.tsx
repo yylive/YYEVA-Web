@@ -1,13 +1,13 @@
-import {Segmented, Typography, Tooltip} from 'antd'
 import {
-  DashboardOutlined,
   BellOutlined,
+  DashboardOutlined,
   RightSquareOutlined,
-  UpSquareOutlined,
   ThunderboltOutlined,
+  UpSquareOutlined,
 } from '@ant-design/icons'
-import {useVideoStore} from 'src/preview/store/usePlayerStore'
+import {Segmented, Tooltip, Typography} from 'antd'
 import videos from 'src/preview/config/video'
+import {useVideoStore} from 'src/preview/store/usePlayerStore'
 const SelectVideo = () => {
   const {setVideo} = useVideoStore(state => state)
   return (

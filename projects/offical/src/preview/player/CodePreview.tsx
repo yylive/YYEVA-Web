@@ -1,9 +1,9 @@
-import {Badge, Card, Typography, Row, Col, Avatar, Modal, Button, Tooltip} from 'antd'
-import {useCodeStore, useVideoStore} from '../store/usePlayerStore'
-import CodeMirror from '@uiw/react-codemirror'
 import {javascript} from '@codemirror/lang-javascript'
 import {dracula} from '@uiw/codemirror-theme-dracula'
+import CodeMirror from '@uiw/react-codemirror'
+import {Avatar, Badge, Button, Card, Col, Modal, Row, Tooltip, Typography} from 'antd'
 import {useCallback} from 'react'
+import {useCodeStore, useVideoStore} from '../store/usePlayerStore'
 const genCode = (o?: any) => {
   // console.log(o)
   const oString = JSON.stringify(o, null, 10)

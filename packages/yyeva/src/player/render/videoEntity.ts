@@ -2,7 +2,13 @@ import {logger} from 'src/helper/logger'
 import {isAndroid, isIOS} from 'src/helper/polyfill'
 import {getTextByMaxWidth, isDataUrl, isOffscreenCanvasSupported} from 'src/helper/utils'
 import Animator from 'src/player/video/animator'
-import {MixEvideoOptions, VideoAnimateType, VideoAnimateEffectType, VideoDataType, EScaleMode} from 'src/type/mix'
+import {
+  EScaleMode,
+  type MixEvideoOptions,
+  type VideoAnimateEffectType,
+  type VideoAnimateType,
+  type VideoDataType,
+} from 'src/type/mix'
 
 type ContextType = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
 export default class VideoEntity {
@@ -229,11 +235,11 @@ export default class VideoEntity {
     const effect = this.config?.effect
     if (effect) {
       for (let index = 0; index < effect.length; index++) {
-        const item = effect[index];
+        const item = effect[index]
         if (item.effectId == effectId) {
           type = item.effectType
           break
-        }        
+        }
       }
     }
 
@@ -260,7 +266,7 @@ export default class VideoEntity {
           // if (this.op['fontStyle'] && !item['fontStyle']) {
           //   item['fontStyle'] = this.op['fontStyle']
           // }
-          logger.debug('parseFromSrcAndOptions effectTag=', effectTag)          
+          logger.debug('parseFromSrcAndOptions effectTag=', effectTag)
           let effectOp = effects[effectTag]
           if (!effectOp && effectTag.indexOf('_') > 0) {
             // 对于'key7_ffffff_18'格式的key, 外部传入'key7_'也能支持
