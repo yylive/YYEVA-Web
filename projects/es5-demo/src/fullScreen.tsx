@@ -41,7 +41,7 @@ const getOpt: any = () => {
     //   fontSize: 40,
     // },
     useFrameCache: true,
-    renderType: 'canvas2d',
+    // renderType: 'canvas2d',
     ...opt,
   }
 }

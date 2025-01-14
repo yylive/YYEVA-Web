@@ -14,12 +14,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@efox/emp": "^2.4.6",
+    "@empjs/cli": "^3.5.3",
     "@types/react": "18",
     "@types/react-dom": "18",
     "vconsole": "^3.15.0"
   },
   "dependencies": {
+    "@empjs/plugin-react": "^3.5.3",
     "core-js": "^3.22.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
