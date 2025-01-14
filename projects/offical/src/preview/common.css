@@ -162,3 +162,8 @@ video {
 		font-size: 12px;
 	}
 }
+
+.ant-pro-page-container-children-container {
+  padding: 0!important;
+}
+
