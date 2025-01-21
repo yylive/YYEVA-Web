@@ -1,17 +1,18 @@
 import logger from 'src/helper/logger'
-export async function getVideoByHttp(videoSource: string) {
-  const blob = await fetch(videoSource)
-    .then(r => {
-      if (r.ok) {
-        return r.blob()
-      } else {
-        logger.error('fetch request failed, url: ' + this.op.videoSource)
+export function getVideoByHttp(videoSource: string) {
+  return new Promise((resolve, reject) => {
+    fetch(videoSource)
+      .then(r => {
+        if (r.ok) {
+          resolve(r.blob())
+        } else {
+          logger.error('fetch request failed, url: ' + this.op.videoSource)
+          return undefined
+        }
+      })
+      .catch(err => {
+        logger.error('getVideoByHttp fetch, err=', err)
         return undefined
-      }
-    })
-    .catch(err => {
-      logger.error('getVideoByHttp fetch, err=', err)
-      return undefined
-    })
-  return blob
+      })
+  })
 }

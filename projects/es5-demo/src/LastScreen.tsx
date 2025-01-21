@@ -1,13 +1,23 @@
 import {Player} from './player'
-const options = () => {
+const options = (): any => {
   return {
-    videoUrl: '/stage2.mp4',
+    // videoUrl: '/stage2.mp4',
+    videoUrl: '/yy/yy.mp4',
+    useMetaData: true,
     loop: false,
     endPause: true, // 播放结束停留在最后一帧，好看ios支持，安卓不支持，会循环播放，需要手动停止
+    showVideo: true,
+    useVideoDBCache: false,
+    useFrameCache: false,
+    useOfsRender: false,
+    usePrefetch: false,
+    logLevel: 'debug',
+    renderType: 'webgl',
   }
 }
 const LastScreen = () => {
   return <Player playOpt={options} replay={false} />
+  // return <div>LastScreen</div>
 }
 
 export default LastScreen

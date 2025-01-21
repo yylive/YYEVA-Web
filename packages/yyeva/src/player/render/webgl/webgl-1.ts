@@ -12,7 +12,7 @@ export const VERTEX_SHADER = () => {
   return `attribute vec2 a_position;
     attribute vec2 a_texCoord;
     attribute vec2 a_alpha_texCoord;
-    varying vec2 v_alpha_texCoord
+    varying vec2 v_alpha_texCoord;
     varying vec2 v_texcoord;
     uniform vec2 u_scale;
     void main(void){

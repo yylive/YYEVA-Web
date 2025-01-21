@@ -102,7 +102,7 @@ export default class EVideo {
     onError && onError?.(err)
   }
   async selectRender(rt: RenderType) {
-    logger.debug('this.renderer', this.renderer)
+    logger.debug('this.renderer', this.renderer, rt)
     if (this.op.renderType !== rt) this.op.renderType = rt
     const {default: Renderer} = await this.renderLoader[rt]()
     this.renderer = new Renderer(this.op)
@@ -377,9 +377,9 @@ export default class EVideo {
     this.video.pause()
     this.cleanTimer()
   }
-  private videoEvent = (e: any) => {
+  private videoEvent = (e: any, ...args) => {
     logger.debug(`[${e.type}]:`)
-    this.eventsFn[e.type] && this.eventsFn[e.type]()
+    this.eventsFn[e.type] && this.eventsFn[e.type](e, ...args)
   }
 
   private loop() {
@@ -551,6 +551,7 @@ export default class EVideo {
       this.renderer.videoSeekedEvent()
     }
     this.eventsFn.error = e => {
+      logger.error(e)
       this.onError && this.onError(e)
     }
     videoEvents.map(name => {

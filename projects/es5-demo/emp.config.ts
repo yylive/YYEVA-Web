@@ -8,5 +8,8 @@ export default defineConfig(() => {
       open: false,
       // https: true,
     },
+    html: {
+      template: 'src/index.html',
+    },
   }
 })
