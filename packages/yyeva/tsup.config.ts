@@ -11,7 +11,7 @@ export default defineConfig(({watch}) => {
     platform: 'browser',
     splitting: true,
     sourcemap: true,
-    minify: !isDev,
+    minify: !isDev ? 'terser' : false,
     clean: true,
     dts: true,
     shims: true,
@@ -22,6 +22,9 @@ export default defineConfig(({watch}) => {
     esbuildOptions(options, context) {
       options.legalComments = 'none'
       options.keepNames = false
+      // options.minifySyntax = !isDev
+      // options.minifyWhitespace = !isDev
+      // options.minifyIdentifiers = !isDev
     },
     // outExtension({format}) {
     //   return {
