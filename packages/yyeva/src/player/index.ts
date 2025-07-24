@@ -21,7 +21,6 @@ import {
 
 // import {getVIdeoId} from 'src/helper/utils'
 import {clickPlayBtn, isHevc, polyfill} from 'src/helper/polyfill'
-import {detectAudio} from 'src/helper/utils'
 // import VideoEntity from './render/videoEntity'
 import {LoopChecker} from './loopCheck'
 import {getVideoByHttp} from './player_utils'
@@ -148,9 +147,9 @@ export default class EVideo {
 
       await this.videoLoad()
       await this.renderer.setup(this.video)
-      const hasAudio = await detectAudio(this.video)
-      // console.log('hasAudio', hasAudio, this.op.mute)
-      this.video.muted = !hasAudio || this.op.mute
+      // const hasAudio = await detectAudio(this.video)
+      // logger.debug('hasAudio', hasAudio, 'mute', this.op.mute)
+      this.video.muted = this.op.mute
       //判断是否存在 audio 默认为 false
       // if (!this.renderer.videoEntity.hasAudio) {
       //   this.video.muted = true

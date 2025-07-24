@@ -4,7 +4,7 @@ const options = (): any => {
     // videoUrl: '/stage2.mp4',
     // videoUrl: '/yy/yy.mp4',
     videoUrl: '/no-music.mp4',
-    // mute: false,
+    mute: false,
     useMetaData: true,
     loop: false,
     endPause: true, // 播放结束停留在最后一帧，好看ios支持，安卓不支持，会循环播放，需要手动停止

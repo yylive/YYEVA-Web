@@ -25,9 +25,9 @@
     "zustand": "^4.1.5"
   },
   "devDependencies": {
-    "@empjs/cli": "^3.5.3",
-    "@empjs/plugin-lightningcss": "^3.0.0",
-    "@empjs/plugin-react": "^3.5.3",
+    "@empjs/cli": "^3.9.0",
+    "@empjs/plugin-react": "^3.8.2",
+    "@empjs/plugin-lightningcss": "^3.3.3",
     "@types/react": "18.0.26",
     "@types/react-dom": "^18.0.9",
     "@types/react-router-dom": "^5.3.2"

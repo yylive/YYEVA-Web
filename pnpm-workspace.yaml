@@ -1,7 +1,11 @@
 packages:
-  # all packages in subdirs of packages/ and components/
-  - 'packages/**'
-  - 'projects/**'
-  - 'docs/**'
-  # exclude packages that are inside test directories
+  - packages/**
+  - projects/**
+  - docs/**
   - '!**/test/**'
+
+ignoredBuiltDependencies:
+  - '@biomejs/biome'
+  - '@parcel/watcher'
+  - core-js
+  - esbuild
