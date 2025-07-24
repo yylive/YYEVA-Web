@@ -1,5 +1,5 @@
 import {logger} from 'src/helper/logger'
-import {getChromeVersion, isAndroid, polyfill} from './polyfill'
+import {getChromeVersion, isAndroid} from './polyfill'
 
 /**
  * 判断链接是否 dataUrl (base64)
@@ -76,4 +76,37 @@ export function getTextByMaxWidth(text: string, font: string, maxWidth: number) 
   document.body.removeChild(ele)
 
   return str
+}
+
+export function detectAudio(videoElement) {
+  return new Promise(resolve => {
+    const checkAudio = () => {
+      // Firefox
+      if (typeof videoElement.mozHasAudio !== 'undefined') {
+        resolve(videoElement.mozHasAudio)
+        return
+      }
+
+      // Webkit browsers
+      if (typeof videoElement.webkitAudioDecodedByteCount !== 'undefined') {
+        resolve(videoElement.webkitAudioDecodedByteCount > 0)
+        return
+      }
+
+      // Standard method
+      if (videoElement.audioTracks) {
+        resolve(videoElement.audioTracks.length > 0)
+        return
+      }
+
+      // 最后的兼容方案
+      resolve(false)
+    }
+
+    if (videoElement.readyState >= 1) {
+      checkAudio()
+    } else {
+      videoElement.addEventListener('loadedmetadata', checkAudio, {once: true})
+    }
+  })
 }

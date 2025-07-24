@@ -141,7 +141,7 @@ export default class MCache {
   //TODO 定制批量删除策略
   removeCache() {
     //超过 frameCacheCount 删除
-    if (MCache.cacheKeys.length > this.frameCacheCount) {
+    if (MCache.cacheKeys && MCache.cacheKeys.length > this.frameCacheCount) {
       const resetCount = MCache.cacheKeys.length - this.frameCacheCount
       for (let i = 1; i < resetCount; i++) {
         const key = MCache.cacheKeys.shift()

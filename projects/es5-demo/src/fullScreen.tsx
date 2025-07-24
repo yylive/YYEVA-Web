@@ -49,6 +49,9 @@ const getOpt: any = () => {
     // renderType: 'webgpu',
     // renderType: 'canvas2d',
     ...opt,
+    onProcess(...args) {
+      console.log('onProcess', args)
+    },
   }
   // console.log(options)
   return options

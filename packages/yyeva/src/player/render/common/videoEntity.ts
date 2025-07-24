@@ -16,7 +16,7 @@ export default class VideoEntity {
   public videoFps = 30
   public config?: VideoAnimateType
   public isUseMeta = false
-  public hasAudio = false
+  // public hasAudio = false
   //
   private ofs: HTMLCanvasElement | OffscreenCanvas
   private ctx: CanvasRenderingContext2D | null | OffscreenCanvasRenderingContext2D
@@ -83,9 +83,9 @@ export default class VideoEntity {
       this.fps = config.descript.fps
       this.videoFps = config.descript.fps
     }
-    if (config.descript.hasAudio) {
-      this.hasAudio = true
-    }
+    // if (config.descript.hasAudio) {
+    //   this.hasAudio = true
+    // }
   }
   async setup() {
     if (this.op.dataUrl) {
