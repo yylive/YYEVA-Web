@@ -499,7 +499,11 @@ export default class VideoEntity {
     logger.debug('getFontStyle, style: ', ctx.font, ', text:', txt)
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     const posx = Math.floor(w / 2)
-    const posy = Math.floor(h / 2)
+    let posy = Math.floor(h / 2)
+    if (!isAndroid && !isIOS) {
+      const metrics = ctx.measureText(txt)
+      posy = posy + (metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) / 2
+    }
     ctx.fillText(getTextByMaxWidth(txt, ctx.font, w), posx, posy)
     if (isOffscreenCanvasSupported() && this.ofs instanceof OffscreenCanvas) {
       const blob = await this.ofs.convertToBlob()
