@@ -339,7 +339,13 @@ export default class VideoEntity {
           const drawWidth = Math.round(img.width * adapt)
           const drawHeight = Math.round(img.height * adapt)
           const sx = Math.round((w - drawWidth) / 2)
-          const sy = Math.round((drawHeight - h) / 2)
+          let sy = 0
+          if(this.op.renderType === 'webgpu'){
+             sy = Math.round((h - drawHeight) / 2)
+          }
+          else{
+             sy = Math.round((drawHeight - h) / 2)
+          }
           // console.log(
           //   `[effect] before draw: w ,h ,drawWidth, drawHeight, sx, sy, adapt`,
           //   w,
@@ -351,8 +357,13 @@ export default class VideoEntity {
           //   adapt,
           // )
           ctx.save()
-          ctx.translate(0, drawHeight)
-          ctx.scale(1, -1)
+          if(this.op.renderType === 'webgpu'){
+              ctx.translate(0, 0)
+          }
+          else{
+             ctx.translate(0, drawHeight)
+             ctx.scale(1, -1)
+          }
           ctx.drawImage(img, sx, sy, drawWidth, drawHeight)
           ctx.restore()
           return ctx.getImageData(0, 0, w, h)
@@ -368,7 +379,13 @@ export default class VideoEntity {
           const drawWidth = Math.round(img.width * adapt)
           const drawHeight = Math.round(img.height * adapt)
           const sx = Math.round((w - drawWidth) / 2)
-          const sy = Math.round((drawHeight - h) / 2)
+          let sy = 0
+          if(this.op.renderType === 'webgpu'){
+             sy = Math.round((h - drawHeight) / 2)
+          }
+          else{
+             sy = Math.round((drawHeight - h) / 2)
+          }
           // console.log(
           //   `[effect] before draw: w ,h ,drawWidth, drawHeight, sx, sy, adapt`,
           //   w,
@@ -380,8 +397,13 @@ export default class VideoEntity {
           //   adapt,
           // )
           ctx.save()
-          ctx.translate(0, drawHeight)
-          ctx.scale(1, -1)
+          if(this.op.renderType === 'webgpu'){
+              ctx.translate(0, 0)
+          }
+          else{
+             ctx.translate(0, drawHeight)
+             ctx.scale(1, -1)
+          }
           ctx.drawImage(img, sx, sy, drawWidth, drawHeight)
           ctx.restore()
           return ctx.getImageData(0, 0, w, h)
