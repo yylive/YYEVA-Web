@@ -6,7 +6,7 @@ export function getVideoByHttp(videoSource: string) {
         if (r.ok) {
           resolve(r.blob())
         } else {
-          logger.error('fetch request failed, url: ' + this.op.videoSource)
+          logger.error('fetch request failed, url: ' + videoSource)
           return undefined
         }
       })
