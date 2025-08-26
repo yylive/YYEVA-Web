@@ -119,11 +119,12 @@ export default class EVideo {
       await this.videoLoad()
       await this.renderer.setup(this.video)
       //判断是否存在 audio 默认为 false
-      if (!this.renderer.videoEntity.hasAudio) {
-        this.video.muted = true
-      } else {
-        this.video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : false
+
+      if(polyfill.harmony){
+        this.op.mute = true //鸿蒙系统禁止声音播放
       }
+
+      this.video.muted =  this.op.mute
 
       // video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : !VideoEntity.hasAudio
       //
