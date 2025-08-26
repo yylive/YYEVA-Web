@@ -14,6 +14,8 @@ export const isAndroid = /android|adr/i.test(ua)
 export const isUCBrowser = ua.indexOf('ucbrowser') > -1 // UC浏览器
 export const isQuark = ua.indexOf('quark') > -1 // 夸克浏览器
 
+export const isHarmonyOS  = ua.indexOf('harmonyos') > -1;
+
 export const getChromeVersion = () => {
   const s = ua.match(/chrome\/([\d\.]+)/)
   let v: any = s ? s[1] : '0.0.0'
@@ -32,6 +34,7 @@ export const polyfill = {
   quark: isQuark,
   mac: isMac,
   safari: isSafari,
+  harmony: isHarmonyOS
 }
 //
 export type PolyfillType = typeof polyfill

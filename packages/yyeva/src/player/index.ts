@@ -149,16 +149,13 @@ export default class EVideo {
       await this.renderer.setup(this.video)
       // const hasAudio = await detectAudio(this.video)
       // logger.debug('hasAudio', hasAudio, 'mute', this.op.mute)
-      this.video.muted = this.op.mute
-      //判断是否存在 audio 默认为 false
-      // if (!this.renderer.videoEntity.hasAudio) {
-      //   this.video.muted = true
-      // } else {
-      //   this.video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : false
-      // }
 
-      // video.muted = typeof this.op.mute !== 'undefined' ? this.op.mute : !VideoEntity.hasAudio
-      //
+      if(polyfill.harmony){
+        this.op.mute = true //鸿蒙系统禁止声音播放
+      }
+
+      this.video.muted = this.op.mute
+      
       this.fps = this.renderer.videoEntity.fps
       logger.debug(`[YYEVA] this.renderer.videoEntity.fps`, this.renderer.videoEntity.fps)
       this.animator.setVideoFps({
