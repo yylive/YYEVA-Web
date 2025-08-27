@@ -309,63 +309,40 @@ export default class EVideo {
       return
     }
 
-    const videoPromise = this.video.play()
-    // 避免 uc 夸克报错
-    if (videoPromise) {
-      videoPromise
-        .then(() => {
-          logger.debug(`${this.op.mute === false ? '声音播放' : '静音播放'}`)
-        })
-        .catch(e => {
-          /**
-           * 触发 catch 条件
-           * 浏览器对静音不允许导致
-           * 微信禁止自动播放导致
-           * TODO 看看是否可以跟 canplaythrough 合并
-           */
-          /**
-           * TODO 音频适配 safari
-           * safari 会引起死循环
-           * 暂时自动切换静音
-           */
-          if (polyfill.safari && polyfill.mac) {
-            logger.debug('切换到静音播放', this.op.videoSource)
+    const tryPlay = (isMuted = false) => {
+        if (isMuted) {
             this.video.muted = true
-            this.video.play().catch(e => {
-              logger.debug(e)
-              this.op?.onError?.(e)
-            })
-            return
-          }
-          //
-          logger.error(
-            `play error: `,
-            this.op.videoSource,
-            e,
-            'e?.code=',
-            e?.code,
-            ', e?.name=',
-            e?.name,
-            ', url=',
-            this.op.videoUrl,
-          )
-          if (e?.code === 20) {
-            return
-          }
-
-          this.clickToPlay()
-          // 增加弹窗 手动触发 video.play
-          if (e?.code === 0 && e?.name === EPlayError.NotAllowedError) {
-            this.op?.onError?.({
-              playError: EPlayError.NotAllowedError,
-              video: this.video,
-              playStep: EPlayStep.muted,
-            })
-          }
-        })
-    } else {
-      this.op?.onEnd?.()
+        }
+        
+        const videoPromise = this.video.play()
+        if (videoPromise) {
+            videoPromise
+                .then(() => {
+                    logger.debug(`${this.video.muted ? '静音播放' : '声音播放'}`)
+                })
+                .catch(e => {
+                    if (isMuted) {
+                        // 已经尝试过静音播放仍然失败
+                        logger.error('静音播放也失败:', e)
+                        this.clickToPlay()
+                        this.op?.onError?.({
+                            playError: EPlayError.NotAllowedError,
+                            video: this.video,
+                            playStep: EPlayStep.muted,
+                        })
+                        return
+                    }
+                    
+                    // 第一次播放失败，尝试静音播放
+                    logger.debug('尝试切换到静音播放', this.op.videoSource)
+                    tryPlay(true)
+                })
+        } else {
+            this.op?.onEnd?.()
+        }
     }
+
+    tryPlay(this.op.mute)
   }
   public stop() {
     logger.debug('[player]stop.')
