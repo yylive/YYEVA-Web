@@ -150,10 +150,6 @@ export default class EVideo {
       // const hasAudio = await detectAudio(this.video)
       // logger.debug('hasAudio', hasAudio, 'mute', this.op.mute)
 
-      if(polyfill.harmony){
-        this.op.mute = true //鸿蒙系统禁止声音播放
-      }
-
       this.video.muted = this.op.mute
       
       this.fps = this.renderer.videoEntity.fps
@@ -308,8 +304,7 @@ export default class EVideo {
       logger.debug(`startEvent() document.hidden..`)
       return
     }
-
-    const tryPlay = (isMuted = false) => {
+   const tryPlay = (isMuted = false) => {
         if (isMuted) {
             this.video.muted = true
         }
@@ -323,25 +318,40 @@ export default class EVideo {
                 .catch(e => {
                     if (isMuted) {
                         // 已经尝试过静音播放仍然失败
-                        logger.error('静音播放也失败:', e)
+                       logger.error(
+                          `play error: `,
+                          this.op.videoSource,
+                          e,
+                          'e?.code=',
+                          e?.code,
+                          ', e?.name=',
+                          e?.name,
+                          ', url=',
+                          this.op.videoUrl,
+                        )
+                        if (e?.code === 20) {
+                          return
+                        }
                         this.clickToPlay()
-                        this.op?.onError?.({
-                            playError: EPlayError.NotAllowedError,
-                            video: this.video,
-                            playStep: EPlayStep.muted,
-                        })
+                        if (e?.code === 0 && e?.name === EPlayError.NotAllowedError) {
+                          this.op?.onError?.({
+                              playError: EPlayError.NotAllowedError,
+                              video: this.video,
+                              playStep: EPlayStep.muted,
+                          })
+                        }
                         return
                     }
                     
                     // 第一次播放失败，尝试静音播放
-                    logger.debug('尝试切换到静音播放', this.op.videoSource)
+                    logger.warn('尝试切换到静音播放', this.op.videoSource)
                     tryPlay(true)
                 })
         } else {
             this.op?.onEnd?.()
         }
     }
-
+   
     tryPlay(this.op.mute)
   }
   public stop() {
