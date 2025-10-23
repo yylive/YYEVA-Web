@@ -163,7 +163,7 @@ export default class VideoEntity {
    * @param url 支持 HTTP DATAURL
    * @returns
    */
-  private async loadImg(url: string): Promise<HTMLImageElement | ImageBitmap | undefined> {
+   private async loadImg(url: string): Promise<HTMLImageElement | ImageBitmap | HTMLCanvasElement | OffscreenCanvas | undefined> {
     try {
       const isBase64 = isDataUrl(url)
       if (this.isUseBitmap) {
@@ -212,7 +212,32 @@ export default class VideoEntity {
         url = `${location.protocol}//${location.host}${url}`
       }
       // url base64 都可以创建 image element
-      return this.createImageElement(url)
+      const img = await this.createImageElement(url)
+
+      if (!img) {
+        return undefined;
+      }
+
+      // Create a temporary canvas to flip the image vertically
+      const canvas = isOffscreenCanvasSupported() ? new OffscreenCanvas(img.width, img.height) : document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+
+      if (!ctx) {
+        // Fallback to the original image if context is not available
+        return img;
+      }
+
+      // Apply vertical flip transformation. [1, 7, 10]
+      ctx.save();
+      ctx.translate(0, img.height);
+      ctx.scale(1, -1);
+      ctx.drawImage(img, 0, 0);
+      ctx.restore();
+      
+      return canvas;
+
     } catch (e) {
       logger.warn('fetch, else err=', e)
       // this.op?.onEnd?.(e)
