@@ -38,42 +38,46 @@ export function isOffscreenCanvasSupported() {
 // Use a fake element
 //https://phuoc.ng/collection/html-dom/measure-the-width-of-given-text-of-given-font/
 export function getTextByMaxWidth(text: string, font: string, maxWidth: number) {
-  // Create an element
-  const ele = document.createElement('div')
+  // 1. 创建一个临时的、不可见的元素用于测量
+  const ele = document.createElement('span'); // 使用 span 更适合测量行内文本
 
-  // Set styles
-  ele.style.position = 'absolute'
-  ele.style.visibility = 'hidden'
-  ele.style.whiteSpace = 'nowrap'
-  ele.style.left = '-9999px'
+  // 2. 设置样式使其不影响页面布局
+  ele.style.position = 'absolute';
+  ele.style.visibility = 'hidden';
+  ele.style.whiteSpace = 'nowrap';
+  // ele.style.left = '-9999px'; // visibility: hidden 已经足够
 
-  // Set font and text
-  ele.style.font = font
-  ele.innerText = text
+  // 3. 设置字体和初始文本
+  ele.style.font = font;
+  ele.textContent = text; // 使用 textContent 更高效，因为它不解析HTML
 
-  // Append to the body
-  document.body.appendChild(ele)
+  // 4. 将元素添加到 body 中以进行计算
+  document.body.appendChild(ele);
 
-  let str = text
-  // Get the width
-  let width = window.getComputedStyle(ele).width
-  logger.info('getTextByMaxWidth width=', width)
-  if (parseInt(width, 10) > maxWidth) {
-    let len = text.length
-    while (true) {
-      str = text.substring(0, len - 1) + '...'
-      ele.innerText = str
-      width = window.getComputedStyle(ele).width
-      window.console.log('getTextByMaxWidth.. width=', width, str)
-      if (parseInt(width, 10) <= maxWidth) {
-        break
-      }
-      len = len - 1
-    }
+  // 5. 初始检查：如果原始文本已经符合要求，直接返回
+  // 使用 offsetWidth 更直接，它返回一个整数，无需 parseInt
+  if (ele.offsetWidth <= maxWidth) {
+    document.body.removeChild(ele);
+    return text;
   }
 
-  // Remove the element
-  document.body.removeChild(ele)
+  // 6. 如果文本太长，则开始缩减
+  let len = text.length;
+  let truncatedText = text;
 
-  return str
+  // 循环条件：宽度仍然超出 并且 还有字符可以移除
+  while (ele.offsetWidth > maxWidth && len > 0) {
+    len--; // 减少一个字符
+    truncatedText = text.substring(0, len) + '...';
+    ele.textContent = truncatedText;
+    // 调试日志
+    // console.log(`getTextByMaxWidth.. width=${ele.offsetWidth}, str=${truncatedText}`);
+  }
+
+  // 7. 清理临时元素
+  document.body.removeChild(ele);
+
+  // 8. 返回结果
+  // 如果循环是因为 len=0 结束的（即"..."也超宽），则返回"..."作为最短可能值
+  return truncatedText;
 }

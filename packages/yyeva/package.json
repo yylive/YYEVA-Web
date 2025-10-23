@@ -1,6 +1,6 @@
 {
   "name": "@gfe/yyeva",
-  "version": "1.0.0-ch.21",
+  "version": "1.0.0-ch.23",
   "description": "mp4 gift player",
   "files": [
     "dist",
@@ -18,6 +18,10 @@
     {
       "name": "zhanghaifeng2",
       "email": "zhanghaifeng2@yy.com"
+    },
+    {
+      "name": "linyongbao",
+      "email": "linyongbao@yy.com"
     }
   ],
   "engines": {

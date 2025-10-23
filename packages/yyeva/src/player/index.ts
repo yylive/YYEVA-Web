@@ -779,6 +779,7 @@ export default class EVideo {
   setCurrentTime(sec: number) {
     try {
       this.video.currentTime = sec
+      this.loopChecker?.reset()
       this.doStart()
     } catch (e) {
       //
