@@ -430,6 +430,7 @@ export default class EVideo {
     } else {
       video = document.createElement('video')
       video.setAttribute('id', videoID)
+      video.setAttribute('poster', 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')
       // 插入video 解决IOS不播放问题
       document.body.appendChild(video)
     }

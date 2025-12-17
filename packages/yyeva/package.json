@@ -1,6 +1,6 @@
 {
   "name": "yyeva",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "description": "mp4 gift player",
   "files": ["dist"],
   "maintainers": [
@@ -11,6 +11,10 @@
     {
       "name": "liangxiaoming",
       "email": "liangxiaoming@yy.com"
+    },
+    {
+      "name": "linyongbao",
+      "email": "linyongbao@yy.com"
     },
     {
       "name": "zhanghaifeng2",
