@@ -285,7 +285,7 @@ export class RenderWebGPUBase extends BizBase {
       size: vertices.byteLength,
       usage,
     })
-    this.device.queue.writeBuffer(vertexBuffer, 0, vertices)
+    this.device.queue.writeBuffer(vertexBuffer, 0, vertices.buffer as ArrayBuffer, vertices.byteOffset, vertices.byteLength)
     return vertexBuffer
   }
 }
