@@ -87,16 +87,25 @@ class WechatPolyfill {
     if (!polyfill.weixin || !polyfill.ios) {
       return
     }
-    //
-    document.addEventListener('WeixinJSBridgeReady', () => {
-      this.ready = true
+    const mountVideoDoms = () => {
       list.map(v => {
         const video = document.createElement('video')
         video.setAttribute('id', v)
         document.body.appendChild(video)
         video.style.visibility = 'hidden'
       })
-    })
+    }
+    if ((window as any).WeixinJSBridge) {
+      (window as any).WeixinJSBridge.invoke('getNetworkType', {}, () => {
+        this.ready = true
+        mountVideoDoms()
+      })
+    } else {
+      document.addEventListener('WeixinJSBridgeReady', () => {
+        this.ready = true
+        mountVideoDoms()
+      })
+    }
   }
   wxReady() {
     logger.debug('[wxReady] resolve', this.ready)
