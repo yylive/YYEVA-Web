@@ -96,10 +96,10 @@ export default class EVideo {
     const onEnd = this.onEnd
     const onError = this.onError
 
-    this.stop()
-    this.destroy()
     onEnd && onEnd?.(err)
     onError && onError?.(err)
+    this.stop()
+    this.destroy()
   }
   async selectRender(rt: RenderType) {
     logger.debug('this.renderer', this.renderer, rt)
@@ -208,6 +208,8 @@ export default class EVideo {
       // this.onError?.(e)
       // this.destroy()
       logger.error(e)
+      this._error(e)
+      throw e
     }
 
     //this.op.showPlayerInfo && versionTips(this.op, this)
