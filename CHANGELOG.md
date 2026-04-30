@@ -12,6 +12,7 @@
 ## Features
 + 增加 多实例支持
 
+
 ## Bugfixes 
 + 修复 不同帧率互相干扰的问题 
 + 修复 不同Video Duration导致的互相干扰问题 
