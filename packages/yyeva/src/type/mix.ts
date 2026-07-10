@@ -145,6 +145,11 @@ export type MixEvideoOptions = VideoEvent & {
   fontStyle?: string | any
   font?: {
     overflow: 'zoom' | 'cut' //  适配文本框宽度方式,超出文本框时:  'zoom'缩放  'cut'截取后段文本...
+    /**
+     * 文本水平对齐方式
+     * @default center
+     */
+    textAlign?: 'left' | 'center' | 'right'
   }
   /**
    * effects
@@ -156,6 +161,11 @@ export type MixEvideoOptions = VideoEvent & {
     fontColor?: string
     fontSize?: number
     fontStyle?: string
+    /**
+     * 文本水平对齐方式，可被单个 effect 的 textAlign 覆盖
+     * @default center
+     */
+    textAlign?: 'left' | 'center' | 'right'
   }
   /**
    * useVideoDBCache 使用视频缓存
@@ -318,6 +328,7 @@ export type VideoAnimateEffectType = {
   text: string
   fontColor?: string
   fontSize?: number
+  textAlign?: 'left' | 'center' | 'right'
   scaleMode: EScaleMode
   [key: string]: any
 }

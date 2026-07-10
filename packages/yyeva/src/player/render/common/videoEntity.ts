@@ -284,6 +284,7 @@ export default class VideoEntity {
               fontStyle: effects.fontStyle,
               fontColor: effects.fontColor,
               fontSize: effects.fontSize,
+              textAlign: effects.textAlign || this.op?.font?.textAlign,
             }
 
             if (typeof effectOp === 'string') {
@@ -295,6 +296,7 @@ export default class VideoEntity {
               if (style.fontStyle) eOptions.fontStyle = style.fontStyle
               if (style.fontColor) eOptions.fontColor = style.fontColor
               if (style.fontSize) eOptions.fontSize = style.fontSize
+              if (style.textAlign) eOptions.textAlign = style.textAlign
             }
             item.img = await this.makeTextImg(item, eOptions, item.effectHeight)
           }
@@ -468,14 +470,16 @@ export default class VideoEntity {
     if (eOptions.fontStyle) item.fontStyle = eOptions.fontStyle
     if (eOptions.fontColor) item.fontColor = eOptions.fontColor
     if (eOptions.fontSize) item.fontSize = eOptions.fontSize
+    if (eOptions.textAlign) item.textAlign = eOptions.textAlign
     const {fontStyle, fontColor, fontSize} = item
+    const textAlign = item.textAlign === 'left' || item.textAlign === 'right' ? item.textAlign : 'center'
     //
     const w = Math.ceil(item[this.effectWidth])
     const h = Math.ceil(item[this.effectHeight])
     ctx.canvas.width = w
     ctx.canvas.height = h
     ctx.textBaseline = 'middle'
-    ctx.textAlign = 'center'
+    ctx.textAlign = textAlign
     const txt = item.text || ''
     const txtlength = txt.length
     const defaultFontSize = h - 2
@@ -518,9 +522,11 @@ export default class VideoEntity {
       if (fontColor) ctx.fillStyle = fontColor
       fontStyle(null, ctx, item)
     }
-    logger.debug('getFontStyle, style: ', ctx.font, ', text:', txt)
+    // fontStyle 回调可能改过 textAlign，以最终配置为准
+    ctx.textAlign = textAlign
+    logger.debug('getFontStyle, style: ', ctx.font, ', text:', txt, ', textAlign:', textAlign)
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-    const posx = Math.floor(w / 2)
+    const posx = textAlign === 'left' ? 0 : textAlign === 'right' ? w : Math.floor(w / 2)
     let posy = Math.floor(h / 2)
     if (!isAndroid && !isIOS) {
       const metrics = ctx.measureText(txt)
