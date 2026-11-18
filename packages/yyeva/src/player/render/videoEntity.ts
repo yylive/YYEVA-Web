@@ -245,56 +245,53 @@ export default class VideoEntity {
     }
   }
 
-  private parseFromSrcAndOptions() {
+  private async parseFromSrcAndOptions() {
     if (!this.config?.effect) return
     const effects = this.op.effects || {}
     // logger.debug('parseFromSrcAndOptions, this.config.effect=', this.config.effect, effects)
-    return Promise.all(
-      this.config.effect.map(async item => {
-        //
-        const effectType = item[this.effectType]
-        const effectTag = item[this.effectTag]
-        // text
-        if (this.effectTypes.txt.indexOf(effectType) > -1) {
-          // if (this.op['fontStyle'] && !item['fontStyle']) {
-          //   item['fontStyle'] = this.op['fontStyle']
-          // }
-          logger.debug('parseFromSrcAndOptions effectTag=', effectTag)          
-          let effectOp = effects[effectTag]
-          if (!effectOp && effectTag.indexOf('_') > 0) {
-            // 对于'key7_ffffff_18'格式的key, 外部传入'key7_'也能支持
-            const tags = effectTag.split('_')
-            const tag = tags[0] + '_'
-            effectOp = effects[tag]
-            logger.debug('parseFromSrcAndOptions 2, tag=', tag)
-          }
-          logger.debug('parseFromSrcAndOptions 2, effectTag=', effectTag, effectOp)
-          if (effectOp) {
-            const eOptions = {
-              fontStyle: effects.fontStyle,
-              fontColor: effects.fontColor,
-              fontSize: effects.fontSize,
-            }
-
-            if (typeof effectOp === 'string') {
-              item.text = effectOp
-            } else {
-              item.text = effectOp.text
-
-              const style = effectOp
-              if (style.fontStyle) eOptions.fontStyle = style.fontStyle
-              if (style.fontColor) eOptions.fontColor = style.fontColor
-              if (style.fontSize) eOptions.fontSize = style.fontSize
-            }
-            item.img = await this.makeTextImg(item, eOptions, item.effectHeight)
-          }
-        } // image
-        else if (this.effectTypes.img.indexOf(effectType) > -1) {
-          // window.console.log(`[effect] effectTag:`, effectTag, ':', effects[effectTag])
-          item.img = await this.makeImage(item, effects[effectTag])
+    for (const item of this.config.effect) {
+      const effectType = item[this.effectType]
+      const effectTag = item[this.effectTag]
+      // text
+      if (this.effectTypes.txt.indexOf(effectType) > -1) {
+        // if (this.op['fontStyle'] && !item['fontStyle']) {
+        //   item['fontStyle'] = this.op['fontStyle']
+        // }
+        logger.debug('parseFromSrcAndOptions effectTag=', effectTag)
+        let effectOp = effects[effectTag]
+        if (!effectOp && effectTag.indexOf('_') > 0) {
+          // 对于'key7_ffffff_18'格式的key, 外部传入'key7_'也能支持
+          const tags = effectTag.split('_')
+          const tag = tags[0] + '_'
+          effectOp = effects[tag]
+          logger.debug('parseFromSrcAndOptions 2, tag=', tag)
         }
-      }),
-    )
+        logger.debug('parseFromSrcAndOptions 2, effectTag=', effectTag, effectOp)
+        if (effectOp) {
+          const eOptions = {
+            fontStyle: effects.fontStyle,
+            fontColor: effects.fontColor,
+            fontSize: effects.fontSize,
+          }
+
+          if (typeof effectOp === 'string') {
+            item.text = effectOp
+          } else {
+            item.text = effectOp.text
+
+            const style = effectOp
+            if (style.fontStyle) eOptions.fontStyle = style.fontStyle
+            if (style.fontColor) eOptions.fontColor = style.fontColor
+            if (style.fontSize) eOptions.fontSize = style.fontSize
+          }
+          item.img = await this.makeTextImg(item, eOptions, item.effectHeight)
+        }
+      } // image
+      else if (this.effectTypes.img.indexOf(effectType) > -1) {
+        // window.console.log(`[effect] effectTag:`, effectTag, ':', effects[effectTag])
+        item.img = await this.makeImage(item, effects[effectTag])
+      }
+    }
   }
   /**
    * effect 图片处理
