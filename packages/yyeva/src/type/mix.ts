@@ -208,6 +208,8 @@ export type MixEvideoOptions = VideoEvent & {
   checkTimeout?: boolean
 
   checkWindowStateWhenPlay?: boolean
+
+  flip?: boolean
 }
 
 export type VideoDataInfoType = {

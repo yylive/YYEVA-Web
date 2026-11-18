@@ -231,8 +231,10 @@ export default class VideoEntity {
 
       // Apply vertical flip transformation. [1, 7, 10]
       ctx.save();
-      ctx.translate(0, img.height);
-      ctx.scale(1, -1);
+      if (this.op.flip) {
+        ctx.translate(0, img.height);
+        ctx.scale(1, -1);
+      }
       ctx.drawImage(img, 0, 0);
       ctx.restore();
       
